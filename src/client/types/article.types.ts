@@ -47,6 +47,9 @@ export interface CreateArticleInput {
   summary?: string;
   featuredImageUrl?: string;
   status?: ArticleStatus;
+  slug?: string;
+  subjectId?: string;
+  topicId?: string;
 }
 
 export interface UpdateArticleInput {
@@ -55,6 +58,9 @@ export interface UpdateArticleInput {
   summary?: string;
   featuredImageUrl?: string;
   status?: ArticleStatus;
+  slug?: string;
+  subjectId?: string;
+  topicId?: string;
 }
 
 export interface QueryArticleParams {
@@ -62,6 +68,8 @@ export interface QueryArticleParams {
   search?: string;
   page?: number;
   limit?: number;
+  subjectId?: string;
+  topicId?: string;
 }
 
 export interface ArticleListMeta {

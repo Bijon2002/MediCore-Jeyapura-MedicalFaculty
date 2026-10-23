@@ -1,4 +1,4 @@
-import { apiRequest } from './api-client';
+import { supabase } from '../../lib/supabase';
 import type {
   Subject,
   SubjectListResponse,
@@ -9,94 +9,160 @@ import type {
 
 export class SubjectsApiClient {
   /**
-   * GET /subjects
    * Retrieves a paginated list of subjects sorted by orderIndex.
    */
   static async getSubjects(
     params?: QuerySubjectParams,
-    token?: string,
+    _token?: string,
   ): Promise<SubjectListResponse> {
-    return apiRequest<SubjectListResponse>('/subjects', {
-      method: 'GET',
-      params: params as Record<string, string | number | boolean | undefined | null>,
-      token,
-    });
+    const page = params?.page ? Number(params.page) : 1;
+    const limit = params?.limit ? Number(params.limit) : 20;
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+
+    let query = supabase
+      .from('subjects')
+      .select('*, topics(*)', { count: 'exact' });
+
+    if (params?.search) {
+      query = query.ilike('title', `%${params.search}%`);
+    }
+
+    query = query.order('order_index', { ascending: true }).range(from, to);
+
+    const { data, count, error } = await query;
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    const total = count || 0;
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data: (data as unknown as Subject[]) || [],
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages,
+      },
+    };
   }
 
   /**
-   * GET /subjects/slug/:slug
    * Retrieves a single subject by its URL slug.
    */
   static async getSubjectBySlug(
     slug: string,
-    token?: string,
+    _token?: string,
   ): Promise<Subject> {
-    const encodedSlug = encodeURIComponent(slug);
-    return apiRequest<Subject>(`/subjects/slug/${encodedSlug}`, {
-      method: 'GET',
-      token,
-    });
+    const { data, error } = await supabase
+      .from('subjects')
+      .select('*, topics(*)')
+      .eq('slug', slug)
+      .single();
+
+    if (error || !data) {
+      throw new Error(error?.message || 'Subject not found');
+    }
+
+    return data as unknown as Subject;
   }
 
   /**
-   * GET /subjects/id/:id
    * Retrieves a single subject by its UUID ID.
    */
   static async getSubjectById(
     id: string,
-    token?: string,
+    _token?: string,
   ): Promise<Subject> {
-    const encodedId = encodeURIComponent(id);
-    return apiRequest<Subject>(`/subjects/id/${encodedId}`, {
-      method: 'GET',
-      token,
-    });
+    const { data, error } = await supabase
+      .from('subjects')
+      .select('*, topics(*)')
+      .eq('id', id)
+      .single();
+
+    if (error || !data) {
+      throw new Error(error?.message || 'Subject not found');
+    }
+
+    return data as unknown as Subject;
   }
 
   /**
-   * POST /subjects
-   * Creates a new subject (requires MEDICAL_REVIEWER or ADMIN role token).
+   * Creates a new subject.
    */
   static async createSubject(
     data: CreateSubjectInput,
-    token: string,
+    _token?: string,
   ): Promise<Subject> {
-    return apiRequest<Subject>('/subjects', {
-      method: 'POST',
-      body: JSON.stringify(data),
-      token,
-    });
+    const { data: inserted, error } = await supabase
+      .from('subjects')
+      .insert({
+        title: data.title,
+        slug: data.slug,
+        description: data.description || null,
+        icon_url: data.iconUrl || null,
+        order_index: data.orderIndex ?? 0,
+      })
+      .select('*, topics(*)')
+      .single();
+
+    if (error || !inserted) {
+      throw new Error(error?.message || 'Failed to create subject');
+    }
+
+    return inserted as unknown as Subject;
   }
 
   /**
-   * PATCH /subjects/:id
-   * Updates an existing subject (requires MEDICAL_REVIEWER or ADMIN role token).
+   * Updates an existing subject.
    */
   static async updateSubject(
     id: string,
     data: UpdateSubjectInput,
-    token: string,
+    _token?: string,
   ): Promise<Subject> {
-    const encodedId = encodeURIComponent(id);
-    return apiRequest<Subject>(`/subjects/${encodedId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(data),
-      token,
-    });
+    const updatePayload: Record<string, unknown> = {
+      updated_at: new Date().toISOString(),
+    };
+
+    if (data.title !== undefined) updatePayload.title = data.title;
+    if (data.slug !== undefined) updatePayload.slug = data.slug;
+    if (data.description !== undefined) updatePayload.description = data.description;
+    if (data.iconUrl !== undefined) updatePayload.icon_url = data.iconUrl;
+    if (data.orderIndex !== undefined) updatePayload.order_index = data.orderIndex;
+
+    const { data: updated, error } = await supabase
+      .from('subjects')
+      .update(updatePayload)
+      .eq('id', id)
+      .select('*, topics(*)')
+      .single();
+
+    if (error || !updated) {
+      throw new Error(error?.message || 'Failed to update subject');
+    }
+
+    return updated as unknown as Subject;
   }
 
   /**
-   * DELETE /subjects/:id
-   * Deletes a subject by ID (requires ADMIN role token).
+   * Deletes a subject by ID.
    */
   static async deleteSubject(
     id: string,
-    token: string,
+    _token?: string,
   ): Promise<{ message: string }> {
-    const encodedId = encodeURIComponent(id);
-    return apiRequest<{ message: string }>(`/subjects/${encodedId}`, {
-      method: 'DELETE',
-      token,
-    });
+    const { error } = await supabase
+      .from('subjects')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return { message: 'Subject deleted successfully' };
   }
 }

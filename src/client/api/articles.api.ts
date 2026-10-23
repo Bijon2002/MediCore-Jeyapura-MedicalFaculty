@@ -1,4 +1,4 @@
-import { apiRequest } from './api-client';
+import { supabase } from '../../lib/supabase';
 import type {
   Article,
   ArticleListResponse,
@@ -9,95 +9,190 @@ import type {
 
 export class ArticlesApiClient {
   /**
-   * GET /articles
-   * Retrieves a paginated list of articles with optional filtering and search.
-   * Student role / unauthenticated users receive published articles only.
+   * Retrieves a paginated list of articles with optional filtering and search from Supabase.
    */
   static async getArticles(
     params?: QueryArticleParams,
-    token?: string,
+    _token?: string,
   ): Promise<ArticleListResponse> {
-    return apiRequest<ArticleListResponse>('/articles', {
-      method: 'GET',
-      params: params as Record<string, string | number | boolean | undefined | null>,
-      token,
-    });
+    const page = params?.page ? Number(params.page) : 1;
+    const limit = params?.limit ? Number(params.limit) : 10;
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+
+    let query = supabase
+      .from('articles')
+      .select('*, author:profiles!author_id(*), subject:subjects(*), topic:topics(*)', { count: 'exact' });
+
+    if (params?.status) {
+      query = query.eq('status', params.status);
+    }
+    if (params?.subjectId) {
+      query = query.eq('subject_id', params.subjectId);
+    }
+    if (params?.topicId) {
+      query = query.eq('topic_id', params.topicId);
+    }
+    if (params?.search) {
+      query = query.ilike('title', `%${params.search}%`);
+    }
+
+    query = query.order('created_at', { ascending: false }).range(from, to);
+
+    const { data, count, error } = await query;
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    const total = count || 0;
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data: (data as unknown as Article[]) || [],
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages,
+      },
+    };
   }
 
   /**
-   * GET /articles/slug/:slug
    * Retrieves a single article by its URL slug.
    */
   static async getArticleBySlug(
     slug: string,
-    token?: string,
+    _token?: string,
   ): Promise<Article> {
-    const encodedSlug = encodeURIComponent(slug);
-    return apiRequest<Article>(`/articles/slug/${encodedSlug}`, {
-      method: 'GET',
-      token,
-    });
+    const { data, error } = await supabase
+      .from('articles')
+      .select('*, author:profiles!author_id(*), subject:subjects(*), topic:topics(*)')
+      .eq('slug', slug)
+      .single();
+
+    if (error || !data) {
+      throw new Error(error?.message || 'Article not found');
+    }
+
+    return data as unknown as Article;
   }
 
   /**
-   * GET /articles/id/:id
    * Retrieves a single article by its unique UUID ID.
    */
   static async getArticleById(
     id: string,
-    token?: string,
+    _token?: string,
   ): Promise<Article> {
-    const encodedId = encodeURIComponent(id);
-    return apiRequest<Article>(`/articles/id/${encodedId}`, {
-      method: 'GET',
-      token,
-    });
+    const { data, error } = await supabase
+      .from('articles')
+      .select('*, author:profiles!author_id(*), subject:subjects(*), topic:topics(*)')
+      .eq('id', id)
+      .single();
+
+    if (error || !data) {
+      throw new Error(error?.message || 'Article not found');
+    }
+
+    return data as unknown as Article;
   }
 
   /**
-   * POST /articles
-   * Creates a new article (requires MEDICAL_REVIEWER or ADMIN role token).
+   * Creates a new article in Supabase.
    */
   static async createArticle(
     data: CreateArticleInput,
-    token: string,
+    _token?: string,
   ): Promise<Article> {
-    return apiRequest<Article>('/articles', {
-      method: 'POST',
-      body: JSON.stringify(data),
-      token,
-    });
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error('You must be logged in to create an article');
+    }
+
+    const slug =
+      data.slug ||
+      data.title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)+/g, '') +
+        '-' +
+        Date.now();
+
+    const { data: inserted, error } = await supabase
+      .from('articles')
+      .insert({
+        title: data.title,
+        slug,
+        content: data.content,
+        summary: data.summary || null,
+        status: data.status || 'DRAFT',
+        subject_id: data.subjectId || null,
+        topic_id: data.topicId || null,
+        featured_image_url: data.featuredImageUrl || null,
+        author_id: user.id,
+      })
+      .select('*, author:profiles!author_id(*), subject:subjects(*), topic:topics(*)')
+      .single();
+
+    if (error || !inserted) {
+      throw new Error(error?.message || 'Failed to create article');
+    }
+
+    return inserted as unknown as Article;
   }
 
   /**
-   * PATCH /articles/:id
-   * Partially updates an existing article (requires MEDICAL_REVIEWER or ADMIN role token).
+   * Partially updates an existing article in Supabase.
    */
   static async updateArticle(
     id: string,
     data: UpdateArticleInput,
-    token: string,
+    _token?: string,
   ): Promise<Article> {
-    const encodedId = encodeURIComponent(id);
-    return apiRequest<Article>(`/articles/${encodedId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(data),
-      token,
-    });
+    const updatePayload: Record<string, unknown> = {
+      updated_at: new Date().toISOString(),
+    };
+
+    if (data.title !== undefined) updatePayload.title = data.title;
+    if (data.slug !== undefined) updatePayload.slug = data.slug;
+    if (data.content !== undefined) updatePayload.content = data.content;
+    if (data.summary !== undefined) updatePayload.summary = data.summary;
+    if (data.status !== undefined) updatePayload.status = data.status;
+    if (data.subjectId !== undefined) updatePayload.subject_id = data.subjectId;
+    if (data.topicId !== undefined) updatePayload.topic_id = data.topicId;
+    if (data.featuredImageUrl !== undefined) updatePayload.featured_image_url = data.featuredImageUrl;
+
+    const { data: updated, error } = await supabase
+      .from('articles')
+      .update(updatePayload)
+      .eq('id', id)
+      .select('*, author:profiles!author_id(*), subject:subjects(*), topic:topics(*)')
+      .single();
+
+    if (error || !updated) {
+      throw new Error(error?.message || 'Failed to update article');
+    }
+
+    return updated as unknown as Article;
   }
 
   /**
-   * DELETE /articles/:id
-   * Deletes an article by ID (requires ADMIN role token).
+   * Deletes an article by ID in Supabase.
    */
   static async deleteArticle(
     id: string,
-    token: string,
+    _token?: string,
   ): Promise<{ message: string }> {
-    const encodedId = encodeURIComponent(id);
-    return apiRequest<{ message: string }>(`/articles/${encodedId}`, {
-      method: 'DELETE',
-      token,
-    });
+    const { error } = await supabase
+      .from('articles')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    return { message: 'Article deleted successfully' };
   }
 }

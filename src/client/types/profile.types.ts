@@ -47,4 +47,4 @@ export interface UpdateProfileInput {
     institution?: string;
     bio?: string;
     expertise?: string;
-}
+}

@@ -1,111 +1,68 @@
-# MedCore — Backend Foundation
+# MedCore
 
-MedCore is a medical education platform backend built with **NestJS**, **TypeScript**, **Prisma ORM**, and **PostgreSQL**.
+MedCore is a modern medical education platform built with **React (Vite)**, **TypeScript**, and **Supabase**.
 
 ---
 
-## 🏗 Foundation Architecture
+## 🏗 Architecture
 
-* **Framework**: NestJS (v11) with TypeScript
-* **ORM**: Prisma ORM (v6)
-* **Database**: PostgreSQL
-* **Environment Validation**: `class-validator` & `@nestjs/config`
-* **Global Error Handling**: Custom `AllExceptionsFilter` structured JSON response
-* **Core Models Initialized**:
-  * `User` (`users`)
-  * `StudentProfile` (`student_profiles`)
-  * `Subject` (`subjects`)
-  * `Topic` (`topics`)
+* **Frontend:** React 19 + TypeScript + Vite
+* **Backend & Database:** Supabase (Managed PostgreSQL, Supabase Auth, Row Level Security)
+* **SDK:** `@supabase/supabase-js`
+* **Styling:** CSS3 & modern design tokens
 
 ---
 
 ## 📁 Project Structure
 
 ```
-MedCore/
-├── prisma/
-│   ├── schema.prisma               # Initial database schema
-│   └── migrations/
-│       └── 0_init/
-│           └── migration.sql       # Initial PostgreSQL SQL migration
+Medi-Core/
+├── public/                 # Static assets & images
 ├── src/
-│   ├── common/
-│   │   └── filters/
-│   │       └── all-exceptions.filter.ts   # Global exception handler
-│   ├── config/
-│   │   └── env.validation.ts             # Environment variable validation
-│   ├── modules/
-│   │   └── health/                       # App & DB Health Check endpoint
-│   ├── prisma/
-│   │   ├── prisma.service.ts             # Lifecycle-managed Prisma client
-│   │   └── prisma.module.ts              # Global Prisma module
-│   ├── app.module.ts                     # Root NestJS module
-│   └── main.ts                           # Application bootstrap
-├── .env.example
-├── .gitignore
-├── package.json
-├── tsconfig.json
-└── README.md
+│   ├── auth/              # Supabase AuthContext & Session management
+│   ├── client/
+│   │   ├── api/           # Supabase API services (Articles, Quizzes, Profiles, Subjects, Topics)
+│   │   ├── types/         # TypeScript interfaces & domain types
+│   │   └── utils/         # Helper functions
+│   ├── components/        # React UI components (Dashboard, Quizzes, Articles, Profile, etc.)
+│   ├── lib/
+│   │   └── supabase.ts    # Initialized Supabase client
+│   ├── App.tsx            # Main application shell & routing
+│   ├── main.tsx           # Entry point
+│   └── index.css          # Global styling & design tokens
+├── supabase/
+│   └── schema.sql         # Complete PostgreSQL schema, triggers & RLS policies
+├── .env                   # Supabase environment variables (URL & Anon Key)
+├── index.html             # Vite entry HTML
+├── package.json           # Dependencies & scripts
+└── vite.config.ts         # Vite configuration
 ```
 
 ---
 
-## 🚀 Setup & Getting Started
+## 🚀 Getting Started
 
 ### 1. Prerequisites
-* Node.js (v18+)
-* PostgreSQL Database instance
+* [Node.js](https://nodejs.org/) (v18+)
+* A [Supabase](https://supabase.com/) project
 
 ### 2. Environment Setup
-Copy the example environment file and configure your local PostgreSQL connection string:
-
-```bash
-cp .env.example .env
-```
-
-Update `DATABASE_URL` in `.env`:
+Configure your Supabase credentials in `.env`:
 ```env
-PORT=3000
-NODE_ENV=development
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/medcore_db?schema=public"
+VITE_SUPABASE_URL="https://your-project-id.supabase.co"
+VITE_SUPABASE_ANON_KEY="your-anon-key"
 ```
 
-### 3. Install Dependencies
+### 3. Database Setup
+Run the SQL schema located in `supabase/schema.sql` inside your Supabase **SQL Editor**.
+
+### 4. Run Locally
 ```bash
 npm install
+npm run dev
 ```
 
-### 4. Database Setup & Migration
-Generate Prisma Client:
-```bash
-npx prisma generate
-```
-
-Apply database migrations to your PostgreSQL database:
-```bash
-npx prisma migrate dev
-```
-
-### 5. Running the Application
-
-**Development Mode:**
-```bash
-npm run start:dev
-```
-
-**Production Build:**
+### 5. Build for Production
 ```bash
 npm run build
-npm run start:prod
-```
-
-### 6. Verify Health Endpoint
-Once started, visit `http://localhost:3000/health`:
-```json
-{
-  "status": "ok",
-  "timestamp": "2026-08-25T09:45:00.000Z",
-  "service": "MedCore Backend API",
-  "database": "connected"
-}
 ```

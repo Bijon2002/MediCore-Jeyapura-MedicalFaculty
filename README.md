@@ -63,6 +63,40 @@ npm run dev
 ```
 
 ### 5. Build for Production
+# Build for Production
 ```bash
 npm run build
 ```
+
+## 🚀 Deploy to Cloudflare Pages
+
+The frontend is a static Vite build. You can deploy it directly to **Cloudflare Pages**:
+
+1. Push the repository to GitHub (already done).
+2. In the Cloudflare dashboard, create a new Pages project and connect it to this repo.
+3. Set the **Build command** to `npm run build`.
+4. Set the **Build output directory** to `dist`.
+5. Add the two environment variables `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in the Pages Settings (or link the `.env` file via secret).
+6. Click **Save and Deploy** – Cloudflare will serve the site on a global edge network.
+
+No separate backend host is required because all data and auth are served by Supabase.
+
+## 📱 Mobile Responsiveness
+
+All UI components use responsive CSS (flexbox, CSS grid, and relative units). Test with:
+
+- `npm run dev` and resize the browser or use Chrome DevTools device toolbar.
+- Run `npm run build` and preview the static files (`npx serve dist`) on a mobile device.
+
+The layout adapts to phones, tablets, and desktops out‑of‑the‑box.
+
+## 📦 Repository Details
+
+- **Description:** MedCore – a modern medical education platform for faculty students to study, create, and take quizzes.
+- **Website:** https://github.com/Bijon2002/MediCore-Jeyapura-MedicalFaculty
+- **Topics:** medical-education, supabase, react, vite, typescript
+- **Deployments:** Cloudflare Pages (static), Supabase (backend services).
+
+These details can be filled in the GitHub repository settings under *About* and *Topics*.
+
+

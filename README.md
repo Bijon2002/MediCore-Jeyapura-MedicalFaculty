@@ -1,6 +1,6 @@
 # MedCore
 
-MedCore is a modern medical education platform built with **React (Vite)**, **TypeScript**, and **Supabase**.
+MedCore is a modern medical education platform built with **React (Vite)**, **TypeScript**, and **Supabase**, designed for medical faculty students to study, create, and take quizzes, and manage article‑based learning resources.
 
 ---
 

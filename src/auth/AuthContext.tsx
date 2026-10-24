@@ -12,6 +12,8 @@ import type {
     LoginInput,
 } from '../client/types/auth.types';
 
+import { setAccessToken, removeAccessToken } from './auth-storage';
+
 interface AuthContextValue {
     user: AuthUser | null;
     isLoading: boolean;
@@ -47,10 +49,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
         supabase.auth.getSession().then(({ data: { session } }) => {
             if (!isMounted) return;
             if (session?.user) {
+                if (session.access_token) {
+                    setAccessToken(session.access_token);
+                }
                 refreshUser().finally(() => {
                     if (isMounted) setIsLoading(false);
                 });
             } else {
+                removeAccessToken();
                 setUser(null);
                 setIsLoading(false);
             }
@@ -62,8 +68,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
         } = supabase.auth.onAuthStateChange(async (_event, session) => {
             if (!isMounted) return;
             if (session?.user) {
+                if (session.access_token) {
+                    setAccessToken(session.access_token);
+                }
                 await refreshUser();
             } else {
+                removeAccessToken();
                 setUser(null);
             }
             setIsLoading(false);
@@ -77,10 +87,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     const login = async (data: LoginInput): Promise<void> => {
         const response = await AuthApiClient.login(data);
+        if (response.accessToken) {
+            setAccessToken(response.accessToken);
+        }
         setUser(response.user);
     };
 
     const logout = async (): Promise<void> => {
+        removeAccessToken();
         await AuthApiClient.logout();
         setUser(null);
     };

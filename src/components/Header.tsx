@@ -59,6 +59,16 @@ export const Header: React.FC<HeaderProps> = ({
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } finally {
+      if (onNavigateHome) {
+        onNavigateHome();
+      }
+    }
+  };
+
   const handleBrandClick = () => {
     setMobileMenuOpen(false);
     if (isWorkspaceView && onNavigateHome) {
@@ -316,7 +326,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               type="button"
               className="btn-header-logout"
-              onClick={logout}
+              onClick={handleLogout}
               title="Sign out of your MedCore account"
               data-testid="logout-button"
             >

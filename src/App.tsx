@@ -121,6 +121,15 @@ function App() {
     const isLoginRoute = route.type === 'login';
     const isRegisterRoute = route.type === 'register';
     const isProfileRoute = route.type === 'profile';
+    const isDashboardRoute = route.type === 'dashboard';
+
+    // If user is not logged in, prevent showing any dashboard/workspace route and move to home
+    if (!user) {
+      if (isAdminRoute || isReviewerRoute || isDashboardRoute || isCreateRoute || isEditRoute || isProfileRoute) {
+        navigateToHome();
+        return;
+      }
+    }
 
     const role = user?.role;
 
@@ -132,7 +141,7 @@ function App() {
 
     // Protect /profile route
     if (isProfileRoute && !role) {
-      navigateToLogin();
+      navigateToHome();
       return;
     }
 
@@ -152,13 +161,11 @@ function App() {
 
     if (isAdminRoute) {
       if (role !== 'ADMIN') {
-        setRoute({ type: 'dashboard' });
-        pushRoute('/dashboard');
+        navigateToHome();
       }
     } else if (isReviewerRoute || isCreateRoute || isEditRoute) {
       if (role !== 'MEDICAL_REVIEWER' && role !== 'ADMIN') {
-        setRoute({ type: 'dashboard' });
-        pushRoute('/dashboard');
+        navigateToHome();
       }
     }
   }, [route, user, isLoading]);

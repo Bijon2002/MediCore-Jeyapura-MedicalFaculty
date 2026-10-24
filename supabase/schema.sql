@@ -178,19 +178,45 @@ CREATE TABLE IF NOT EXISTS public.quiz_answers (
 -- 14. Automatic Profile Trigger on Signup
 -- When a user signs up via Supabase Auth, automatically insert a row into public.profiles
 CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS trigger AS $$
+RETURNS trigger 
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, auth, pg_temp
+AS $$
+DECLARE
+    assigned_role public.user_role;
+    user_role_str text;
 BEGIN
+    user_role_str := COALESCE(new.raw_user_meta_data->>'role', 'STUDENT');
+    
+    IF user_role_str = 'ADMIN' THEN
+        assigned_role := 'ADMIN'::public.user_role;
+    ELSIF user_role_str = 'MEDICAL_REVIEWER' THEN
+        assigned_role := 'MEDICAL_REVIEWER'::public.user_role;
+    ELSE
+        assigned_role := 'STUDENT'::public.user_role;
+    END IF;
+
     INSERT INTO public.profiles (id, email, first_name, last_name, role)
     VALUES (
         new.id,
-        new.email,
+        COALESCE(new.email, ''),
         COALESCE(new.raw_user_meta_data->>'first_name', ''),
         COALESCE(new.raw_user_meta_data->>'last_name', ''),
-        COALESCE((new.raw_user_meta_data->>'role')::user_role, 'STUDENT'::user_role)
-    );
+        assigned_role
+    )
+    ON CONFLICT (id) DO UPDATE SET
+        email = EXCLUDED.email,
+        first_name = CASE WHEN EXCLUDED.first_name <> '' THEN EXCLUDED.first_name ELSE public.profiles.first_name END,
+        last_name = CASE WHEN EXCLUDED.last_name <> '' THEN EXCLUDED.last_name ELSE public.profiles.last_name END;
+
     RETURN new;
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE WARNING 'handle_new_user error: %', SQLERRM;
+        RETURN new;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
@@ -216,6 +242,8 @@ ALTER TABLE public.quiz_answers ENABLE ROW LEVEL SECURITY;
 -- PROFILES
 CREATE POLICY "Public profiles are viewable by everyone" 
     ON public.profiles FOR SELECT USING (true);
+CREATE POLICY "Users can insert their own profile" 
+    ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id);
 CREATE POLICY "Users can update their own profile" 
     ON public.profiles FOR UPDATE USING (auth.uid() = id);
 

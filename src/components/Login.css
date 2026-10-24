@@ -378,7 +378,7 @@
 @media (max-width: 900px) {
   .medcore-login-split-card {
     flex-direction: column;
-    max-width: 480px;
+    max-width: 500px;
   }
 
   .login-visual-panel {
@@ -389,3 +389,22 @@
     padding: 36px 28px;
   }
 }
+
+@media (max-width: 520px) {
+  .medcore-login-page-wrapper {
+    padding: 16px 12px;
+  }
+
+  .medcore-login-split-card {
+    border-radius: 18px;
+  }
+
+  .login-form-panel {
+    padding: 24px 16px;
+  }
+
+  .login-title {
+    font-size: 20px;
+  }
+}
+

@@ -118,13 +118,12 @@
   bottom: 0;
   background: linear-gradient(
     135deg,
-    rgba(10, 16, 32, 0.72) 0%,
-    rgba(10, 16, 32, 0.55) 45%,
-    rgba(10, 16, 32, 0.20) 70%,
-    rgba(255, 255, 255, 0.55) 88%,
-    #ffffff 100%
+    rgba(7, 14, 27, 0.94) 0%,
+    rgba(10, 20, 38, 0.84) 45%,
+    rgba(15, 28, 52, 0.72) 75%,
+    rgba(10, 18, 32, 0.88) 100%
   );
-  backdrop-filter: none;
+  backdrop-filter: blur(1.5px);
 }
 
 .hero-organic-wave {
@@ -236,12 +235,19 @@
   flex-wrap: wrap;
 }
 
-/* Hero Text Block Animation */
+/* Hero Text Block Animation & High-Contrast Backdrop Card */
 .hero-text-block {
-  max-width: 620px;
+  max-width: 640px;
   text-align: left;
   margin-bottom: 36px;
   animation: heroTextFade 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  background: rgba(10, 20, 36, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  padding: 36px 38px;
+  box-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 @keyframes heroTextFade {
@@ -261,37 +267,42 @@
   gap: 8px;
   padding: 6px 16px;
   border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(20, 184, 166, 0.16);
   backdrop-filter: blur(8px);
-  border: 1px solid rgba(226, 232, 240, 0.9);
+  border: 1px solid rgba(45, 212, 191, 0.4);
   font-size: 11.5px;
-  font-weight: 700;
+  font-weight: 750;
   letter-spacing: 0.8px;
-  color: #154734;
+  color: #2dd4bf;
   text-transform: uppercase;
   margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .eyebrow-svg-icon {
-  color: #154734;
+  color: #2dd4bf;
 }
 
 .hero-display-title {
-  font-size: 52px;
+  font-size: 48px;
   font-weight: 850;
-  line-height: 1.12;
-  letter-spacing: -0.04em;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
   color: #ffffff;
-  margin: 0 0 20px;
+  margin: 0 0 18px;
   font-family: var(--sans);
   min-height: 116px;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 3px 18px rgba(0, 0, 0, 0.6), 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 @media (max-width: 768px) {
+  .hero-text-block {
+    padding: 24px 20px;
+    border-radius: 18px;
+  }
+
   .hero-display-title {
-    font-size: 36px;
+    font-size: 32px;
     min-height: auto;
   }
 }
@@ -312,14 +323,14 @@
 }
 
 .hero-lead-description {
-  font-size: 16.5px;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.92);
+  font-size: 16px;
+  line-height: 1.65;
+  color: #e2e8f0;
   margin: 0 0 26px;
   max-width: 540px;
-  font-weight: 450;
+  font-weight: 400;
   min-height: 52px;
-  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
 }
 
 /* Bilateral Stats Pills in Center Slide */

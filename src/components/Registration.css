@@ -495,7 +495,8 @@
   margin: 0 0 24px;
 }
 
-.btn-proceed-login {
+.btn-proceed-login,
+.btn-go-login {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -511,8 +512,10 @@
   transition: all 0.2s ease;
 }
 
-.btn-proceed-login:hover {
+.btn-proceed-login:hover,
+.btn-go-login:hover {
   transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(21, 71, 52, 0.35);
 }
 
 /* FOOTER */
@@ -557,7 +560,7 @@
 @media (max-width: 900px) {
   .medcore-registration-split-card {
     flex-direction: column;
-    max-width: 480px;
+    max-width: 520px;
   }
 
   .registration-visual-panel {
@@ -567,5 +570,37 @@
   .registration-form-panel {
     padding: 32px 24px;
     max-height: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .medcore-registration-page-wrapper {
+    padding: 16px 12px;
+  }
+
+  .medcore-registration-split-card {
+    border-radius: 18px;
+  }
+
+  .registration-form-panel {
+    padding: 24px 16px;
+  }
+
+  .registration-portal-tabs {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .portal-tab {
+    padding: 10px 12px;
+    font-size: 12.5px;
+  }
+
+  .registration-title {
+    font-size: 20px;
+  }
+
+  .registration-subtitle {
+    font-size: 12.5px;
   }
 }

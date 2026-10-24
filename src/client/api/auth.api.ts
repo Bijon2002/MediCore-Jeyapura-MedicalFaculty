@@ -46,6 +46,7 @@ export class AuthApiClient {
      * The handle_new_user trigger in Postgres will auto-create the public.profiles record.
      */
     static async register(data: RegisterInput): Promise<RegisterResponse> {
+        // Step 1: Create the auth user
         const { data: authData, error } = await supabase.auth.signUp({
             email: data.email,
             password: data.password,
@@ -58,8 +59,34 @@ export class AuthApiClient {
             },
         });
 
-        if (error || !authData.user) {
-            throw new Error(error?.message || 'Registration failed');
+        if (error) {
+            // Provide friendly messages for common errors
+            if (error.message?.includes('already registered') || error.message?.includes('already exists')) {
+                throw new Error('An account with this email already exists. Please sign in instead.');
+            }
+            throw new Error(error.message || 'Registration failed. Please try again.');
+        }
+
+        if (!authData.user) {
+            throw new Error('Registration failed. Please try again.');
+        }
+
+        // Step 2: Manually upsert the profile as a fallback
+        // The trigger should handle this automatically, but this ensures
+        // it works even if the trigger is delayed or has issues.
+        const { error: profileError } = await supabase
+            .from('profiles')
+            .upsert({
+                id: authData.user.id,
+                email: authData.user.email || data.email,
+                first_name: data.firstName,
+                last_name: data.lastName,
+                role: 'STUDENT',
+            }, { onConflict: 'id' });
+
+        // Profile error is non-fatal — trigger may have already created it
+        if (profileError) {
+            console.warn('Profile upsert warning (trigger may have handled it):', profileError.message);
         }
 
         const user: AuthUser = {
@@ -71,10 +98,11 @@ export class AuthApiClient {
         };
 
         return {
-            message: 'Registration successful! Please check your email if confirmation is required.',
+            message: 'Registration successful! You can now sign in.',
             user,
         };
     }
+
 
     /**
      * Retrieves the currently authenticated user from the active Supabase session.

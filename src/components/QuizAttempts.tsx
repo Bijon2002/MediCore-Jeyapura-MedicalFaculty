@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { getAccessToken } from '../auth/auth-storage';
 import { QuizzesApiClient } from '../client/api/quizzes.api';
 import type { QuizAttemptHistoryItem } from '../client/types/quiz.types';
@@ -45,12 +45,22 @@ export const QuizAttempts: React.FC<QuizAttemptsProps> = ({ onBackToQuizzes }) =
     fetchAttempts();
   }, [fetchAttempts]);
 
+  const stats = useMemo(() => {
+    if (attempts.length === 0) {
+      return { total: 0, avg: 0, best: 0 };
+    }
+    const total = attempts.length;
+    const avg = Math.round(attempts.reduce((acc, curr) => acc + (curr.percentage || 0), 0) / total);
+    const best = Math.max(...attempts.map((a) => a.percentage || 0));
+    return { total, avg, best };
+  }, [attempts]);
+
   const formatDate = (dateValue: string | Date): string => {
     try {
       const date = new Date(dateValue);
       return date.toLocaleString('en-US', {
         day: 'numeric',
-        month: 'long',
+        month: 'short',
         year: 'numeric',
         hour: 'numeric',
         minute: '2-digit',
@@ -61,6 +71,25 @@ export const QuizAttempts: React.FC<QuizAttemptsProps> = ({ onBackToQuizzes }) =
     }
   };
 
+  const getScoreGrade = (percentage: number) => {
+    if (percentage >= 80) {
+      return {
+        label: 'High Distinction',
+        gradeClass: 'grade-excellent',
+      };
+    }
+    if (percentage >= 60) {
+      return {
+        label: 'Passed',
+        gradeClass: 'grade-pass',
+      };
+    }
+    return {
+      label: 'Needs Review',
+      gradeClass: 'grade-review',
+    };
+  };
+
   if (unauthenticated) {
     return (
       <div className="medcore-quiz-attempts-container">
@@ -69,6 +98,8 @@ export const QuizAttempts: React.FC<QuizAttemptsProps> = ({ onBackToQuizzes }) =
             <svg
               className="quiz-state-icon"
               viewBox="0 0 24 24"
+              width="36"
+              height="36"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
@@ -133,6 +164,8 @@ export const QuizAttempts: React.FC<QuizAttemptsProps> = ({ onBackToQuizzes }) =
             <svg
               className="quiz-back-btn-icon"
               viewBox="0 0 24 24"
+              width="18"
+              height="18"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
@@ -151,6 +184,8 @@ export const QuizAttempts: React.FC<QuizAttemptsProps> = ({ onBackToQuizzes }) =
             <svg
               className="quiz-state-icon"
               viewBox="0 0 24 24"
+              width="36"
+              height="36"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
@@ -196,6 +231,8 @@ export const QuizAttempts: React.FC<QuizAttemptsProps> = ({ onBackToQuizzes }) =
             <svg
               className="quiz-back-btn-icon"
               viewBox="0 0 24 24"
+              width="18"
+              height="18"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
@@ -214,6 +251,8 @@ export const QuizAttempts: React.FC<QuizAttemptsProps> = ({ onBackToQuizzes }) =
             <svg
               className="quiz-state-icon"
               viewBox="0 0 24 24"
+              width="36"
+              height="36"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
@@ -234,8 +273,47 @@ export const QuizAttempts: React.FC<QuizAttemptsProps> = ({ onBackToQuizzes }) =
             className="quiz-empty-back-btn"
             onClick={onBackToQuizzes}
           >
+            <svg
+              className="quiz-btn-arrow-icon"
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <line x1="19" y1="12" x2="5" y2="12" />
+              <polyline points="12 19 5 12 12 5" />
+            </svg>
             Back to Quizzes
           </button>
+
+          <div className="quiz-empty-features-grid">
+            <div className="empty-feature-card">
+              <div className="feature-icon-bullet">🩺</div>
+              <div className="feature-text">
+                <strong>Clinical MCQs</strong>
+                <span>Practice faculty-reviewed medical cases</span>
+              </div>
+            </div>
+            <div className="empty-feature-card">
+              <div className="feature-icon-bullet">📊</div>
+              <div className="feature-text">
+                <strong>Instant Scoring</strong>
+                <span>Review rationale for every clinical option</span>
+              </div>
+            </div>
+            <div className="empty-feature-card">
+              <div className="feature-icon-bullet">📈</div>
+              <div className="feature-text">
+                <strong>Progress Tracking</strong>
+                <span>Monitor subject mastery over time</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -245,6 +323,7 @@ export const QuizAttempts: React.FC<QuizAttemptsProps> = ({ onBackToQuizzes }) =
     <div className="medcore-quiz-attempts-container">
       <div className="quiz-attempts-header">
         <div className="quiz-attempts-title-area">
+          <div className="quiz-title-badge">Student Assessment Record</div>
           <h1 className="quiz-attempts-title">My Quiz Attempts</h1>
           <p className="quiz-attempts-subtitle">
             Review your previous quiz submissions and test performance history.
@@ -259,6 +338,8 @@ export const QuizAttempts: React.FC<QuizAttemptsProps> = ({ onBackToQuizzes }) =
           <svg
             className="quiz-back-btn-icon"
             viewBox="0 0 24 24"
+            width="18"
+            height="18"
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
@@ -273,13 +354,34 @@ export const QuizAttempts: React.FC<QuizAttemptsProps> = ({ onBackToQuizzes }) =
         </button>
       </div>
 
+      <div className="quiz-attempts-summary-banner">
+        <div className="summary-stat-box">
+          <span className="summary-stat-label">Total Attempts</span>
+          <span className="summary-stat-val">{stats.total}</span>
+          <span className="summary-stat-caption">Recorded submissions</span>
+        </div>
+        <div className="summary-stat-divider" />
+        <div className="summary-stat-box">
+          <span className="summary-stat-label">Average Accuracy</span>
+          <span className="summary-stat-val text-accent">{stats.avg}% Avg</span>
+          <span className="summary-stat-caption">Across all subjects</span>
+        </div>
+        <div className="summary-stat-divider" />
+        <div className="summary-stat-box">
+          <span className="summary-stat-label">Highest Score</span>
+          <span className="summary-stat-val text-success">{stats.best}% Peak</span>
+          <span className="summary-stat-caption">Personal best</span>
+        </div>
+      </div>
+
       <div className="attempts-list">
         {attempts.map((attempt) => {
           const topicTitle = attempt.topic?.name ?? 'All topics';
           const subjectTitle = attempt.subject?.name ?? '';
+          const grade = getScoreGrade(attempt.percentage);
 
           return (
-            <div key={attempt.attemptId} className="attempt-card">
+            <div key={attempt.attemptId} className={`attempt-card ${grade.gradeClass}`}>
               <div className="attempt-card-main">
                 <div className="attempt-info">
                   <div className="attempt-badges">
@@ -288,6 +390,9 @@ export const QuizAttempts: React.FC<QuizAttemptsProps> = ({ onBackToQuizzes }) =
                     )}
                     <span className="attempt-topic-separator">•</span>
                     <span className="attempt-topic">{topicTitle}</span>
+                    <span className={`attempt-grade-pill ${grade.gradeClass}`}>
+                      {grade.label}
+                    </span>
                   </div>
 
                   <h2 className="attempt-quiz-title">{attempt.quizTitle}</h2>
@@ -296,6 +401,8 @@ export const QuizAttempts: React.FC<QuizAttemptsProps> = ({ onBackToQuizzes }) =
                     <svg
                       className="attempt-date-icon"
                       viewBox="0 0 24 24"
+                      width="16"
+                      height="16"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="2"
@@ -313,18 +420,33 @@ export const QuizAttempts: React.FC<QuizAttemptsProps> = ({ onBackToQuizzes }) =
                 </div>
 
                 <div className="attempt-results-summary">
-                  <div className="attempt-score-box">
-                    <span className="attempt-score-label">Score</span>
-                    <span className="attempt-score-value">
-                      {attempt.score} / {attempt.total}
-                    </span>
+                  <div className="attempt-metrics-wrapper">
+                    <div className="attempt-score-box">
+                      <span className="attempt-score-label">Score</span>
+                      <span className="attempt-score-value">
+                        {attempt.score} / {attempt.total}
+                      </span>
+                    </div>
+
+                    <div className="attempt-metrics-divider" />
+
+                    <div className="attempt-percentage-box">
+                      <span className="attempt-percentage-label">Percentage</span>
+                      <span className="attempt-percentage-value">
+                        {attempt.percentage}%
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="attempt-percentage-box">
-                    <span className="attempt-percentage-label">Percentage</span>
-                    <span className="attempt-percentage-value">
-                      {attempt.percentage}%
-                    </span>
+                  <div className="attempt-progress-bar-container">
+                    <div
+                      className={`attempt-progress-bar-fill ${grade.gradeClass}`}
+                      style={{ width: `${Math.min(100, Math.max(0, attempt.percentage))}%` }}
+                      role="progressbar"
+                      aria-valuenow={attempt.percentage}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                    />
                   </div>
                 </div>
               </div>

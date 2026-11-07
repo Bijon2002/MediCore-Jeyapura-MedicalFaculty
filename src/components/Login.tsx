@@ -123,19 +123,7 @@ export const Login: React.FC<LoginProps> = ({
         <div className="login-form-panel">
           {/* BRAND HEADER */}
           <div className="login-brand-header">
-            <div className="login-logo-wrapper" onClick={onNavigateHome} role="button" tabIndex={0} title="Return to MedCore Home">
-              <svg
-                className="login-brand-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-              </svg>
-            </div>
+            <div className="login-logo-wrapper" onClick={onNavigateHome} role="button" tabIndex={0} title="Return to MedCore Home">`r`n              <img src="/medcore-logo.png" alt="MedCore Logo" className="login-brand-logo-img" />`r`n            </div>
             <h1 className="login-title">Sign in to MedCore</h1>
             <p className="login-subtitle">
               Enter your clinical credentials to access your dashboard.

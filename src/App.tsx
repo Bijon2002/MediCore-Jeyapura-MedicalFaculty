@@ -20,6 +20,7 @@ import { Login } from './components/Login';
 import { Registration } from './components/Registration';
 import { Profile } from './components/Profile';
 import { ReviewerApplication } from './components/ReviewerApplication';
+import { AppPreloader } from './components/AppPreloader';
 import { parseRoute, pushRoute, type RouteState } from './components/route-utils';
 import { useAuth } from './auth/AuthContext';
 import type { Article } from './client/types/article.types';
@@ -32,18 +33,17 @@ function App() {
   const { user, isLoading } = useAuth();
   const [route, setRoute] = useState<RouteState>(() => parseRoute());
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showPreloader, setShowPreloader] = useState(true);
   const currentRole: UserRole = user?.role || 'STUDENT';
   const [adminActiveTab, setAdminActiveTab] = useState<AdminWorkspaceTab>('OVERVIEW');
 
   const isWorkspaceRoute =
-    route.type === 'dashboard' ||
-    route.type === 'reviewer-dashboard' ||
-    route.type === 'create-article' ||
-    route.type === 'edit-article' ||
-    route.type === 'create-quiz' ||
-    route.type === 'edit-quiz' ||
-    route.type === 'apply-reviewer' ||
-    route.type === 'profile';
+    (currentRole === 'ADMIN' || currentRole === 'MEDICAL_REVIEWER') &&
+    (route.type === 'reviewer-dashboard' ||
+      route.type === 'create-article' ||
+      route.type === 'edit-article' ||
+      route.type === 'create-quiz' ||
+      route.type === 'edit-quiz');
 
   useEffect(() => {
     const handlePopState = () => {
@@ -305,11 +305,19 @@ function App() {
 
   return (
     <div className="medcore-app">
+      {showPreloader && (
+        <AppPreloader
+          isReady={!isLoading}
+          onLoaded={() => setShowPreloader(false)}
+        />
+      )}
+
       {/* HEADER */}
       <Header
         onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
         isSidebarOpen={isSidebarOpen}
         onNavigateHome={navigateToHome}
+        onNavigateToDashboard={navigateToDashboard}
         onNavigateToLogin={navigateToLogin}
         onNavigateToProfile={navigateToProfile}
         onNavigateToArticles={navigateToArticles}
@@ -395,6 +403,9 @@ function App() {
               onNavigateToTopics={navigateToTopics}
               onNavigateToArticles={navigateToArticles}
               onNavigateToQuizzes={navigateToQuizzes}
+              onNavigateToQuizAttempts={navigateToQuizAttempts}
+              onNavigateToProfile={navigateToProfile}
+              onNavigateToApplyReviewer={navigateToApplyReviewer}
             />
           ) : route.type === 'reviewer-dashboard' ? (
             <ReviewerDashboard
@@ -463,9 +474,7 @@ function App() {
               <div className="footer-container">
                 <div className="footer-brand" onClick={navigateToHome} style={{ cursor: 'pointer' }}>
                   <div className="footer-mini-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                    </svg>
+                    <img src="/medcore-logo.png" alt="MedCore Logo" className="footer-mini-logo-img" />
                   </div>
                   <span>MedCore Clinical Platform</span>
                 </div>

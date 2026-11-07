@@ -211,25 +211,7 @@ export const Registration: React.FC<RegistrationProps> = ({
         <div className="registration-form-panel">
           {/* BRAND HEADER */}
           <div className="registration-brand-header">
-            <div
-              className="registration-logo-wrapper"
-              onClick={onNavigateHome}
-              role="button"
-              tabIndex={0}
-              title="Return to MedCore Home"
-            >
-            <svg
-              className="registration-brand-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-            </svg>
-          </div>
+            <div className="registration-logo-wrapper" onClick={onNavigateHome} role="button" tabIndex={0} title="Return to MedCore Home">`r`n              <img src="/medcore-logo.png" alt="MedCore Logo" className="registration-brand-logo-img" />`r`n            </div>
           <h1 className="registration-title">
             {accountType === 'STUDENT' ? 'Create Student Account' : 'Medical Reviewer Registration'}
           </h1>

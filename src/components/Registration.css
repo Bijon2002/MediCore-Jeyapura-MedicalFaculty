@@ -185,19 +185,30 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #154734 0%, #0d2e21 100%);
-  border-radius: 12px;
-  color: #ffffff;
-  margin-bottom: 16px;
+  width: 52px;
+  height: 52px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  margin-bottom: 18px;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(21, 71, 52, 0.25);
-  transition: transform 0.2s ease;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  overflow: hidden;
+  padding: 4px;
 }
 
 .registration-logo-wrapper:hover {
   transform: scale(1.05);
+  border-color: #0284c7;
+  box-shadow: 0 6px 18px rgba(2, 132, 199, 0.2);
+}
+
+.registration-brand-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .registration-brand-icon {

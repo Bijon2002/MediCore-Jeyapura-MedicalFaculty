@@ -1,66 +1,209 @@
-/* MedCore Dashboard View Styles */
+/* =========================================================================
+   MedCore Student Dashboard View Styles
+   Theme: Modern Horizontal Clinical Learning Portal
+   ========================================================================= */
 
-.medcore-dashboard-container {
-  max-width: 1280px;
+.medcore-student-dashboard {
+  width: 100%;
+  max-width: 1240px;
   margin: 0 auto;
-  padding: 32px 24px 64px;
+  padding: 28px 24px 80px;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+/* =========================================================================
+   1. HORIZONTAL STUDENT SUBNAV BAR
+   ========================================================================= */
+.student-horizontal-subnav {
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 14px;
+  padding: 14px 20px;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.student-profile-strip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.student-avatar-badge {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
+  flex-shrink: 0;
+}
+
+.student-info-meta {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 2px;
 }
 
-/* HERO BANNER */
-.dashboard-hero-card {
-  background: linear-gradient(135deg, var(--surface) 0%, var(--primary-50) 100%);
-  border: 1px solid var(--border);
+.student-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.student-display-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-h, #0f172a);
+}
+
+.student-status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #16a34a;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  padding: 1px 8px;
+  border-radius: 999px;
+}
+
+.pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #16a34a;
+  animation: pulse-ring 2s infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 5px rgba(22, 163, 74, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(22, 163, 74, 0);
+  }
+}
+
+.student-institution {
+  font-size: 12px;
+  color: var(--text-muted, #64748b);
+}
+
+.student-horizontal-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.student-nav-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  background: var(--code-bg, #f8fafc);
+  color: var(--text, #334155);
+  border: 1px solid var(--border, #e2e8f0);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.student-nav-pill:hover {
+  background: #f1f5f9;
+  color: #0284c7;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+.student-nav-pill.active {
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #0284c7;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
+}
+
+.student-nav-pill.highlight {
+  color: #0284c7;
+  background: #f0f9ff;
+  border-color: #bae6fd;
+}
+
+.student-nav-pill.highlight:hover {
+  background: #e0f2fe;
+}
+
+/* =========================================================================
+   2. HERO BANNER
+   ========================================================================= */
+.student-hero-card {
+  background: linear-gradient(135deg, var(--surface, #ffffff) 0%, #f0f9ff 100%);
+  border: 1px solid var(--border, #e2e8f0);
   border-radius: 16px;
   padding: 32px 36px;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.05);
+  margin-bottom: 24px;
   position: relative;
   overflow: hidden;
-}
-
-@media (prefers-color-scheme: dark) {
-  .dashboard-hero-card {
-    background: linear-gradient(135deg, var(--surface) 0%, rgba(2, 132, 199, 0.1) 100%);
-  }
 }
 
 .hero-pill-tag {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  padding: 4px 12px;
+  padding: 4px 10px;
   border-radius: 999px;
-  background: var(--accent-bg);
-  color: var(--accent);
-  border: 1px solid var(--accent-border);
+  background: #e0f2fe;
+  color: #0284c7;
+  border: 1px solid #bae6fd;
   margin-bottom: 12px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.05em;
 }
 
 .hero-title {
   font-size: 28px;
   font-weight: 800;
-  color: var(--text-h);
+  color: var(--text-h, #0f172a);
   line-height: 1.25;
-  margin-bottom: 12px;
+  margin: 0 0 10px;
+  letter-spacing: -0.02em;
 }
 
 .hero-subtitle {
   font-size: 15px;
-  color: var(--text);
-  max-width: 720px;
+  color: var(--text, #475569);
+  max-width: 760px;
   line-height: 1.6;
-  margin-bottom: 24px;
+  margin: 0 0 24px;
 }
 
 .hero-actions {
   display: flex;
-  gap: 14px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
@@ -70,7 +213,7 @@
   gap: 8px;
   padding: 10px 20px;
   border-radius: 10px;
-  background: linear-gradient(135deg, var(--primary-500), var(--teal-500));
+  background: #0284c7;
   color: #ffffff;
   font-weight: 600;
   font-size: 14px;
@@ -81,6 +224,7 @@
 }
 
 .btn-hero-primary:hover {
+  background: #0369a1;
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(2, 132, 199, 0.35);
 }
@@ -91,33 +235,82 @@
   gap: 8px;
   padding: 10px 20px;
   border-radius: 10px;
-  background: var(--surface);
-  color: var(--text-h);
+  background: var(--surface, #ffffff);
+  color: var(--text-h, #0f172a);
   font-weight: 600;
   font-size: 14px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border, #cbd5e1);
   cursor: pointer;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
   transition: all 0.2s ease;
 }
 
 .btn-hero-secondary:hover {
-  background: var(--surface-hover);
-  border-color: var(--border-light);
+  background: var(--surface-hover, #f8fafc);
+  border-color: #0284c7;
+  color: #0284c7;
+  transform: translateY(-1px);
 }
 
-/* METRICS GRID */
+.btn-hero-accent {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  background: #10b981;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  transition: all 0.2s ease;
+}
+
+.btn-hero-accent:hover {
+  background: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+}
+
+.btn-hero-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  background: transparent;
+  color: #0284c7;
+  font-weight: 600;
+  font-size: 14px;
+  border: 1px solid #bae6fd;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-hero-outline:hover {
+  background: #f0f9ff;
+  border-color: #0284c7;
+  transform: translateY(-1px);
+}
+
+/* =========================================================================
+   3. METRICS GRID
+   ========================================================================= */
 .dashboard-metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
+  gap: 18px;
+  margin-bottom: 32px;
 }
 
 .metric-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--border, #e2e8f0);
   border-radius: 14px;
-  padding: 20px;
-  box-shadow: var(--shadow-sm);
+  padding: 22px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -125,8 +318,8 @@
 }
 
 .metric-card:hover {
-  border-color: var(--accent-border);
-  box-shadow: var(--shadow-md);
+  border-color: #cbd5e1;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
   transform: translateY(-2px);
 }
 
@@ -137,22 +330,23 @@
 }
 
 .metric-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted, #64748b);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.05em;
 }
 
 .metric-value {
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 800;
-  color: var(--text-h);
+  color: var(--text-h, #0f172a);
+  letter-spacing: -0.02em;
 }
 
 .metric-description {
   font-size: 12px;
-  color: var(--text-muted);
+  color: var(--text-muted, #94a3b8);
 }
 
 .metric-icon-box {
@@ -162,115 +356,212 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--accent-bg);
-  color: var(--accent);
+  flex-shrink: 0;
 }
 
 .metric-icon-box.teal {
-  background: rgba(13, 148, 136, 0.1);
-  color: var(--teal-500);
+  background: #f0fdf4;
+  color: #16a34a;
 }
 
 .metric-icon-box.sky {
-  background: rgba(2, 132, 199, 0.1);
-  color: var(--primary-500);
+  background: #f0f9ff;
+  color: #0284c7;
 }
 
 .metric-icon-box.green {
-  background: rgba(16, 185, 129, 0.1);
-  color: #10b981;
+  background: #ecfdf5;
+  color: #059669;
 }
 
-/* SECTION TITLES */
+/* =========================================================================
+   4. CORE CLINICAL SECTIONS
+   ========================================================================= */
+.dashboard-section {
+  margin-bottom: 32px;
+}
+
 .dashboard-section-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
 .section-title {
   font-size: 20px;
-  font-weight: 700;
-  color: var(--text-h);
+  font-weight: 800;
+  color: var(--text-h, #0f172a);
+  margin: 0;
+  letter-spacing: -0.02em;
 }
 
-.section-link-btn {
-  font-size: 13px;
+.section-subtitle-tag {
+  font-size: 12px;
+  color: var(--text-muted, #64748b);
   font-weight: 600;
-  color: var(--accent);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
 }
 
-.section-link-btn:hover {
-  text-decoration: underline;
-}
-
-/* QUICK ACTION CARDS GRID */
 .quick-action-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
 }
 
 .quick-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--border, #e2e8f0);
   border-radius: 14px;
   padding: 24px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
   cursor: pointer;
-  transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 16px;
+  transition: all 0.2s ease;
 }
 
 .quick-card:hover {
-  border-color: var(--accent);
-  box-shadow: var(--shadow-md);
   transform: translateY(-2px);
+  border-color: #0284c7;
+  box-shadow: 0 8px 24px rgba(2, 132, 199, 0.08);
 }
 
 .quick-card-header {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
+  margin-bottom: 10px;
 }
 
 .quick-card-icon {
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background: var(--accent-bg);
-  color: var(--accent);
+  background: #f0f9ff;
+  color: #0284c7;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .quick-card-title {
   font-size: 16px;
   font-weight: 700;
-  color: var(--text-h);
+  color: var(--text-h, #0f172a);
 }
 
 .quick-card-desc {
-  font-size: 14px;
-  color: var(--text);
+  font-size: 13.5px;
+  color: var(--text-muted, #64748b);
   line-height: 1.5;
+  margin: 0 0 16px;
+  flex-grow: 1;
 }
 
 .quick-card-footer {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--accent);
   display: flex;
   align-items: center;
   gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0284c7;
+}
+
+/* =========================================================================
+   5. BECOME A REVIEWER HORIZONTAL BANNER
+   ========================================================================= */
+.student-reviewer-pathway-card {
+  background: var(--surface, #ffffff);
+  border: 1px solid #bfdbfe;
+  border-left: 4px solid #0284c7;
+  border-radius: 14px;
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.reviewer-pathway-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  min-width: 280px;
+}
+
+.reviewer-pathway-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  background: #f0f9ff;
+  color: #0284c7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.reviewer-pathway-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-h, #0f172a);
+  margin: 0 0 4px;
+}
+
+.reviewer-pathway-desc {
+  font-size: 13px;
+  color: var(--text-muted, #64748b);
+  line-height: 1.5;
+  margin: 0;
+  max-width: 680px;
+}
+
+.btn-apply-reviewer {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 13.5px;
+  font-weight: 600;
+  border-radius: 10px;
+  background: #0284c7;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn-apply-reviewer:hover {
+  background: #0369a1;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+}
+
+/* =========================================================================
+   DARK THEME
+   ========================================================================= */
+[data-theme="dark"] .student-horizontal-subnav,
+[data-theme="dark"] .student-hero-card,
+[data-theme="dark"] .metric-card,
+[data-theme="dark"] .quick-card,
+[data-theme="dark"] .student-reviewer-pathway-card {
+  background: #111827;
+  border-color: #1e293b;
+}
+
+[data-theme="dark"] .student-nav-pill {
+  background: #1e293b;
+  border-color: #334155;
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .student-nav-pill:hover {
+  background: #334155;
+  color: #38bdf8;
 }

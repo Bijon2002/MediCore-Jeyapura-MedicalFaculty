@@ -1105,11 +1105,7 @@ export const Home: React.FC<HomeProps> = ({
             {/* Col 1: Brand & Bio */}
             <div className="footer-brand-column">
               <div className="footer-logo-row" onClick={onNavigateToArticles}>
-                <div className="footer-brand-icon">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                  </svg>
-                </div>
+                <div className="footer-brand-icon">`r`n                  <img src="/medcore-logo.png" alt="MedCore Logo" className="footer-brand-logo-img" />`r`n                </div>
                 <div>
                   <h3 className="footer-brand-title">MedCore</h3>
                   <span className="footer-brand-tagline">Explore. Learn. Discover.</span>

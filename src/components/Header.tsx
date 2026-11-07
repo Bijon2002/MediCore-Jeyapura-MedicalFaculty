@@ -7,6 +7,7 @@ export interface HeaderProps {
   onToggleSidebar: () => void;
   isSidebarOpen: boolean;
   onNavigateHome: () => void;
+  onNavigateToDashboard?: () => void;
   onNavigateToLogin?: () => void;
   onNavigateToProfile?: () => void;
   onNavigateToArticles?: () => void;
@@ -24,6 +25,7 @@ export interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   onToggleSidebar,
   onNavigateHome,
+  onNavigateToDashboard,
   onNavigateToLogin,
   onNavigateToProfile,
   onNavigateToArticles,
@@ -139,17 +141,7 @@ export const Header: React.FC<HeaderProps> = ({
             }}
           >
             <div className="brand-icon-wrapper">
-              <svg
-                className="brand-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-              </svg>
+              <img src="/medcore-logo.png" alt="MedCore Logo" className="brand-logo-img" />
             </div>
             <div className="brand-text-block">
               <span className="brand-title">MedCore</span>
@@ -177,7 +169,7 @@ export const Header: React.FC<HeaderProps> = ({
                 textTransform: 'uppercase',
               }}
             >
-              {currentRole === 'ADMIN' ? '🛡️ Administration Console' : currentRole === 'MEDICAL_REVIEWER' ? '✍️ Reviewer Workspace' : '🎓 Clinical Dashboard'}
+              {currentRole === 'ADMIN' ? 'ðŸ›¡ï¸ Administration Console' : currentRole === 'MEDICAL_REVIEWER' ? 'âœï¸ Reviewer Workspace' : 'ðŸŽ“ Clinical Dashboard'}
             </span>
           </div>
         ) : (
@@ -189,6 +181,16 @@ export const Header: React.FC<HeaderProps> = ({
             >
               Home
             </button>
+
+            {user && onNavigateToDashboard && (
+              <button
+                type="button"
+                className={`nav-tab-btn ${activeRouteType === 'dashboard' ? 'active' : ''}`}
+                onClick={() => handleNavClick(onNavigateToDashboard)}
+              >
+                Dashboard
+              </button>
+            )}
 
             <button
               type="button"
@@ -361,6 +363,16 @@ export const Header: React.FC<HeaderProps> = ({
           >
             Home
           </button>
+
+            {user && onNavigateToDashboard && (
+              <button
+                type="button"
+                className={`nav-tab-btn ${activeRouteType === 'dashboard' ? 'active' : ''}`}
+                onClick={() => handleNavClick(onNavigateToDashboard)}
+              >
+                Dashboard
+              </button>
+            )}
           <button
             type="button"
             className={`mobile-nav-item ${activeRouteType === 'article-list' ? 'active' : ''}`}

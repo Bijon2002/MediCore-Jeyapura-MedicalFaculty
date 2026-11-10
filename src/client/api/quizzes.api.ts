@@ -9,10 +9,17 @@ import type {
 } from '../types/quiz.types';
 
 export class QuizzesApiClient {
+  private static cache: { data: Quiz[]; timestamp: number } | null = null;
+  private static CACHE_TTL = 30000; // 30 seconds
+
   /**
    * Retrieves quizzes from Supabase.
    */
   static async getQuizzes(_token?: string): Promise<Quiz[]> {
+    if (this.cache && Date.now() - this.cache.timestamp < this.CACHE_TTL) {
+      return this.cache.data;
+    }
+
     const { data, error } = await supabase
       .from('quizzes')
       .select('*, subject:subjects(id, title), topic:topics(id, title), questions:quiz_questions(*, options:quiz_options(*))')
@@ -22,7 +29,7 @@ export class QuizzesApiClient {
       throw new Error(error.message);
     }
 
-    return (data || []).map((q: any) => ({
+    const result = (data || []).map((q: any) => ({
       id: q.id,
       title: q.title,
       description: q.description,
@@ -46,6 +53,13 @@ export class QuizzesApiClient {
         })),
       })),
     }));
+
+    this.cache = { data: result, timestamp: Date.now() };
+    return result;
+  }
+
+  static clearCache(): void {
+    this.cache = null;
   }
 
   /**
@@ -146,6 +160,7 @@ export class QuizzesApiClient {
       }
     }
 
+    this.clearCache();
     return this.getQuizById(quiz.id);
   }
 
@@ -173,6 +188,7 @@ export class QuizzesApiClient {
 
     if (quizError) throw new Error(quizError.message);
 
+    this.clearCache();
     return this.getQuizById(id);
   }
 
@@ -186,6 +202,7 @@ export class QuizzesApiClient {
       .eq('id', id);
 
     if (error) throw new Error(error.message);
+    this.clearCache();
     return this.getQuizById(id);
   }
 
@@ -199,6 +216,7 @@ export class QuizzesApiClient {
       .eq('id', id);
 
     if (error) throw new Error(error.message);
+    this.clearCache();
     return this.getQuizById(id);
   }
 

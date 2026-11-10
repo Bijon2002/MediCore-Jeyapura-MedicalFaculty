@@ -8,6 +8,9 @@ import type {
 } from '../types/topic.types';
 
 export class TopicsApiClient {
+  private static cache = new Map<string, { data: TopicListResponse; timestamp: number }>();
+  private static CACHE_TTL = 45000; // 45 seconds
+
   /**
    * Retrieves a paginated list of topics with optional filtering by subjectId or parentId.
    */
@@ -15,6 +18,12 @@ export class TopicsApiClient {
     params?: QueryTopicParams,
     _token?: string,
   ): Promise<TopicListResponse> {
+    const cacheKey = JSON.stringify(params || {});
+    const cached = this.cache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < this.CACHE_TTL) {
+      return cached.data;
+    }
+
     const page = params?.page ? Number(params.page) : 1;
     const limit = params?.limit ? Number(params.limit) : 50;
     const from = (page - 1) * limit;
@@ -41,11 +50,12 @@ export class TopicsApiClient {
     if (error) {
       throw new Error(error.message);
     }
+    this.clearCache();
 
     const total = count || 0;
     const totalPages = Math.ceil(total / limit);
 
-    return {
+    const result: TopicListResponse = {
       data: (data as unknown as Topic[]) || [],
       meta: {
         total,
@@ -54,6 +64,13 @@ export class TopicsApiClient {
         totalPages,
       },
     };
+
+    this.cache.set(cacheKey, { data: result, timestamp: Date.now() });
+    return result;
+  }
+
+  static clearCache(): void {
+    this.cache.clear();
   }
 
   /**
@@ -73,6 +90,7 @@ export class TopicsApiClient {
       throw new Error(error?.message || 'Topic not found');
     }
 
+    this.clearCache();
     return data as unknown as Topic;
   }
 
@@ -93,6 +111,7 @@ export class TopicsApiClient {
       throw new Error(error?.message || 'Topic not found');
     }
 
+    this.clearCache();
     return data as unknown as Topic;
   }
 
@@ -171,6 +190,7 @@ export class TopicsApiClient {
     if (error) {
       throw new Error(error.message);
     }
+    this.clearCache();
 
     return { message: 'Topic deleted successfully' };
   }

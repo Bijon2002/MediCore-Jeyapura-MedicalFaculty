@@ -26,10 +26,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onSwitchToPublic,
 }) => {
   const isDashboardActive = activeRoute.type === 'dashboard';
-  const isArticlesActive = activeRoute.type === 'article-list' || activeRoute.type === 'article-detail';
-  const isSubjectsActive = activeRoute.type === 'subject-list' || activeRoute.type === 'subject-detail';
-  const isTopicsActive = activeRoute.type === 'topic-list';
-  const isQuizzesActive = activeRoute.type === 'quiz-list' || activeRoute.type === 'quiz-detail';
   const isQuizAttemptsActive = activeRoute.type === 'quiz-attempts';
   const isProfileActive = activeRoute.type === 'profile';
   const isApplyReviewerActive = activeRoute.type === 'apply-reviewer';

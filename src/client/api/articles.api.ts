@@ -8,6 +8,9 @@ import type {
 } from '../types/article.types';
 
 export class ArticlesApiClient {
+  private static cache = new Map<string, { data: ArticleListResponse; timestamp: number }>();
+  private static CACHE_TTL = 30000; // 30 seconds
+
   /**
    * Retrieves a paginated list of articles with optional filtering and search from Supabase.
    */
@@ -15,6 +18,12 @@ export class ArticlesApiClient {
     params?: QueryArticleParams,
     _token?: string,
   ): Promise<ArticleListResponse> {
+    const cacheKey = JSON.stringify(params || {});
+    const cached = this.cache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < this.CACHE_TTL) {
+      return cached.data;
+    }
+
     const page = params?.page ? Number(params.page) : 1;
     const limit = params?.limit ? Number(params.limit) : 10;
     const from = (page - 1) * limit;
@@ -43,11 +52,12 @@ export class ArticlesApiClient {
     if (error) {
       throw new Error(error.message);
     }
+    this.clearCache();
 
     const total = count || 0;
     const totalPages = Math.ceil(total / limit);
 
-    return {
+    const result: ArticleListResponse = {
       data: (data as unknown as Article[]) || [],
       meta: {
         total,
@@ -56,6 +66,13 @@ export class ArticlesApiClient {
         totalPages,
       },
     };
+
+    this.cache.set(cacheKey, { data: result, timestamp: Date.now() });
+    return result;
+  }
+
+  static clearCache(): void {
+    this.cache.clear();
   }
 
   /**
@@ -75,6 +92,7 @@ export class ArticlesApiClient {
       throw new Error(error?.message || 'Article not found');
     }
 
+    this.clearCache();
     return data as unknown as Article;
   }
 
@@ -95,6 +113,7 @@ export class ArticlesApiClient {
       throw new Error(error?.message || 'Article not found');
     }
 
+    this.clearCache();
     return data as unknown as Article;
   }
 
@@ -192,6 +211,7 @@ export class ArticlesApiClient {
     if (error) {
       throw new Error(error.message);
     }
+    this.clearCache();
 
     return { message: 'Article deleted successfully' };
   }

@@ -30,16 +30,16 @@ export const QuizAttempts: React.FC<QuizAttemptsProps> = ({ onBackToQuizzes, onS
     }
 
     try {
-      const [attemptsData, allQuizzes] = await Promise.allSettled([
-        QuizzesApiClient.getMyAttempts(token),
-        QuizzesApiClient.getQuizzes(),
-      ]);
+      const data = await QuizzesApiClient.getMyAttempts(token);
+      setAttempts(data || []);
 
-      if (attemptsData.status === 'fulfilled') {
-        setAttempts(attemptsData.value || []);
-      }
-      if (allQuizzes.status === 'fulfilled') {
-        setSuggestedQuizzes(allQuizzes.value || []);
+      if (typeof QuizzesApiClient.getQuizzes === 'function') {
+        try {
+          const allQuizzes = await QuizzesApiClient.getQuizzes();
+          setSuggestedQuizzes(allQuizzes || []);
+        } catch {
+          setSuggestedQuizzes([]);
+        }
       }
       setLoading(false);
     } catch (err: unknown) {

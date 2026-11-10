@@ -8,6 +8,9 @@ import type {
 } from '../types/subject.types';
 
 export class SubjectsApiClient {
+  private static cache = new Map<string, { data: SubjectListResponse; timestamp: number }>();
+  private static CACHE_TTL = 45000; // 45 seconds
+
   /**
    * Retrieves a paginated list of subjects sorted by orderIndex.
    */
@@ -15,6 +18,12 @@ export class SubjectsApiClient {
     params?: QuerySubjectParams,
     _token?: string,
   ): Promise<SubjectListResponse> {
+    const cacheKey = JSON.stringify(params || {});
+    const cached = this.cache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < this.CACHE_TTL) {
+      return cached.data;
+    }
+
     const page = params?.page ? Number(params.page) : 1;
     const limit = params?.limit ? Number(params.limit) : 20;
     const from = (page - 1) * limit;
@@ -34,11 +43,12 @@ export class SubjectsApiClient {
     if (error) {
       throw new Error(error.message);
     }
+    this.clearCache();
 
     const total = count || 0;
     const totalPages = Math.ceil(total / limit);
 
-    return {
+    const result: SubjectListResponse = {
       data: (data as unknown as Subject[]) || [],
       meta: {
         total,
@@ -47,6 +57,13 @@ export class SubjectsApiClient {
         totalPages,
       },
     };
+
+    this.cache.set(cacheKey, { data: result, timestamp: Date.now() });
+    return result;
+  }
+
+  static clearCache(): void {
+    this.cache.clear();
   }
 
   /**
@@ -66,6 +83,7 @@ export class SubjectsApiClient {
       throw new Error(error?.message || 'Subject not found');
     }
 
+    this.clearCache();
     return data as unknown as Subject;
   }
 
@@ -86,6 +104,7 @@ export class SubjectsApiClient {
       throw new Error(error?.message || 'Subject not found');
     }
 
+    this.clearCache();
     return data as unknown as Subject;
   }
 
@@ -162,6 +181,7 @@ export class SubjectsApiClient {
     if (error) {
       throw new Error(error.message);
     }
+    this.clearCache();
 
     return { message: 'Subject deleted successfully' };
   }

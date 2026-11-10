@@ -16,9 +16,11 @@
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 64px);
+  height: calc(100vh - 76px);
   position: sticky;
-  top: 64px;
+  top: 76px;
+  align-self: flex-start;
+  flex-shrink: 0;
   z-index: 80;
   transition: transform 0.3s ease, width 0.3s ease;
   user-select: none;
@@ -131,10 +133,10 @@
 
   .medcore-sidebar {
     position: fixed;
-    top: 64px;
+    top: 76px;
     left: 0;
     bottom: 0;
-    height: calc(100vh - 64px);
+    height: calc(100vh - 76px);
     box-shadow: var(--shadow-lg);
     transform: translateX(-100%);
     z-index: 100;

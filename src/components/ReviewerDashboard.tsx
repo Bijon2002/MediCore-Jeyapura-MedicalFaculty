@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { ArticlesApiClient } from '../client/api/articles.api';
 import { QuizzesApiClient } from '../client/api/quizzes.api';
 import { SubjectsApiClient } from '../client/api/subjects.api';
+import { supabase } from '../lib/supabase';
 import { getAccessToken } from '../auth/auth-storage';
 import { useAuth } from '../auth/AuthContext';
 import type { Article, ArticleStatus } from '../client/types/article.types';
@@ -11,7 +12,7 @@ import { AdminApplicationReview } from './AdminApplicationReview';
 import { Profile } from './Profile';
 import './ReviewerDashboard.css';
 
-export type AdminWorkspaceTab = 'OVERVIEW' | 'ARTICLES' | 'QUIZZES' | 'REVIEWERS' | 'SUBJECTS' | 'PROFILE';
+export type AdminWorkspaceTab = 'OVERVIEW' | 'ARTICLES' | 'QUIZZES' | 'REVIEWERS' | 'SUBJECTS' | 'PROFILE' | 'USERS' | 'HERO_SLIDES';
 
 export interface ReviewerDashboardProps {
   onCreateArticle: () => void;
@@ -68,6 +69,59 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
   const [quizzesError, setQuizzesError] = useState<string | null>(null);
   const [quizStatusFilter, setQuizStatusFilter] = useState<'ALL' | 'PUBLISHED' | 'UNPUBLISHED'>('ALL');
   const [quizSearchTerm, setQuizSearchTerm] = useState<string>('');
+
+  // USERS STATE (Admin-only)
+  interface UserProfile {
+    id: string;
+    first_name: string | null;
+    last_name: string | null;
+    email: string | null;
+    role: string | null;
+    created_at: string | null;
+    avatar_url: string | null;
+  }
+  const [users, setUsers] = useState<UserProfile[]>([]);
+  const [usersLoading, setUsersLoading] = useState<boolean>(false);
+  const [usersError, setUsersError] = useState<string | null>(null);
+  const [userRoleChanges, setUserRoleChanges] = useState<Record<string, string>>({});
+  const [userSavingId, setUserSavingId] = useState<string | null>(null);
+
+  // HERO SLIDES STATE (Admin-only)
+  interface HeroSlideEditable {
+    eyebrow: string;
+    titleLine1: string;
+    titleLine2: string;
+    lead: string;
+    cta: string;
+    badgeTitle: string;
+    badgeSubtitle: string;
+  }
+  const defaultHeroSlidesAdmin: HeroSlideEditable[] = [
+    { eyebrow: 'DIAGNOSTIC PRECISION & NEUROLOGY', titleLine1: 'Discover Medicine.', titleLine2: 'Find Your Precision.', lead: 'Peer-reviewed clinical neuro-imaging, surgical anatomy guides, and high-yield diagnostic algorithms crafted for healthcare practitioners.', cta: 'Explore Guides', badgeTitle: 'MRI Diagnostic Protocol', badgeSubtitle: '99.4% Peer-Reviewed Concordance' },
+    { eyebrow: 'OPERATIVE THEATER CURRICULUM', titleLine1: 'Master Board Exams.', titleLine2: 'Empower Operative Care.', lead: 'Over 500+ clinically verified surgical procedures and USMLE Step 1 & 2 diagnostic question banks designed to reinforce bedside decision-making.', cta: 'Start Quizzes', badgeTitle: 'Operative Anatomy & Critical Care', badgeSubtitle: '500+ Surgical Protocols Verified' },
+    { eyebrow: 'CARDIOVASCULAR MEDICINE & CATH LAB', titleLine1: 'Cardiology Algorithms.', titleLine2: 'Master Systemic Hemodynamics.', lead: 'Comprehensive 3D anatomical breakdowns, coronary angiography pathways, and valvular guidelines with zero paywalls.', cta: 'Browse Specialties', badgeTitle: 'Left Ventricular EF: 55-70% • Cath Protocols', badgeSubtitle: '2026 ACC/AHA Valvular Guidelines Active' },
+    { eyebrow: 'PEDIATRICS & EMERGENCY RESUSCITATION', titleLine1: 'Trauma & Critical Triage.', titleLine2: 'Real-Time Bedside Care.', lead: 'Instant access to emergency protocols, pediatric Glasgow Coma Scale (pGCS), and trauma resuscitation guidelines.', cta: 'View Emergency Care', badgeTitle: 'Pediatric Triage Matrix', badgeSubtitle: 'Real-Time Evidence-Based Algorithms' },
+  ];
+  const [heroSlidesAdmin, setHeroSlidesAdmin] = useState<HeroSlideEditable[]>(() => {
+    try {
+      const stored = localStorage.getItem('medcore_hero_slides');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        // Map full slides to editable fields
+        return parsed.map((s: any) => ({
+          eyebrow: s.eyebrow || '',
+          titleLine1: s.titleLine1 || '',
+          titleLine2: s.titleLine2 || '',
+          lead: s.lead || '',
+          cta: s.cta || '',
+          badgeTitle: s.badgeTitle || s.leftBadge || '',
+          badgeSubtitle: s.badgeSubtitle || s.rightBadge || '',
+        }));
+      }
+    } catch {}
+    return defaultHeroSlidesAdmin;
+  });
+  const [heroSlidesSaved, setHeroSlidesSaved] = useState(false);
 
   // FETCH ARTICLES
   const fetchArticles = useCallback(async () => {
@@ -127,6 +181,57 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
     }
   }, []);
 
+  // FETCH USERS (Admin-only)
+  const fetchUsers = useCallback(async () => {
+    setUsersLoading(true);
+    setUsersError(null);
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, first_name, last_name, email, role, created_at, avatar_url')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      setUsers(data || []);
+      // Initialize role-change map
+      const map: Record<string, string> = {};
+      (data || []).forEach((u: any) => { map[u.id] = u.role || 'STUDENT'; });
+      setUserRoleChanges(map);
+    } catch (err: any) {
+      setUsersError(err?.message || 'Failed to load users.');
+    } finally {
+      setUsersLoading(false);
+    }
+  }, []);
+
+  const handleSaveUserRole = async (userId: string) => {
+    const newRole = userRoleChanges[userId];
+    if (!newRole) return;
+    setUserSavingId(userId);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ role: newRole })
+        .eq('id', userId);
+      if (error) throw error;
+      setUsers((prev) => prev.map((u) => u.id === userId ? { ...u, role: newRole } : u));
+    } catch (err: any) {
+      alert(err?.message || 'Failed to update user role.');
+    } finally {
+      setUserSavingId(null);
+    }
+  };
+
+  const handleSaveHeroSlides = () => {
+    try {
+      localStorage.setItem('medcore_hero_slides', JSON.stringify(heroSlidesAdmin));
+      window.dispatchEvent(new CustomEvent('medcore:hero-slides-updated'));
+      setHeroSlidesSaved(true);
+      setTimeout(() => setHeroSlidesSaved(false), 2500);
+    } catch (err) {
+      alert('Failed to save hero slides.');
+    }
+  };
+
   useEffect(() => {
     if (isReviewerOrAdmin) {
       if (activeTab === 'OVERVIEW') {
@@ -139,9 +244,11 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
         fetchQuizzes();
       } else if (activeTab === 'SUBJECTS') {
         fetchSubjects();
+      } else if (activeTab === 'USERS') {
+        fetchUsers();
       }
     }
-  }, [isReviewerOrAdmin, activeTab, fetchArticles, fetchQuizzes, fetchSubjects]);
+  }, [isReviewerOrAdmin, activeTab, fetchArticles, fetchQuizzes, fetchSubjects, fetchUsers]);
 
   // DELETE ARTICLE
   const handleDeleteArticle = async (articleId: string, articleTitle: string) => {
@@ -430,6 +537,63 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
           </svg>
           {isAdmin ? 'Admin Profile' : 'Reviewer Profile'}
         </button>
+
+        {isAdmin && (
+          <button
+            type="button"
+            onClick={() => handleSetActiveTab('USERS')}
+            style={{
+              background: activeTab === 'USERS' ? 'var(--accent, #0d9488)' : 'var(--surface)',
+              color: activeTab === 'USERS' ? '#ffffff' : 'var(--text-muted)',
+              border: '1px solid var(--border)',
+              padding: '0.5rem 1.25rem',
+              borderRadius: '8px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+            data-testid="admin-tab-users"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            Manage Users
+          </button>
+        )}
+
+        {isAdmin && (
+          <button
+            type="button"
+            onClick={() => handleSetActiveTab('HERO_SLIDES')}
+            style={{
+              background: activeTab === 'HERO_SLIDES' ? 'var(--accent, #0d9488)' : 'var(--surface)',
+              color: activeTab === 'HERO_SLIDES' ? '#ffffff' : 'var(--text-muted)',
+              border: '1px solid var(--border)',
+              padding: '0.5rem 1.25rem',
+              borderRadius: '8px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+            data-testid="admin-tab-hero-slides"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <polyline points="21 15 16 10 5 21" />
+            </svg>
+            Hero Slides
+          </button>
+        )}
       </div>
 
       {/* VIEW: OVERVIEW (ADMIN ONLY) */}
@@ -772,6 +936,180 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
         </div>
       ) : isAdmin && activeTab === 'REVIEWERS' ? (
         <AdminApplicationReview />
+      ) : isAdmin && activeTab === 'USERS' ? (
+        /* VIEW: MANAGE USERS (ADMIN ONLY) */
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div className="reviewer-header">
+            <div className="reviewer-title-group">
+              <span className="reviewer-badge">User Management</span>
+              <h1 className="reviewer-title">Registered Platform Users</h1>
+              <p className="reviewer-subtitle">
+                View all registered users, update their roles, and manage platform access.
+              </p>
+            </div>
+          </div>
+
+          <div className="reviewer-table-card">
+            {usersLoading ? (
+              <div style={{ padding: '36px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                Loading Users...
+              </div>
+            ) : usersError ? (
+              <div style={{ padding: '24px', color: '#ef4444' }}>{usersError}</div>
+            ) : users.length === 0 ? (
+              <div style={{ padding: '36px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                No users found.
+              </div>
+            ) : (
+              <div className="reviewer-table-wrapper">
+                <table className="reviewer-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Role</th>
+                      <th>Joined Date</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {users.map((u) => (
+                      <tr key={u.id}>
+                        <td>
+                          <strong style={{ color: 'var(--text-h)' }}>
+                            {[u.first_name, u.last_name].filter(Boolean).join(' ') || 'N/A'}
+                          </strong>
+                        </td>
+                        <td style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{u.email || '—'}</td>
+                        <td>
+                          <select
+                            value={userRoleChanges[u.id] ?? (u.role || 'STUDENT')}
+                            onChange={(e) => setUserRoleChanges((prev) => ({ ...prev, [u.id]: e.target.value }))}
+                            style={{
+                              padding: '4px 8px',
+                              borderRadius: '6px',
+                              border: '1px solid var(--border)',
+                              background: 'var(--surface)',
+                              color: 'var(--text)',
+                              fontSize: '13px',
+                              fontWeight: 600,
+                              cursor: 'pointer',
+                            }}
+                          >
+                            <option value="STUDENT">STUDENT</option>
+                            <option value="MEDICAL_REVIEWER">MEDICAL_REVIEWER</option>
+                            <option value="ADMIN">ADMIN</option>
+                          </select>
+                        </td>
+                        <td>
+                          <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
+                            {u.created_at ? new Date(u.created_at).toLocaleDateString() : '—'}
+                          </span>
+                        </td>
+                        <td>
+                          <button
+                            type="button"
+                            className="btn-action-edit"
+                            disabled={userSavingId === u.id}
+                            onClick={() => handleSaveUserRole(u.id)}
+                          >
+                            {userSavingId === u.id ? 'Saving…' : 'Save'}
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      ) : isAdmin && activeTab === 'HERO_SLIDES' ? (
+        /* VIEW: HERO SLIDES EDITOR (ADMIN ONLY) */
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div className="reviewer-header">
+            <div className="reviewer-title-group">
+              <span className="reviewer-badge">Homepage Editor</span>
+              <h1 className="reviewer-title">Hero Slides Configuration</h1>
+              <p className="reviewer-subtitle">
+                Edit the 4 hero slides displayed on the MedCore home page. Changes are saved to localStorage and applied instantly.
+              </p>
+            </div>
+            <button
+              type="button"
+              className="btn-create-article"
+              onClick={handleSaveHeroSlides}
+              style={{ background: heroSlidesSaved ? '#16a34a' : undefined }}
+            >
+              {heroSlidesSaved ? '✓ Saved!' : 'Save All Slides'}
+            </button>
+          </div>
+
+          {heroSlidesAdmin.map((slide, idx) => (
+            <div
+              key={idx}
+              style={{
+                background: 'var(--surface)',
+                border: '1px solid var(--border)',
+                borderRadius: '12px',
+                padding: '20px 24px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '14px',
+              }}
+            >
+              <div style={{ fontWeight: 700, fontSize: '15px', color: 'var(--text-h)', marginBottom: '4px' }}>
+                Slide {idx + 1}
+              </div>
+              {(['eyebrow', 'titleLine1', 'titleLine2', 'lead', 'cta', 'badgeTitle', 'badgeSubtitle'] as (keyof HeroSlideEditable)[]).map((field) => (
+                <div key={field} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <label style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    {field.replace(/([A-Z])/g, ' $1').replace(/^./, (s) => s.toUpperCase())}
+                  </label>
+                  {field === 'lead' ? (
+                    <textarea
+                      rows={3}
+                      value={slide[field]}
+                      onChange={(e) => {
+                        const updated = [...heroSlidesAdmin];
+                        updated[idx] = { ...updated[idx], [field]: e.target.value };
+                        setHeroSlidesAdmin(updated);
+                      }}
+                      style={{
+                        padding: '8px 12px',
+                        borderRadius: '8px',
+                        border: '1px solid var(--border)',
+                        background: 'var(--bg)',
+                        color: 'var(--text)',
+                        fontSize: '13px',
+                        resize: 'vertical',
+                        fontFamily: 'inherit',
+                      }}
+                    />
+                  ) : (
+                    <input
+                      type="text"
+                      value={slide[field]}
+                      onChange={(e) => {
+                        const updated = [...heroSlidesAdmin];
+                        updated[idx] = { ...updated[idx], [field]: e.target.value };
+                        setHeroSlidesAdmin(updated);
+                      }}
+                      style={{
+                        padding: '8px 12px',
+                        borderRadius: '8px',
+                        border: '1px solid var(--border)',
+                        background: 'var(--bg)',
+                        color: 'var(--text)',
+                        fontSize: '13px',
+                      }}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
       ) : activeTab === 'QUIZZES' ? (
         /* VIEW: QUIZZES MANAGEMENT */
         <>

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { ArticlesApiClient } from '../client/api/articles.api';
 import { SubjectsApiClient } from '../client/api/subjects.api';
 import { TopicsApiClient } from '../client/api/topics.api';
+import { supabase } from '../lib/supabase';
 import type { Article } from '../client/types/article.types';
 import type { Subject } from '../client/types/subject.types';
 import type { Topic } from '../client/types/topic.types';
@@ -40,6 +41,9 @@ export const Home: React.FC<HomeProps> = ({
     topics: 0,
   });
   const [loading, setLoading] = useState<boolean>(true);
+
+  // Registered user count for stats strip
+  const [userCount, setUserCount] = useState<number | null>(null);
 
   // Search widget state
   const [searchTopic, setSearchTopic] = useState<string>('');
@@ -95,6 +99,11 @@ export const Home: React.FC<HomeProps> = ({
       .finally(() => {
         if (isMounted) setLoading(false);
       });
+
+    // Fetch registered user count for stats strip
+    supabase.from('profiles').select('id', { count: 'exact', head: true }).then(({ count }) => {
+      if (isMounted && count !== null) setUserCount(count);
+    });
 
     return () => {
       isMounted = false;
@@ -182,7 +191,7 @@ export const Home: React.FC<HomeProps> = ({
   };
 
   // Hero slides data with medical images and distinct layouts
-  const heroSlides = [
+  const defaultHeroSlides = [
     {
       id: 0,
       layout: 'layout-left',
@@ -239,6 +248,32 @@ export const Home: React.FC<HomeProps> = ({
       badgeDoctor: 'Free Open Access for All Healthcare Workers',
     },
   ];
+
+  const getHeroSlides = () => {
+    try {
+      const stored = localStorage.getItem('medcore_hero_slides');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        // Merge with defaults to preserve layout/bgImage/target fields
+        return defaultHeroSlides.map((def, i) => ({
+          ...def,
+          ...(parsed[i] || {}),
+        }));
+      }
+    } catch {}
+    return defaultHeroSlides;
+  };
+
+  const [heroSlides, setHeroSlides] = useState(getHeroSlides);
+
+  // Listen for hero slides updates from admin panel
+  useEffect(() => {
+    const handleHeroUpdate = () => {
+      setHeroSlides(getHeroSlides());
+    };
+    window.addEventListener('medcore:hero-slides-updated', handleHeroUpdate);
+    return () => window.removeEventListener('medcore:hero-slides-updated', handleHeroUpdate);
+  }, []);
 
   // Auto-advance hero slideshow (pauses on hover)
   useEffect(() => {
@@ -1010,8 +1045,8 @@ export const Home: React.FC<HomeProps> = ({
                   </svg>
                 </div>
                 <div className="stat-text-meta">
-                  <strong>100%</strong>
-                  <span>Free Clinical Access</span>
+                  <strong>{userCount !== null ? `${userCount}+` : '—'}</strong>
+                  <span>Registered Learners</span>
                 </div>
               </div>
             </div>

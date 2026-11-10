@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import type { UserRole } from '../client/types/auth.types';
 import './Header.css';
@@ -13,6 +13,7 @@ export interface HeaderProps {
   onNavigateToArticles?: () => void;
   onNavigateToSubjects?: () => void;
   onNavigateToQuizzes?: () => void;
+  onNavigateToQuizAttempts?: () => void;
   onNavigateToAbout?: () => void;
   onNavigateToContact?: () => void;
   onSwitchToWorkspace?: () => void;
@@ -31,6 +32,7 @@ export const Header: React.FC<HeaderProps> = ({
   onNavigateToArticles,
   onNavigateToSubjects,
   onNavigateToQuizzes,
+  onNavigateToQuizAttempts,
   onNavigateToAbout,
   onNavigateToContact,
   onSwitchToWorkspace,
@@ -40,7 +42,29 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const { user, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const profileDropdownRef = useRef<HTMLDivElement>(null);
+
   const activeRole: UserRole = user?.role || currentRole;
+
+  // Close profile dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        profileDropdownRef.current &&
+        !profileDropdownRef.current.contains(event.target as Node)
+      ) {
+        setProfileDropdownOpen(false);
+      }
+    }
+
+    if (profileDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [profileDropdownOpen]);
 
   const getRoleBadgeLabel = () => {
     switch (activeRole) {
@@ -53,15 +77,8 @@ export const Header: React.FC<HeaderProps> = ({
     }
   };
 
-  const handleProfileClick = () => {
-    if (user && onNavigateToProfile) {
-      onNavigateToProfile();
-    } else if (!user && onNavigateToLogin) {
-      onNavigateToLogin();
-    }
-  };
-
   const handleLogout = async () => {
+    setProfileDropdownOpen(false);
     try {
       await logout();
     } finally {
@@ -73,22 +90,22 @@ export const Header: React.FC<HeaderProps> = ({
 
   const handleBrandClick = () => {
     setMobileMenuOpen(false);
-    if (isWorkspaceView && onNavigateHome) {
-      onNavigateHome();
-    } else if (onNavigateHome) {
+    setProfileDropdownOpen(false);
+    if (onNavigateHome) {
       onNavigateHome();
     }
   };
 
   const handleNavClick = (callback?: () => void) => {
     setMobileMenuOpen(false);
+    setProfileDropdownOpen(false);
     if (callback) callback();
   };
 
   return (
     <header className="medcore-header">
       <div className="header-container">
-        {/* LEFT SECTION: BRAND & (OPTIONAL) SIDEBAR TOGGLE */}
+        {/* LEFT SECTION: BRAND & SIDEBAR / MOBILE TOGGLE */}
         <div className="header-left">
           {isWorkspaceView ? (
             <button
@@ -150,8 +167,8 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* CENTER SECTION: PUBLIC NAVIGATION LINKS OR WORKSPACE BADGE */}
-        {isWorkspaceView ? (
+        {/* CENTER SECTION: ADMIN/REVIEWER WORKSPACE BADGE OR MAIN NAVIGATION LINKS */}
+        {isWorkspaceView && (currentRole === 'ADMIN' || currentRole === 'MEDICAL_REVIEWER') ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span
               style={{
@@ -169,7 +186,10 @@ export const Header: React.FC<HeaderProps> = ({
                 textTransform: 'uppercase',
               }}
             >
-              {currentRole === 'ADMIN' ? 'ðŸ›¡ï¸ Administration Console' : currentRole === 'MEDICAL_REVIEWER' ? 'âœï¸ Reviewer Workspace' : 'ðŸŽ“ Clinical Dashboard'}
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+              {currentRole === 'ADMIN' ? 'Administration Console' : 'Reviewer Workspace'}
             </span>
           </div>
         ) : (
@@ -181,16 +201,6 @@ export const Header: React.FC<HeaderProps> = ({
             >
               Home
             </button>
-
-            {user && onNavigateToDashboard && (
-              <button
-                type="button"
-                className={`nav-tab-btn ${activeRouteType === 'dashboard' ? 'active' : ''}`}
-                onClick={() => handleNavClick(onNavigateToDashboard)}
-              >
-                Dashboard
-              </button>
-            )}
 
             <button
               type="button"
@@ -234,8 +244,7 @@ export const Header: React.FC<HeaderProps> = ({
           </nav>
         )}
 
-        {/* RIGHT SECTION: PORTAL SWITCHER & PROFILE */}
-        {/* RIGHT SECTION: CLEAN ACTION ICONS & PROFILE (Matching reference exactly) */}
+        {/* RIGHT SECTION: SEARCH, FAVORITES, WORKSPACE SWITCHER & PROFILE DROPDOWN */}
         <div className="header-right">
           {/* Quick Action Icon: Search */}
           <button
@@ -269,7 +278,7 @@ export const Header: React.FC<HeaderProps> = ({
             type="button"
             className="header-action-icon-btn grid-menu-btn"
             onClick={isWorkspaceView ? onNavigateHome : onSwitchToWorkspace}
-            title={isWorkspaceView ? "Return to Public View" : "Clinical Admin Workspace"}
+            title={isWorkspaceView ? 'Return to Public View' : 'Clinical Workspace / Dashboard'}
             aria-label="Switch Workspace"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -302,43 +311,135 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
           ) : null}
 
-          {/* User profile / Sign in button */}
+          {/* User profile dropdown OR Sign in button */}
           {user ? (
-            <div
-              className="user-profile-pill clickable"
-              onClick={handleProfileClick}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  handleProfileClick();
-                }
-              }}
-              title={`Logged in as ${user.firstName || ''} ${user.lastName || ''} (${getRoleBadgeLabel()})`}
-            >
-              <div className="user-avatar">
-                {user?.firstName ? user.firstName[0].toUpperCase() : activeRole[0]}
-              </div>
-              <span className="user-role-label">{getRoleBadgeLabel()}</span>
-            </div>
-          ) : null}
+            <div className="header-user-wrapper" ref={profileDropdownRef}>
+              <button
+                type="button"
+                className={`user-profile-pill clickable ${profileDropdownOpen ? 'active' : ''}`}
+                onClick={() => setProfileDropdownOpen((prev) => !prev)}
+                aria-expanded={profileDropdownOpen}
+                aria-haspopup="true"
+                title={`${user.firstName || ''} ${user.lastName || ''} (${getRoleBadgeLabel()})`}
+              >
+                <div className="user-avatar">
+                  {user?.firstName ? user.firstName[0].toUpperCase() : activeRole[0]}
+                </div>
+                <span className="user-role-label">{getRoleBadgeLabel()}</span>
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  className={`dropdown-chevron ${profileDropdownOpen ? 'open' : ''}`}
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
 
-          {user ? (
-            <button
-              type="button"
-              className="btn-header-logout"
-              onClick={handleLogout}
-              title="Sign out of your MedCore account"
-              data-testid="logout-button"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                <polyline points="16 17 21 12 16 7" />
-                <line x1="21" y1="12" x2="9" y2="12" />
-              </svg>
-              <span className="logout-btn-label">Sign Out</span>
-            </button>
+              {profileDropdownOpen && (
+                <div className="profile-dropdown-card" role="menu">
+                  {/* User info banner */}
+                  <div className="dropdown-user-header">
+                    <div className="dropdown-user-avatar">
+                      {user?.firstName ? user.firstName[0].toUpperCase() : activeRole[0]}
+                    </div>
+                    <div className="dropdown-user-meta">
+                      <strong className="dropdown-user-name">
+                        {user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : getRoleBadgeLabel()}
+                      </strong>
+                      <span className="dropdown-user-email">{user.email}</span>
+                      <span className={`dropdown-role-tag ${activeRole.toLowerCase()}`}>
+                        {getRoleBadgeLabel()}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="dropdown-divider" />
+
+                  {/* Menu Item: Dashboard */}
+                  <button
+                    type="button"
+                    className="dropdown-menu-item"
+                    onClick={() => {
+                      setProfileDropdownOpen(false);
+                      if (onNavigateToDashboard) onNavigateToDashboard();
+                    }}
+                    role="menuitem"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect x="3" y="3" width="7" height="7" rx="1" />
+                      <rect x="14" y="3" width="7" height="7" rx="1" />
+                      <rect x="14" y="14" width="7" height="7" rx="1" />
+                      <rect x="3" y="14" width="7" height="7" rx="1" />
+                    </svg>
+                    <span>
+                      {activeRole === 'ADMIN'
+                        ? 'Admin Console'
+                        : activeRole === 'MEDICAL_REVIEWER'
+                        ? 'Reviewer Workspace'
+                        : 'Student Dashboard'}
+                    </span>
+                  </button>
+
+                  {/* Menu Item: Profile */}
+                  <button
+                    type="button"
+                    className="dropdown-menu-item"
+                    onClick={() => {
+                      setProfileDropdownOpen(false);
+                      if (onNavigateToProfile) onNavigateToProfile();
+                    }}
+                    role="menuitem"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
+                    </svg>
+                    <span>My Profile</span>
+                  </button>
+
+                  {/* Menu Item: Scores (Students only) */}
+                  {activeRole === 'STUDENT' && (
+                    <button
+                      type="button"
+                      className="dropdown-menu-item"
+                      onClick={() => {
+                        setProfileDropdownOpen(false);
+                        if (onNavigateToQuizAttempts) onNavigateToQuizAttempts();
+                        else if (onNavigateToQuizzes) onNavigateToQuizzes();
+                      }}
+                      role="menuitem"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                      </svg>
+                      <span>My Quiz Scores</span>
+                    </button>
+                  )}
+
+                  <div className="dropdown-divider" />
+
+                  {/* Menu Item: Sign Out */}
+                  <button
+                    type="button"
+                    className="dropdown-menu-item logout-item"
+                    onClick={handleLogout}
+                    role="menuitem"
+                    data-testid="logout-button"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                      <polyline points="16 17 21 12 16 7" />
+                      <line x1="21" y1="12" x2="9" y2="12" />
+                    </svg>
+                    <span>Sign Out</span>
+                  </button>
+                </div>
+              )}
+            </div>
           ) : (
             <button
               type="button"
@@ -363,16 +464,6 @@ export const Header: React.FC<HeaderProps> = ({
           >
             Home
           </button>
-
-            {user && onNavigateToDashboard && (
-              <button
-                type="button"
-                className={`nav-tab-btn ${activeRouteType === 'dashboard' ? 'active' : ''}`}
-                onClick={() => handleNavClick(onNavigateToDashboard)}
-              >
-                Dashboard
-              </button>
-            )}
           <button
             type="button"
             className={`mobile-nav-item ${activeRouteType === 'article-list' ? 'active' : ''}`}
@@ -392,7 +483,7 @@ export const Header: React.FC<HeaderProps> = ({
             className={`mobile-nav-item ${activeRouteType === 'quiz-list' ? 'active' : ''}`}
             onClick={() => handleNavClick(onNavigateToQuizzes)}
           >
-            Clinical Quizzes
+            Quizzes
           </button>
           <button
             type="button"
@@ -408,19 +499,33 @@ export const Header: React.FC<HeaderProps> = ({
           >
             Contact
           </button>
-          <button
-            type="button"
-            className="mobile-nav-item workspace-link"
-            onClick={() => handleNavClick(onSwitchToWorkspace)}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style={{ marginRight: '8px' }}>
-              <rect x="3" y="3" width="7" height="7" />
-              <rect x="14" y="3" width="7" height="7" />
-              <rect x="14" y="14" width="7" height="7" />
-              <rect x="3" y="14" width="7" height="7" />
-            </svg>
-            Clinical Admin Workspace
-          </button>
+
+          {user && (
+            <div style={{ borderTop: '1px solid var(--border)', paddingTop: '10px', marginTop: '6px' }}>
+              <button
+                type="button"
+                className="mobile-nav-item"
+                onClick={() => handleNavClick(onNavigateToDashboard)}
+              >
+                {activeRole === 'ADMIN' ? 'Admin Console' : activeRole === 'MEDICAL_REVIEWER' ? 'Reviewer Workspace' : 'Student Dashboard'}
+              </button>
+              <button
+                type="button"
+                className="mobile-nav-item"
+                onClick={() => handleNavClick(onNavigateToProfile)}
+              >
+                My Profile
+              </button>
+              <button
+                type="button"
+                className="mobile-nav-item"
+                style={{ color: '#dc2626' }}
+                onClick={handleLogout}
+              >
+                Sign Out
+              </button>
+            </div>
+          )}
         </div>
       ) : null}
     </header>

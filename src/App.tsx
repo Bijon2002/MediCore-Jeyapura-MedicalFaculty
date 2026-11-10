@@ -45,6 +45,8 @@ function App() {
       route.type === 'create-quiz' ||
       route.type === 'edit-quiz');
 
+  const hasSidebar = isWorkspaceRoute || (currentRole === 'STUDENT' && route.type === 'dashboard');
+
   useEffect(() => {
     const handlePopState = () => {
       setRoute(parseRoute());
@@ -145,6 +147,20 @@ function App() {
       return;
     }
 
+    // Redirect admin & reviewer /dashboard directly to their dedicated workspaces
+    if (isDashboardRoute && role === 'ADMIN') {
+      setAdminActiveTab('OVERVIEW');
+      setRoute({ type: 'reviewer-dashboard' });
+      pushRoute('/admin');
+      return;
+    }
+    if (isDashboardRoute && role === 'MEDICAL_REVIEWER') {
+      setAdminActiveTab('ARTICLES');
+      setRoute({ type: 'reviewer-dashboard' });
+      pushRoute('/reviewer');
+      return;
+    }
+
     // Redirect admin & reviewer /profile to workspace profile tab so the layout stays dedicated
     if (isProfileRoute && role === 'ADMIN') {
       setAdminActiveTab('PROFILE');
@@ -177,8 +193,18 @@ function App() {
   };
 
   const navigateToDashboard = () => {
-    setRoute({ type: 'dashboard' });
-    pushRoute('/dashboard');
+    if (user?.role === 'ADMIN') {
+      setAdminActiveTab('OVERVIEW');
+      setRoute({ type: 'reviewer-dashboard' });
+      pushRoute('/admin');
+    } else if (user?.role === 'MEDICAL_REVIEWER') {
+      setAdminActiveTab('ARTICLES');
+      setRoute({ type: 'reviewer-dashboard' });
+      pushRoute('/reviewer');
+    } else {
+      setRoute({ type: 'dashboard' });
+      pushRoute('/dashboard');
+    }
   };
 
   const navigateToReviewerDashboard = () => {
@@ -272,7 +298,7 @@ function App() {
   };
 
   const handleSidebarNavigate = (
-    type: 'dashboard' | 'reviewer-dashboard' | 'apply-reviewer' | 'article-list' | 'subject-list' | 'topic-list' | 'quiz-list' | 'profile',
+    type: 'dashboard' | 'reviewer-dashboard' | 'apply-reviewer' | 'article-list' | 'subject-list' | 'topic-list' | 'quiz-list' | 'profile' | 'quiz-attempts',
   ) => {
     switch (type) {
       case 'dashboard':
@@ -295,6 +321,9 @@ function App() {
         break;
       case 'quiz-list':
         navigateToQuizzes();
+        break;
+      case 'quiz-attempts':
+        navigateToQuizAttempts();
         break;
       case 'profile':
         setRoute({ type: 'profile' });
@@ -323,18 +352,19 @@ function App() {
         onNavigateToArticles={navigateToArticles}
         onNavigateToSubjects={navigateToSubjects}
         onNavigateToQuizzes={navigateToQuizzes}
+        onNavigateToQuizAttempts={navigateToQuizAttempts}
         onNavigateToAbout={navigateToAbout}
         onNavigateToContact={navigateToContact}
         onSwitchToWorkspace={handleSwitchToWorkspace}
-        isWorkspaceView={isWorkspaceRoute}
+        isWorkspaceView={hasSidebar}
         activeRouteType={route.type}
         currentRole={currentRole}
       />
 
       {/* MAIN SHELL BODY */}
-      <div className={`medcore-shell-body ${isWorkspaceRoute ? 'with-sidebar' : 'public-layout'}`}>
-        {/* SIDEBAR NAVIGATION (Rendered only on administrative/reviewer workspace routes) */}
-        {isWorkspaceRoute ? (
+      <div className={`medcore-shell-body ${hasSidebar ? 'with-sidebar' : 'public-layout'}`}>
+        {/* SIDEBAR NAVIGATION (Rendered on administrative/reviewer workspaces and student dashboard) */}
+        {hasSidebar ? (
           <Sidebar
             activeRoute={route}
             onNavigate={handleSidebarNavigate}
@@ -354,7 +384,7 @@ function App() {
         ) : null}
 
         {/* MAIN CONTENT AREA */}
-        <main className={`medcore-main ${isWorkspaceRoute ? 'workspace-content' : 'public-content'}`}>
+        <main className={`medcore-main ${hasSidebar ? 'workspace-content' : 'public-content'}`}>
           {route.type === 'home' ? (
             <Home
               onNavigateToArticles={navigateToArticles}

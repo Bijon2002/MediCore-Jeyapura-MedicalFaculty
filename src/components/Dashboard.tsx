@@ -78,130 +78,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   return (
     <div className="medcore-student-dashboard">
-      {/* 1. HORIZONTAL STUDENT SUBNAV BAR */}
-      <div className="student-horizontal-subnav">
-        <div className="student-profile-strip">
-          <div className="student-avatar-badge">
-            {user?.firstName ? user.firstName[0].toUpperCase() : 'S'}
-          </div>
-          <div className="student-info-meta">
-            <div className="student-name-row">
-              <span className="student-display-name">{studentName}</span>
-              <span className="student-status-indicator">
-                <span className="pulse-dot" />
-                Active Student
-              </span>
-            </div>
-            <span className="student-institution">
-              Jeyapura Medical Faculty • Clinical Learning Portal
-            </span>
-          </div>
-        </div>
-
-        {/* HORIZONTAL QUICK NAV LINKS */}
-        <nav className="student-horizontal-nav-links" aria-label="Student Navigation">
-          <button
-            type="button"
-            className="student-nav-pill active"
-            title="Overview"
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <rect x="3" y="3" width="7" height="7" rx="1" />
-              <rect x="14" y="3" width="7" height="7" rx="1" />
-              <rect x="14" y="14" width="7" height="7" rx="1" />
-              <rect x="3" y="14" width="7" height="7" rx="1" />
-            </svg>
-            Dashboard
-          </button>
-
-          <button
-            type="button"
-            className="student-nav-pill"
-            onClick={onNavigateToSubjects}
-            title="Browse Medical Specialties"
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-            </svg>
-            Specialties
-          </button>
-
-          <button
-            type="button"
-            className="student-nav-pill"
-            onClick={onNavigateToTopics}
-            title="Explore Clinical Topics"
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polygon points="12 2 2 7 12 12 22 7 12 2" />
-              <polyline points="2 17 12 22 22 17" />
-              <polyline points="2 12 12 17 22 12" />
-            </svg>
-            Topics
-          </button>
-
-          <button
-            type="button"
-            className="student-nav-pill"
-            onClick={onNavigateToArticles}
-            title="Read Peer-Reviewed Articles"
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-              <polyline points="14 2 14 8 20 8" />
-            </svg>
-            Articles
-          </button>
-
-          {onNavigateToQuizzes && (
-            <button
-              type="button"
-              className="student-nav-pill"
-              onClick={onNavigateToQuizzes}
-              title="Self-Assessment Medical Quizzes"
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-                <line x1="12" y1="17" x2="12.01" y2="17" />
-              </svg>
-              Quizzes
-            </button>
-          )}
-
-          {onNavigateToQuizAttempts && (
-            <button
-              type="button"
-              className="student-nav-pill highlight"
-              onClick={onNavigateToQuizAttempts}
-              title="Review Your Test Scores"
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-              </svg>
-              My Scores
-            </button>
-          )}
-
-          {onNavigateToProfile && (
-            <button
-              type="button"
-              className="student-nav-pill"
-              onClick={onNavigateToProfile}
-              title="Student Profile"
-            >
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
-              </svg>
-              Profile
-            </button>
-          )}
-        </nav>
-      </div>
-
-      {/* 2. HERO BANNER */}
+      {/* 1. HERO BANNER */}
       <section className="student-hero-card">
         <div className="hero-content-column">
           <div className="hero-pill-tag">
@@ -210,7 +87,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </svg>
             Medical Student Academic Portal
           </div>
-          <h1 className="hero-title">Welcome to your Medical Learning Workspace</h1>
+          <h1 className="hero-title">Welcome back, {studentName}</h1>
           <p className="hero-subtitle">
             Explore structured medical subjects, core anatomical topics, and peer-reviewed clinical articles designed for medical students, clinicians, and reviewers.
           </p>
@@ -249,6 +126,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                 </svg>
                 My Quiz Scores
+              </button>
+            )}
+
+            {onNavigateToProfile && (
+              <button type="button" className="btn-hero-outline" onClick={onNavigateToProfile}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+                My Profile
               </button>
             )}
           </div>

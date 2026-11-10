@@ -6,7 +6,7 @@ import './Sidebar.css';
 
 export interface SidebarProps {
   activeRoute: RouteState;
-  onNavigate: (type: 'dashboard' | 'reviewer-dashboard' | 'apply-reviewer' | 'article-list' | 'subject-list' | 'topic-list' | 'quiz-list' | 'profile') => void;
+  onNavigate: (type: 'dashboard' | 'reviewer-dashboard' | 'apply-reviewer' | 'article-list' | 'subject-list' | 'topic-list' | 'quiz-list' | 'profile' | 'quiz-attempts') => void;
   isOpen: boolean;
   onCloseMobile: () => void;
   currentRole: UserRole;
@@ -29,10 +29,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const isArticlesActive = activeRoute.type === 'article-list' || activeRoute.type === 'article-detail';
   const isSubjectsActive = activeRoute.type === 'subject-list' || activeRoute.type === 'subject-detail';
   const isTopicsActive = activeRoute.type === 'topic-list';
-  const isQuizzesActive = activeRoute.type === 'quiz-list' || activeRoute.type === 'quiz-detail' || activeRoute.type === 'quiz-attempts';
+  const isQuizzesActive = activeRoute.type === 'quiz-list' || activeRoute.type === 'quiz-detail';
+  const isQuizAttemptsActive = activeRoute.type === 'quiz-attempts';
+  const isProfileActive = activeRoute.type === 'profile';
   const isApplyReviewerActive = activeRoute.type === 'apply-reviewer';
 
-  const handleSelectNav = (type: 'dashboard' | 'reviewer-dashboard' | 'apply-reviewer' | 'article-list' | 'subject-list' | 'topic-list' | 'quiz-list' | 'profile') => {
+  const handleSelectNav = (type: 'dashboard' | 'reviewer-dashboard' | 'apply-reviewer' | 'article-list' | 'subject-list' | 'topic-list' | 'quiz-list' | 'profile' | 'quiz-attempts') => {
     onNavigate(type);
     onCloseMobile();
   };
@@ -260,12 +262,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
             /* ============================================================== */
             <>
               <div className="sidebar-section-group">
-                <div className="sidebar-section-header">Core Navigation</div>
+                <div className="sidebar-section-header">Student Workspace</div>
 
                 <button
                   type="button"
                   className={`sidebar-nav-item ${isDashboardActive ? 'active' : ''}`}
                   onClick={() => handleSelectNav('dashboard')}
+                  data-testid="student-nav-dashboard"
                 >
                   <svg className="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <rect x="3" y="3" width="7" height="7" rx="1" />
@@ -278,8 +281,36 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
                 <button
                   type="button"
+                  className={`sidebar-nav-item ${isSubjectsActive ? 'active' : ''}`}
+                  onClick={() => handleSelectNav('subject-list')}
+                  data-testid="student-nav-specialties"
+                >
+                  <svg className="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                  </svg>
+                  <span className="nav-item-label">Specialties</span>
+                </button>
+
+                <button
+                  type="button"
+                  className={`sidebar-nav-item ${isTopicsActive ? 'active' : ''}`}
+                  onClick={() => handleSelectNav('topic-list')}
+                  data-testid="student-nav-topics"
+                >
+                  <svg className="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                    <polyline points="2 17 12 22 22 17" />
+                    <polyline points="2 12 12 17 22 12" />
+                  </svg>
+                  <span className="nav-item-label">Topics</span>
+                </button>
+
+                <button
+                  type="button"
                   className={`sidebar-nav-item ${isArticlesActive ? 'active' : ''}`}
                   onClick={() => handleSelectNav('article-list')}
+                  data-testid="student-nav-articles"
                 >
                   <svg className="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
@@ -288,32 +319,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     <line x1="16" y1="17" x2="8" y2="17" />
                   </svg>
                   <span className="nav-item-label">Articles</span>
-                  <span className="nav-item-badge">Verified</span>
-                </button>
-
-                <button
-                  type="button"
-                  className={`sidebar-nav-item ${isSubjectsActive ? 'active' : ''}`}
-                  onClick={() => handleSelectNav('subject-list')}
-                >
-                  <svg className="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                  </svg>
-                  <span className="nav-item-label">Subjects</span>
-                </button>
-
-                <button
-                  type="button"
-                  className={`sidebar-nav-item ${isTopicsActive ? 'active' : ''}`}
-                  onClick={() => handleSelectNav('topic-list')}
-                >
-                  <svg className="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polygon points="12 2 2 7 12 12 22 7 12 2" />
-                    <polyline points="2 17 12 22 22 17" />
-                    <polyline points="2 12 12 17 22 12" />
-                  </svg>
-                  <span className="nav-item-label">Topics</span>
                 </button>
 
                 <button
@@ -329,10 +334,35 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   </svg>
                   <span className="nav-item-label">Quizzes</span>
                 </button>
+
+                <button
+                  type="button"
+                  className={`sidebar-nav-item ${isQuizAttemptsActive ? 'active' : ''}`}
+                  onClick={() => handleSelectNav('quiz-attempts')}
+                  data-testid="sidebar-quiz-attempts-btn"
+                >
+                  <svg className="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                  </svg>
+                  <span className="nav-item-label">My Scores</span>
+                </button>
+
+                <button
+                  type="button"
+                  className={`sidebar-nav-item ${isProfileActive ? 'active' : ''}`}
+                  onClick={() => handleSelectNav('profile')}
+                  data-testid="sidebar-student-profile-btn"
+                >
+                  <svg className="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                  <span className="nav-item-label">Profile</span>
+                </button>
               </div>
 
               <div className="sidebar-section-group" style={{ marginTop: '16px' }}>
-                <div className="sidebar-section-header">Become a Reviewer</div>
+                <div className="sidebar-section-header">Academic Growth</div>
 
                 <button
                   type="button"

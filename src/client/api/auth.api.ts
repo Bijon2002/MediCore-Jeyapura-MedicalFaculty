@@ -33,6 +33,7 @@ export class AuthApiClient {
             firstName: profile?.first_name || '',
             lastName: profile?.last_name || '',
             role: profile?.role || 'STUDENT',
+            avatarUrl: profile?.avatar_url || null,
         };
 
         return {
@@ -95,6 +96,7 @@ export class AuthApiClient {
             firstName: data.firstName,
             lastName: data.lastName,
             role: 'STUDENT',
+            avatarUrl: null,
         };
 
         return {
@@ -129,6 +131,7 @@ export class AuthApiClient {
             firstName: profile?.first_name || '',
             lastName: profile?.last_name || '',
             role: profile?.role || 'STUDENT',
+            avatarUrl: profile?.avatar_url || null,
         };
     }
 

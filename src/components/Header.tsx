@@ -323,7 +323,13 @@ export const Header: React.FC<HeaderProps> = ({
                 title={`${user.firstName || ''} ${user.lastName || ''} (${getRoleBadgeLabel()})`}
               >
                 <div className="user-avatar">
-                  {user?.firstName ? user.firstName[0].toUpperCase() : activeRole[0]}
+                  {user?.avatarUrl ? (
+                    <img src={user.avatarUrl} alt="Profile" className="user-avatar-img" />
+                  ) : user?.firstName ? (
+                    user.firstName[0].toUpperCase()
+                  ) : (
+                    activeRole[0]
+                  )}
                 </div>
                 <span className="user-role-label">{getRoleBadgeLabel()}</span>
                 <svg
@@ -344,7 +350,13 @@ export const Header: React.FC<HeaderProps> = ({
                   {/* User info banner */}
                   <div className="dropdown-user-header">
                     <div className="dropdown-user-avatar">
-                      {user?.firstName ? user.firstName[0].toUpperCase() : activeRole[0]}
+                      {user?.avatarUrl ? (
+                        <img src={user.avatarUrl} alt="Profile" className="user-avatar-img" />
+                      ) : user?.firstName ? (
+                        user.firstName[0].toUpperCase()
+                      ) : (
+                        activeRole[0]
+                      )}
                     </div>
                     <div className="dropdown-user-meta">
                       <strong className="dropdown-user-name">

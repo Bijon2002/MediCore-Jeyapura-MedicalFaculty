@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { ArticlesApiClient } from '../client/api/articles.api';
 import { SubjectsApiClient } from '../client/api/subjects.api';
+import { TopicsApiClient } from '../client/api/topics.api';
 import type { Article } from '../client/types/article.types';
 import type { Subject } from '../client/types/subject.types';
+import type { Topic } from '../client/types/topic.types';
 import './Home.css';
 
 export interface HomeProps {
@@ -31,6 +33,12 @@ export const Home: React.FC<HomeProps> = ({
 }) => {
   const [articles, setArticles] = useState<Article[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [topics, setTopics] = useState<Topic[]>([]);
+  const [counts, setCounts] = useState({
+    articles: 0,
+    subjects: 0,
+    topics: 0,
+  });
   const [loading, setLoading] = useState<boolean>(true);
 
   // Search widget state
@@ -56,17 +64,33 @@ export const Home: React.FC<HomeProps> = ({
     let isMounted = true;
     setLoading(true);
 
-    Promise.all([
-      ArticlesApiClient.getArticles({ page: 1, limit: 16 }),
-      SubjectsApiClient.getSubjects(),
+    Promise.allSettled([
+      ArticlesApiClient.getArticles({ page: 1, limit: 20 }),
+      SubjectsApiClient.getSubjects({ limit: 50 }),
+      TopicsApiClient.getTopics({ limit: 50 }),
     ])
-      .then(([articlesRes, subjectsRes]) => {
+      .then(([articlesRes, subjectsRes, topicsRes]) => {
         if (!isMounted) return;
-        setArticles(articlesRes.data || []);
-        setSubjects(subjectsRes.data || []);
+
+        const articlesData = articlesRes.status === 'fulfilled' ? articlesRes.value.data || [] : [];
+        const subjectsData = subjectsRes.status === 'fulfilled' ? subjectsRes.value.data || [] : [];
+        const topicsData = topicsRes.status === 'fulfilled' ? topicsRes.value.data || [] : [];
+
+        const totalArticles = articlesRes.status === 'fulfilled' ? articlesRes.value.meta?.total || articlesData.length : 0;
+        const totalSubjects = subjectsRes.status === 'fulfilled' ? subjectsRes.value.meta?.total || subjectsData.length : 0;
+        const totalTopics = topicsRes.status === 'fulfilled' ? topicsRes.value.meta?.total || topicsData.length : 0;
+
+        setArticles(articlesData);
+        setSubjects(subjectsData);
+        setTopics(topicsData);
+        setCounts({
+          articles: totalArticles,
+          subjects: totalSubjects,
+          topics: totalTopics,
+        });
       })
       .catch((err) => {
-        console.error('Failed to load home page data', err);
+        console.error('Failed to load home page data from DB', err);
       })
       .finally(() => {
         if (isMounted) setLoading(false);
@@ -156,18 +180,19 @@ export const Home: React.FC<HomeProps> = ({
     return () => clearInterval(interval);
   }, [isCarouselHovered, topViewedArticles.length]);
 
-  // Local generated high-definition card assets
-  const generatedCardImages = [
+  // Fallback card images when article has no featured image
+  const fallbackCardImages = [
     '/images/cardio-heart.jpg',
     '/images/neuro-brain.jpg',
     '/images/thorax-anatomy.jpg',
     '/images/emergency-care.jpg',
-    '/images/cardio-heart.jpg',
-    '/images/neuro-brain.jpg',
   ];
 
-  const popularCardRatings = ['4.9', '4.8', '4.9', '4.7', '4.9', '4.8'];
-  const popularCardReads = ['14.8k Reads', '11.2k Reads', '16.5k Reads', '9.4k Reads', '12.1k Reads', '8.9k Reads'];
+  // Helper: estimate read time from article content
+  const getReadTime = (article: Article): string => {
+    const wordCount = (article.content || '').split(/\s+/).filter(Boolean).length;
+    return `${Math.max(2, Math.ceil(wordCount / 200))} min read`;
+  };
 
   // Hero slides data with medical images and distinct layouts
   const heroSlides = [
@@ -746,10 +771,10 @@ export const Home: React.FC<HomeProps> = ({
               <div className="popular-cards-slider" ref={carouselTrackRef}>
                 {(topViewedArticles.length > 0 ? topViewedArticles : articles.slice(0, 6)).map(
                   (article, idx) => {
-                    const bgImage = generatedCardImages[idx % generatedCardImages.length];
-                    const rating = popularCardRatings[idx % popularCardRatings.length];
-                    const readCount = popularCardReads[idx % popularCardReads.length];
-                    const specialtyName = article.subject?.title || 'Clinical Medicine';
+                    const bgImage = article.featuredImageUrl || fallbackCardImages[idx % fallbackCardImages.length];
+                    const specialtyName = article.subject?.title || 'Clinical Guide';
+                    const readTime = getReadTime(article);
+                    const statusBadge = article.status === 'PUBLISHED' ? 'Verified' : 'Guide';
 
                     return (
                       <div
@@ -768,12 +793,13 @@ export const Home: React.FC<HomeProps> = ({
                         <div className="card-image-layer" style={{ backgroundImage: `url(${bgImage})` }} />
                         <div className="card-gradient-overlay" />
 
-                        {/* Top rating badge with Star SVG */}
+                        {/* Top status badge */}
                         <div className="card-top-pill">
-                          <svg className="star-icon-svg" width="13" height="13" viewBox="0 0 24 24" fill="#f59e0b">
-                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                          <svg className="star-icon-svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.5">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                            <path d="M9 12l2 2 4-4" />
                           </svg>
-                          <span className="rating-value">{rating}</span>
+                          <span className="rating-value">{statusBadge}</span>
                         </div>
 
                         {/* Bottom content info */}
@@ -781,7 +807,7 @@ export const Home: React.FC<HomeProps> = ({
                           <h3 className="card-guide-title">{article.title}</h3>
                           <p className="card-guide-specialty">{specialtyName}</p>
                           <div className="card-price-reads-badge">
-                            <span>{readCount}</span>
+                            <span>{readTime}</span>
                           </div>
                         </div>
                       </div>
@@ -800,109 +826,42 @@ export const Home: React.FC<HomeProps> = ({
       <section className="pomaii-categories-strip-section">
         <div className="pomaii-section-container">
           <div className="category-pills-row">
-            {/* Cardiology */}
-            <button
-              type="button"
-              className="category-pill-item"
-              onClick={() => handleSelectSpecialtyPill('cardio')}
-            >
-              <div className="category-icon-circle bg-orange">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ea580c" strokeWidth="2">
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                  <path d="M3.5 12h3l2-4 3 8 2-4h7" />
-                </svg>
-              </div>
-              <span>Cardiology</span>
-            </button>
+            {subjects.length > 0 ? (
+              subjects.slice(0, 8).map((sub, idx) => {
+                const bgColors = ['bg-orange', 'bg-teal', 'bg-green', 'bg-blue', 'bg-amber', 'bg-purple', 'bg-emerald', 'bg-rose'];
+                const strokeColors = ['#ea580c', '#0d9488', '#16a34a', '#0284c7', '#d97706', '#9333ea', '#059669', '#e11d48'];
+                const bgClass = bgColors[idx % bgColors.length];
+                const strokeColor = strokeColors[idx % strokeColors.length];
 
-            {/* Neurology */}
-            <button
-              type="button"
-              className="category-pill-item"
-              onClick={() => handleSelectSpecialtyPill('neuro')}
-            >
-              <div className="category-icon-circle bg-teal">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="2">
-                  <circle cx="12" cy="12" r="3" />
-                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-                </svg>
-              </div>
-              <span>Neurology</span>
-            </button>
-
-            {/* Anatomy */}
-            <button
-              type="button"
-              className="category-pill-item"
-              onClick={() => handleSelectSpecialtyPill('anatomy')}
-            >
-              <div className="category-icon-circle bg-green">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2">
-                  <path d="M12 2v20M7 7h10M6 12h12M7 17h10" />
-                </svg>
-              </div>
-              <span>Anatomy</span>
-            </button>
-
-            {/* Surgery */}
-            <button
-              type="button"
-              className="category-pill-item"
-              onClick={() => handleSelectSpecialtyPill('surgery')}
-            >
-              <div className="category-icon-circle bg-blue">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0284c7" strokeWidth="2">
-                  <line x1="18" y1="2" x2="6" y2="14" />
-                  <path d="M2 22l4-4 8 8 4-4-8-8" />
-                  <path d="M14.5 9.5l3 3" />
-                </svg>
-              </div>
-              <span>Surgery</span>
-            </button>
-
-            {/* Pediatrics */}
-            <button
-              type="button"
-              className="category-pill-item"
-              onClick={() => handleSelectSpecialtyPill('pediatric')}
-            >
-              <div className="category-icon-circle bg-amber">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2">
-                  <circle cx="12" cy="8" r="5" />
-                  <path d="M20 21a8 8 0 0 0-16 0" />
-                </svg>
-              </div>
-              <span>Pediatrics</span>
-            </button>
-
-            {/* Pathology */}
-            <button
-              type="button"
-              className="category-pill-item"
-              onClick={() => handleSelectSpecialtyPill('pathology')}
-            >
-              <div className="category-icon-circle bg-purple">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9333ea" strokeWidth="2">
-                  <path d="M6 18h8M10 22v-4M14 6l7 7-5 5-7-7 5-5zM9 11l-4 4" />
-                </svg>
-              </div>
-              <span>Pathology</span>
-            </button>
-
-            {/* Pharmacology */}
-            <button
-              type="button"
-              className="category-pill-item"
-              onClick={() => handleSelectSpecialtyPill('pharmacol')}
-            >
-              <div className="category-icon-circle bg-emerald">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2">
-                  <path d="M10.5 20.5l10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z" />
-                  <line x1="8.5" y1="8.5" x2="15.5" y2="15.5" />
-                </svg>
-              </div>
-              <span>Pharmacology</span>
-            </button>
+                return (
+                  <button
+                    key={sub.id}
+                    type="button"
+                    className="category-pill-item"
+                    onClick={() => onNavigateToSubjectDetail(sub)}
+                  >
+                    <div className={`category-icon-circle ${bgClass}`}>
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={strokeColor} strokeWidth="2">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                      </svg>
+                    </div>
+                    <span>{sub.title}</span>
+                  </button>
+                );
+              })
+            ) : (
+              /* Fallback when DB is empty */
+              <button type="button" className="category-pill-item" onClick={onNavigateToSubjects}>
+                <div className="category-icon-circle bg-teal">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0d9488" strokeWidth="2">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                  </svg>
+                </div>
+                <span>Browse All Specialties</span>
+              </button>
+            )}
           </div>
         </div>
       </section>

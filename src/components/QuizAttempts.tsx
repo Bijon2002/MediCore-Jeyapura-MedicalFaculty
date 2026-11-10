@@ -228,7 +228,7 @@ export const QuizAttempts: React.FC<QuizAttemptsProps> = ({ onBackToQuizzes, onS
       <div className="quiz-attempts-header">
         <div className="quiz-attempts-title-area">
           <div className="quiz-title-badge">Student Assessment Record</div>
-          <h1 className="quiz-attempts-title">My Quizzes &amp; Scores</h1>
+          <h1 className="quiz-attempts-title">My Quiz Attempts</h1>
           <p className="quiz-attempts-subtitle">
             Review your previous quiz submissions, scores, and practice new medical question banks.
           </p>
@@ -237,7 +237,7 @@ export const QuizAttempts: React.FC<QuizAttemptsProps> = ({ onBackToQuizzes, onS
           type="button"
           className="quiz-back-btn"
           onClick={onBackToQuizzes}
-          aria-label="Browse All Quizzes"
+          aria-label="Back to Quizzes"
         >
           <svg
             className="quiz-back-btn-icon"
@@ -251,11 +251,10 @@ export const QuizAttempts: React.FC<QuizAttemptsProps> = ({ onBackToQuizzes, onS
             strokeLinejoin="round"
             aria-hidden="true"
           >
-            <circle cx="12" cy="12" r="10" />
-            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-            <line x1="12" y1="17" x2="12.01" y2="17" />
+            <line x1="19" y1="12" x2="5" y2="12" />
+            <polyline points="12 19 5 12 12 5" />
           </svg>
-          Browse All Quizzes
+          Back to Quizzes
         </button>
       </div>
 
@@ -284,13 +283,13 @@ export const QuizAttempts: React.FC<QuizAttemptsProps> = ({ onBackToQuizzes, onS
 
           <div className="attempts-section-header" style={{ margin: '28px 0 16px' }}>
             <h2 style={{ fontSize: '18px', fontWeight: 700, margin: 0, color: 'var(--text-h, #0f172a)' }}>
-              Completed Assessments History
+              Past Assessment Records
             </h2>
           </div>
 
           <div className="attempts-list">
             {attempts.map((attempt) => {
-              const topicTitle = attempt.topic?.name ?? 'General';
+              const topicTitle = attempt.topic?.name ?? 'All topics';
               const subjectTitle = attempt.subject?.name ?? '';
               const grade = getScoreGrade(attempt.percentage);
 
@@ -398,11 +397,11 @@ export const QuizAttempts: React.FC<QuizAttemptsProps> = ({ onBackToQuizzes, onS
             </svg>
           </div>
           <div>
-            <h3 style={{ margin: '0 0 4px', fontSize: '16px', fontWeight: 700, color: '#0f172a' }}>
-              No Quiz Submissions Yet
+            <h3 style={{ margin: '0 0 4px', fontSize: '18px', fontWeight: 700, color: '#0f172a' }}>
+              No Quiz Attempts Yet
             </h3>
             <p style={{ margin: 0, fontSize: '14px', color: '#64748b' }}>
-              Your completed quiz scores and progress analytics will appear here. Choose a recommended quiz below to test your clinical knowledge!
+              No quiz attempts yet. Start a medical quiz to test your knowledge!
             </p>
           </div>
         </div>

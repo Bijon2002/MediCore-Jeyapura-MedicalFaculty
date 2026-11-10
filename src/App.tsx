@@ -37,15 +37,23 @@ function App() {
   const currentRole: UserRole = user?.role || 'STUDENT';
   const [adminActiveTab, setAdminActiveTab] = useState<AdminWorkspaceTab>('OVERVIEW');
 
-  const isWorkspaceRoute =
-    (currentRole === 'ADMIN' || currentRole === 'MEDICAL_REVIEWER') &&
-    (route.type === 'reviewer-dashboard' ||
-      route.type === 'create-article' ||
-      route.type === 'edit-article' ||
-      route.type === 'create-quiz' ||
-      route.type === 'edit-quiz');
+  const isStudentWorkspaceRoute =
+    currentRole === 'STUDENT' &&
+    (route.type === 'dashboard' ||
+      route.type === 'quiz-attempts' ||
+      route.type === 'profile' ||
+      route.type === 'apply-reviewer');
 
-  const hasSidebar = isWorkspaceRoute || (currentRole === 'STUDENT' && route.type === 'dashboard');
+  const isWorkspaceRoute =
+    ((currentRole === 'ADMIN' || currentRole === 'MEDICAL_REVIEWER') &&
+      (route.type === 'reviewer-dashboard' ||
+        route.type === 'create-article' ||
+        route.type === 'edit-article' ||
+        route.type === 'create-quiz' ||
+        route.type === 'edit-quiz')) ||
+    isStudentWorkspaceRoute;
+
+  const hasSidebar = isWorkspaceRoute;
 
   useEffect(() => {
     const handlePopState = () => {
@@ -485,7 +493,7 @@ function App() {
           ) : route.type === 'quiz-list' ? (
             <QuizList onSelectQuiz={navigateToQuizDetail} onViewAttempts={navigateToQuizAttempts} />
           ) : route.type === 'quiz-attempts' ? (
-            <QuizAttempts onBackToQuizzes={navigateToQuizzes} />
+            <QuizAttempts onBackToQuizzes={navigateToQuizzes} onStartQuiz={navigateToQuizDetail} />
           ) : route.type === 'quiz-detail' ? (
             <QuizDetail quizId={route.quizId} onBackToQuizzes={navigateToQuizzes} />
           ) : (

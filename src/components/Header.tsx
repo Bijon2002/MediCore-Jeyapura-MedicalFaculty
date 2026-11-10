@@ -167,8 +167,8 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
 
-        {/* CENTER SECTION: ADMIN/REVIEWER WORKSPACE BADGE OR MAIN NAVIGATION LINKS */}
-        {isWorkspaceView && (currentRole === 'ADMIN' || currentRole === 'MEDICAL_REVIEWER') ? (
+        {/* CENTER SECTION: WORKSPACE BADGE OR MAIN PUBLIC NAVIGATION LINKS */}
+        {isWorkspaceView ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span
               style={{
@@ -177,9 +177,24 @@ export const Header: React.FC<HeaderProps> = ({
                 gap: '6px',
                 padding: '4px 12px',
                 borderRadius: '999px',
-                background: currentRole === 'ADMIN' ? 'rgba(217, 119, 6, 0.12)' : 'rgba(13, 148, 136, 0.12)',
-                color: currentRole === 'ADMIN' ? '#d97706' : 'var(--teal-500)',
-                border: currentRole === 'ADMIN' ? '1px solid rgba(217, 119, 6, 0.3)' : '1px solid rgba(13, 148, 136, 0.3)',
+                background:
+                  currentRole === 'ADMIN'
+                    ? 'rgba(217, 119, 6, 0.12)'
+                    : currentRole === 'MEDICAL_REVIEWER'
+                    ? 'rgba(13, 148, 136, 0.12)'
+                    : 'rgba(2, 132, 199, 0.12)',
+                color:
+                  currentRole === 'ADMIN'
+                    ? '#d97706'
+                    : currentRole === 'MEDICAL_REVIEWER'
+                    ? 'var(--teal-500)'
+                    : '#0284c7',
+                border:
+                  currentRole === 'ADMIN'
+                    ? '1px solid rgba(217, 119, 6, 0.3)'
+                    : currentRole === 'MEDICAL_REVIEWER'
+                    ? '1px solid rgba(13, 148, 136, 0.3)'
+                    : '1px solid rgba(2, 132, 199, 0.3)',
                 fontSize: '12px',
                 fontWeight: 700,
                 letterSpacing: '0.4px',
@@ -189,7 +204,11 @@ export const Header: React.FC<HeaderProps> = ({
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>
-              {currentRole === 'ADMIN' ? 'Administration Console' : 'Reviewer Workspace'}
+              {currentRole === 'ADMIN'
+                ? 'Administration Console'
+                : currentRole === 'MEDICAL_REVIEWER'
+                ? 'Reviewer Workspace'
+                : 'Student Learning Workspace'}
             </span>
           </div>
         ) : (

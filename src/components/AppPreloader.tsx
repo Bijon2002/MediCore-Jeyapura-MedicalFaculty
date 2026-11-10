@@ -7,49 +7,32 @@ interface AppPreloaderProps {
 }
 
 export const AppPreloader: React.FC<AppPreloaderProps> = ({ onLoaded, isReady = true }) => {
-  const [progress, setProgress] = useState<number>(15);
+  const [progress, setProgress] = useState<number>(30);
   const [isFadingOut, setIsFadingOut] = useState<boolean>(false);
   const [isRemoved, setIsRemoved] = useState<boolean>(false);
 
   useEffect(() => {
-    const t1 = setTimeout(() => {
-      setProgress(50);
-    }, 250);
+    if (isReady) {
+      setProgress(100);
+      const fadeTimer = setTimeout(() => {
+        setIsFadingOut(true);
+        const removeTimer = setTimeout(() => {
+          setIsRemoved(true);
+          if (onLoaded) {
+            onLoaded();
+          }
+        }, 180);
+        return () => clearTimeout(removeTimer);
+      }, 120);
 
-    const t2 = setTimeout(() => {
-      setProgress(85);
-    }, 600);
-
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (isReady && progress >= 85) {
-      const finishTimer = setTimeout(() => {
-        setProgress(100);
-
-        const fadeTimer = setTimeout(() => {
-          setIsFadingOut(true);
-
-          const removeTimer = setTimeout(() => {
-            setIsRemoved(true);
-            if (onLoaded) {
-              onLoaded();
-            }
-          }, 500);
-
-          return () => clearTimeout(removeTimer);
-        }, 350);
-
-        return () => clearTimeout(fadeTimer);
-      }, 350);
-
-      return () => clearTimeout(finishTimer);
+      return () => clearTimeout(fadeTimer);
+    } else {
+      const t = setTimeout(() => {
+        setProgress((prev) => Math.min(prev + 30, 90));
+      }, 100);
+      return () => clearTimeout(t);
     }
-  }, [isReady, progress, onLoaded]);
+  }, [isReady, onLoaded]);
 
   if (isRemoved) {
     return null;

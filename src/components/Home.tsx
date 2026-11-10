@@ -888,33 +888,39 @@ export const Home: React.FC<HomeProps> = ({
               </button>
             </div>
 
-            {/* Right side: 2 Landscape Story Cards with Local Images */}
+            {/* Right side: 2 Landscape Story Cards from DB */}
             <div className="story-cards-horizontal-group">
-              <div className="story-landscape-card" onClick={onNavigateToArticles}>
-                <div
-                  className="story-thumbnail"
-                  style={{
-                    backgroundImage: `url('/images/cardio-heart.jpg')`,
-                  }}
-                />
-                <div className="story-card-body">
-                  <h4>10 High-Yield ECG Findings in Emergency Medicine</h4>
-                  <span className="story-read-time">5 min read</span>
-                </div>
-              </div>
+              {(articles.length > 0 ? articles.slice(0, 2) : []).map((storyArticle, idx) => {
+                const readTime = getReadTime(storyArticle);
+                const bgImage = storyArticle.featuredImageUrl || (idx === 0 ? '/images/cardio-heart.jpg' : '/images/emergency-care.jpg');
 
-              <div className="story-landscape-card" onClick={onNavigateToArticles}>
-                <div
-                  className="story-thumbnail"
-                  style={{
-                    backgroundImage: `url('/images/emergency-care.jpg')`,
-                  }}
-                />
-                <div className="story-card-body">
-                  <h4>Step-by-Step Approach to Acid-Base &amp; Electrolyte Disorders</h4>
-                  <span className="story-read-time">4 min read</span>
-                </div>
-              </div>
+                return (
+                  <div
+                    key={storyArticle.id}
+                    className="story-landscape-card"
+                    onClick={() => onNavigateToArticleDetail(storyArticle)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        onNavigateToArticleDetail(storyArticle);
+                      }
+                    }}
+                  >
+                    <div
+                      className="story-thumbnail"
+                      style={{
+                        backgroundImage: `url(${bgImage})`,
+                      }}
+                    />
+                    <div className="story-card-body">
+                      <h4>{storyArticle.title}</h4>
+                      <span className="story-read-time">{readTime}</span>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

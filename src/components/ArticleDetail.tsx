@@ -213,8 +213,12 @@ export const ArticleDetail: React.FC<ArticleDetailProps> = ({ slug, onBack }) =>
                     </svg>
                     {formattedDate}
                   </span>
-                  <span className="read-time-pill">
-                    ⏱️ {readTimeMinutes} min read
+                  <span className="read-time-pill" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="10" />
+                      <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    {readTimeMinutes} min read
                   </span>
                 </div>
               </div>
@@ -248,7 +252,12 @@ export const ArticleDetail: React.FC<ArticleDetailProps> = ({ slug, onBack }) =>
 
             {/* Body Content */}
             <div className="article-body-text">
-              {contentParagraphs.length > 0 ? (
+              {/<[a-z][\s\S]*>/i.test(article.content) ? (
+                <div
+                  className="article-rich-html"
+                  dangerouslySetInnerHTML={{ __html: article.content }}
+                />
+              ) : contentParagraphs.length > 0 ? (
                 contentParagraphs.map((paragraph, index) => (
                   <p key={index} className="article-paragraph">
                     {paragraph}

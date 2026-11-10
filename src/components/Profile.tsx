@@ -3,6 +3,7 @@ import { ProfileApiClient } from '../client/api/profile.api';
 import { getAccessToken } from '../auth/auth-storage';
 import { useAuth } from '../auth/AuthContext';
 import type { UserProfile, UpdateProfileInput } from '../client/types/profile.types';
+import { ImageUploader } from './ImageUploader';
 import './Profile.css';
 
 export const Profile: React.FC = () => {
@@ -232,14 +233,13 @@ export const Profile: React.FC = () => {
             </div>
 
             <div className="profile-form-group form-group-full">
-              <label htmlFor="avatarUrl">Avatar Image URL</label>
-              <input
-                id="avatarUrl"
-                type="url"
-                className="profile-form-input"
+              <ImageUploader
                 value={avatarUrl}
-                onChange={(e) => setAvatarUrl(e.target.value)}
-                placeholder="https://example.com/avatar.jpg"
+                onChange={(url) => setAvatarUrl(url)}
+                label="Profile Picture / Avatar"
+                helpText="Upload a professional profile photo (PNG, JPG, WEBP). Drag and drop or browse."
+                variant="avatar"
+                maxSizeMb={5}
               />
             </div>
           </div>

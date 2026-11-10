@@ -54,6 +54,104 @@
   background: var(--surface-hover);
 }
 
+/* WORD DOCUMENT IMPORT CARD */
+.word-import-card {
+  background: linear-gradient(135deg, rgba(13, 148, 136, 0.08), rgba(2, 132, 199, 0.06));
+  border: 1px dashed #0d9488;
+  border-radius: 14px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: all 0.2s ease;
+}
+
+.word-import-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.word-import-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #ccfbf1;
+  color: #0f766e;
+  flex-shrink: 0;
+}
+
+.word-import-copy {
+  flex: 1;
+  min-width: 240px;
+}
+
+.word-import-copy h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f766e;
+}
+
+.word-import-copy p {
+  margin: 0;
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.4;
+}
+
+.btn-word-upload {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: #0d9488;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.25);
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn-word-upload:hover:not(:disabled) {
+  background: #0f766e;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.35);
+}
+
+.btn-word-upload:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.word-import-success-alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 8px;
+  color: #166534;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.word-import-success-alert svg {
+  flex-shrink: 0;
+  color: #16a34a;
+}
+
+/* FORM CARD */
 .editor-form-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -111,12 +209,6 @@
   border-color: var(--accent);
   background: var(--surface);
   box-shadow: 0 0 0 3px var(--accent-bg);
-}
-
-.field-textarea {
-  min-height: 240px;
-  resize: vertical;
-  line-height: 1.6;
 }
 
 .field-help {

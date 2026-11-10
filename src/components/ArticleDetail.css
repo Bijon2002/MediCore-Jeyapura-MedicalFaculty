@@ -298,6 +298,101 @@
   word-break: break-word;
 }
 
+/* Rich HTML Content from WordPad Editor & Word Imports */
+.article-rich-html {
+  font-size: 17px;
+  line-height: 1.8;
+  color: #1e293b;
+  word-break: break-word;
+}
+
+.article-rich-html h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 1.5em 0 0.6em;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 0.3em;
+}
+
+.article-rich-html h1:first-child {
+  margin-top: 0;
+}
+
+.article-rich-html h2 {
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #0f766e;
+  margin: 1.3em 0 0.5em;
+}
+
+.article-rich-html h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 1.1em 0 0.4em;
+}
+
+.article-rich-html h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #475569;
+  margin: 1em 0 0.4em;
+}
+
+.article-rich-html p {
+  margin: 0 0 1.2em;
+}
+
+.article-rich-html ul,
+.article-rich-html ol {
+  margin: 0 0 1.3em 1.75em;
+  padding: 0;
+}
+
+.article-rich-html li {
+  margin-bottom: 0.5em;
+}
+
+.article-rich-html blockquote {
+  margin: 1.5em 0;
+  padding: 16px 20px;
+  background: #f0fdfa;
+  border-left: 4px solid #0d9488;
+  border-radius: 0 8px 8px 0;
+  color: #115e59;
+  font-style: italic;
+}
+
+.article-rich-html hr {
+  border: none;
+  border-top: 2px solid #e2e8f0;
+  margin: 2em 0;
+}
+
+.article-rich-html pre {
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 16px 20px;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
+  margin: 1.2em 0;
+}
+
+.article-rich-html a {
+  color: #0d9488;
+  text-decoration: underline;
+}
+
+.article-rich-html img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1em 0;
+}
+
 .article-paragraph:last-child {
   margin-bottom: 0;
 }

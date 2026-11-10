@@ -293,21 +293,39 @@ export const QuizAttempts: React.FC<QuizAttemptsProps> = ({ onBackToQuizzes }) =
 
           <div className="quiz-empty-features-grid">
             <div className="empty-feature-card">
-              <div className="feature-icon-bullet">🩺</div>
+              <div className="feature-icon-bullet">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="8.5" cy="7" r="4" />
+                  <polyline points="17 11 19 13 23 9" />
+                </svg>
+              </div>
               <div className="feature-text">
                 <strong>Clinical MCQs</strong>
                 <span>Practice faculty-reviewed medical cases</span>
               </div>
             </div>
             <div className="empty-feature-card">
-              <div className="feature-icon-bullet">📊</div>
+              <div className="feature-icon-bullet">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="3" y="3" width="7" height="7" rx="1" />
+                  <rect x="14" y="3" width="7" height="7" rx="1" />
+                  <rect x="14" y="14" width="7" height="7" rx="1" />
+                  <rect x="3" y="14" width="7" height="7" rx="1" />
+                </svg>
+              </div>
               <div className="feature-text">
                 <strong>Instant Scoring</strong>
                 <span>Review rationale for every clinical option</span>
               </div>
             </div>
             <div className="empty-feature-card">
-              <div className="feature-icon-bullet">📈</div>
+              <div className="feature-icon-bullet">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+                  <polyline points="16 7 22 7 22 13" />
+                </svg>
+              </div>
               <div className="feature-text">
                 <strong>Progress Tracking</strong>
                 <span>Monitor subject mastery over time</span>

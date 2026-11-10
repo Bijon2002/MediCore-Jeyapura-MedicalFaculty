@@ -116,11 +116,33 @@ export const Profile: React.FC = () => {
       const updated = await ProfileApiClient.updateMyProfile(payload, token);
       setProfile(updated);
       setSuccessMessage('Profile updated successfully!');
+      if (payload.avatarUrl && typeof window !== 'undefined') {
+        localStorage.setItem('medcore_user_avatar', payload.avatarUrl);
+        window.dispatchEvent(new CustomEvent('medcore:avatar-updated', { detail: { avatarUrl: payload.avatarUrl } }));
+      }
       await refreshUser();
     } catch (err: any) {
       setError(err?.message || 'Failed to update profile');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleAvatarChange = async (url: string) => {
+    setAvatarUrl(url);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('medcore_user_avatar', url);
+      window.dispatchEvent(new CustomEvent('medcore:avatar-updated', { detail: { avatarUrl: url } }));
+    }
+
+    const token = getAccessToken();
+    if (token) {
+      try {
+        await ProfileApiClient.updateMyProfile({ avatarUrl: url }, token);
+        await refreshUser();
+      } catch (err) {
+        console.warn('Auto-save avatar warning:', err);
+      }
     }
   };
 
@@ -235,7 +257,7 @@ export const Profile: React.FC = () => {
             <div className="profile-form-group form-group-full">
               <ImageUploader
                 value={avatarUrl}
-                onChange={(url) => setAvatarUrl(url)}
+                onChange={handleAvatarChange}
                 label="Profile Picture / Avatar"
                 helpText="Upload a professional profile photo (PNG, JPG, WEBP). Drag and drop or browse."
                 variant="avatar"

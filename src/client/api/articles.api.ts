@@ -31,7 +31,7 @@ export class ArticlesApiClient {
 
     let query = supabase
       .from('articles')
-      .select('*, author:profiles!author_id(*), subject:subjects(*), topic:topics(*)', { count: 'exact' });
+      .select('id, title, slug, summary, featured_image_url, status, order_index, created_at, updated_at, author:profiles!author_id(id, first_name, last_name, avatar_url), subject:subjects(id, title, slug), topic:topics(id, title, slug)', { count: 'exact' });
 
     if (params?.status) {
       query = query.eq('status', params.status);

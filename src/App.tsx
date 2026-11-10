@@ -21,6 +21,7 @@ import { Registration } from './components/Registration';
 import { Profile } from './components/Profile';
 import { ReviewerApplication } from './components/ReviewerApplication';
 import { AppPreloader } from './components/AppPreloader';
+import { FloatingAiChat } from './components/FloatingAiChat';
 import { parseRoute, pushRoute, type RouteState } from './components/route-utils';
 import { useAuth } from './auth/AuthContext';
 import type { Article } from './client/types/article.types';
@@ -539,6 +540,9 @@ function App() {
           ) : null}
         </main>
       </div>
+
+      {/* FLOATING AI ASSISTANT ON LEFT SIDE */}
+      <FloatingAiChat />
     </div>
   );
 }

@@ -7,13 +7,22 @@ interface AppPreloaderProps {
 }
 
 export const AppPreloader: React.FC<AppPreloaderProps> = ({ onLoaded, isReady = true }) => {
-  const [progress, setProgress] = useState<number>(30);
-  const [isFadingOut, setIsFadingOut] = useState<boolean>(false);
-  const [isRemoved, setIsRemoved] = useState<boolean>(false);
+  const isAlreadyVisited = typeof window !== 'undefined' && sessionStorage.getItem('medcore_visited') === 'true';
+  const [progress, setProgress] = useState<number>(isAlreadyVisited ? 100 : 40);
+  const [isFadingOut, setIsFadingOut] = useState<boolean>(isAlreadyVisited);
+  const [isRemoved, setIsRemoved] = useState<boolean>(isAlreadyVisited);
 
   useEffect(() => {
+    if (isAlreadyVisited) {
+      if (onLoaded) onLoaded();
+      return;
+    }
+
     if (isReady) {
       setProgress(100);
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('medcore_visited', 'true');
+      }
       const fadeTimer = setTimeout(() => {
         setIsFadingOut(true);
         const removeTimer = setTimeout(() => {
@@ -21,20 +30,20 @@ export const AppPreloader: React.FC<AppPreloaderProps> = ({ onLoaded, isReady = 
           if (onLoaded) {
             onLoaded();
           }
-        }, 180);
+        }, 120);
         return () => clearTimeout(removeTimer);
-      }, 120);
+      }, 80);
 
       return () => clearTimeout(fadeTimer);
     } else {
       const t = setTimeout(() => {
         setProgress((prev) => Math.min(prev + 30, 90));
-      }, 100);
+      }, 60);
       return () => clearTimeout(t);
     }
-  }, [isReady, onLoaded]);
+  }, [isReady, onLoaded, isAlreadyVisited]);
 
-  if (isRemoved) {
+  if (isRemoved || isAlreadyVisited) {
     return null;
   }
 

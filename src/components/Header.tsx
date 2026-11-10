@@ -43,7 +43,31 @@ export const Header: React.FC<HeaderProps> = ({
   const { user, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [displayedAvatar, setDisplayedAvatar] = useState<string | null>(() => {
+    return user?.avatarUrl || (typeof window !== 'undefined' ? localStorage.getItem('medcore_user_avatar') : null);
+  });
   const profileDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (user?.avatarUrl) {
+      setDisplayedAvatar(user.avatarUrl);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('medcore_user_avatar', user.avatarUrl);
+      }
+    }
+  }, [user?.avatarUrl]);
+
+  useEffect(() => {
+    const handleAvatarUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent<{ avatarUrl?: string }>;
+      if (customEvent.detail?.avatarUrl) {
+        setDisplayedAvatar(customEvent.detail.avatarUrl);
+      }
+    };
+
+    window.addEventListener('medcore:avatar-updated', handleAvatarUpdate);
+    return () => window.removeEventListener('medcore:avatar-updated', handleAvatarUpdate);
+  }, []);
 
   const activeRole: UserRole = user?.role || currentRole;
 
@@ -79,6 +103,10 @@ export const Header: React.FC<HeaderProps> = ({
 
   const handleLogout = async () => {
     setProfileDropdownOpen(false);
+    setDisplayedAvatar(null);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('medcore_user_avatar');
+    }
     try {
       await logout();
     } finally {
@@ -342,8 +370,8 @@ export const Header: React.FC<HeaderProps> = ({
                 title={`${user.firstName || ''} ${user.lastName || ''} (${getRoleBadgeLabel()})`}
               >
                 <div className="user-avatar">
-                  {user?.avatarUrl ? (
-                    <img src={user.avatarUrl} alt="Profile" className="user-avatar-img" />
+                  {displayedAvatar ? (
+                    <img src={displayedAvatar} alt="Profile" className="user-avatar-img" />
                   ) : user?.firstName ? (
                     user.firstName[0].toUpperCase()
                   ) : (
@@ -369,8 +397,8 @@ export const Header: React.FC<HeaderProps> = ({
                   {/* User info banner */}
                   <div className="dropdown-user-header">
                     <div className="dropdown-user-avatar">
-                      {user?.avatarUrl ? (
-                        <img src={user.avatarUrl} alt="Profile" className="user-avatar-img" />
+                      {displayedAvatar ? (
+                        <img src={displayedAvatar} alt="Profile" className="user-avatar-img" />
                       ) : user?.firstName ? (
                         user.firstName[0].toUpperCase()
                       ) : (

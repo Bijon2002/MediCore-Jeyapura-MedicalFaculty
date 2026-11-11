@@ -12,12 +12,12 @@ export const DeveloperDetail: React.FC<DeveloperDetailProps> = ({ slug, onBackTo
 
   const developerData = isBijosilin
     ? {
-        name: 'Bijosilin Marisilin',
+        name: 'Bijosilin',
         title: 'Software Developer & Co-creator of MediCore',
         initials: 'BM',
         colorClass: '',
         metaDesc:
-          'Explore the technical contributions, architecture work, and profile of Bijosilin Marisilin, software developer and co-creator of MediCore medical platform.',
+          'Explore the technical contributions, architecture work, and profile of Bijosilin, software developer and co-creator of MediCore medical platform.',
         portfolio: 'https://bijonn.pages.dev/',
         github: 'https://github.com/Bijon2002',
         linkedin: 'https://linkedin.com/in/marisilin-bijosilin',
@@ -33,12 +33,12 @@ export const DeveloperDetail: React.FC<DeveloperDetailProps> = ({ slug, onBackTo
         technologies: ['React 19', 'TypeScript', 'Vite', 'Supabase', 'PostgreSQL', 'Cloudflare Pages', 'HTML5 / CSS3', 'Git'],
       }
     : {
-        name: 'Puvanenthira Mathushan',
+        name: 'Mathusan',
         title: 'Software Developer & Co-creator of MediCore',
         initials: 'PM',
         colorClass: 'alt',
         metaDesc:
-          'Explore the contributions and engineering background of Puvanenthira Mathushan, software developer and co-creator of the MediCore medical education platform.',
+          'Explore the contributions and engineering background of Mathusan, software developer and co-creator of the MediCore medical education platform.',
         portfolio: null,
         github: null,
         linkedin: null,
@@ -85,9 +85,11 @@ export const DeveloperDetail: React.FC<DeveloperDetailProps> = ({ slug, onBackTo
       </button>
 
       <div className="developer-profile-header">
-        <div className={`developer-avatar-initials large ${developerData.colorClass}`}>
-          {developerData.initials}
-        </div>
+        <img
+          className={`developer-avatar large ${developerData.colorClass}`}
+          src={isBijosilin ? '/Developers/bijon.png' : '/Developers/mathu.jpeg'}
+          alt={developerData.name}
+        />
         <div className="profile-header-meta">
           <div className="dev-tag-pill">VERIFIED DEVELOPER</div>
           <h1 className="profile-dev-name">{developerData.name}</h1>
@@ -145,4 +147,3 @@ export const DeveloperDetail: React.FC<DeveloperDetailProps> = ({ slug, onBackTo
     </div>
   );
 };
-

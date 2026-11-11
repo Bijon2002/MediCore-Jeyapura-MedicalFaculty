@@ -16,7 +16,7 @@ export const Developers: React.FC<DevelopersProps> = ({ onSelectDeveloper }) => 
     mainEntity: [
       {
         '@type': 'Person',
-        name: 'Bijosilin Marisilin',
+        name: 'Bijosilin',
         jobTitle: 'Software Developer & Co-creator',
         sameAs: [
           'https://bijonn.pages.dev/',
@@ -26,7 +26,7 @@ export const Developers: React.FC<DevelopersProps> = ({ onSelectDeveloper }) => 
       },
       {
         '@type': 'Person',
-        name: 'Puvanenthira Mathushan',
+        name: 'Mathusan',
         jobTitle: 'Software Developer & Co-creator',
       },
     ],
@@ -50,13 +50,13 @@ export const Developers: React.FC<DevelopersProps> = ({ onSelectDeveloper }) => 
       </div>
 
       <div className="developers-grid">
-        {/* Bijosilin Marisilin Card */}
+        {/* Bijosilin Card */}
         <div className="developer-card">
           <div className="developer-badge">Co-Creator &amp; Lead Engineer</div>
           <div className="developer-avatar-wrapper">
-            <div className="developer-avatar-initials">BM</div>
+            <img className="developer-avatar" src="/Developers/bijon.png" alt="Bijosilin" />
           </div>
-          <h2 className="developer-name">Bijosilin Marisilin</h2>
+          <h2 className="developer-name">Bijosilin</h2>
           <p className="developer-role">Software Developer · Full-Stack &amp; Product Architecture</p>
           <p className="developer-bio">
             Co-creator of MediCore. Specialized in modern React architectures, TypeScript ecosystem, scalable database design with Supabase, and clinical knowledge delivery systems.
@@ -83,13 +83,13 @@ export const Developers: React.FC<DevelopersProps> = ({ onSelectDeveloper }) => 
           )}
         </div>
 
-        {/* Puvanenthira Mathushan Card */}
+        {/* Mathusan Card */}
         <div className="developer-card">
           <div className="developer-badge">Co-Creator &amp; Software Developer</div>
           <div className="developer-avatar-wrapper">
-            <div className="developer-avatar-initials alt">PM</div>
+            <img className="developer-avatar alt" src="/Developers/mathu.jpeg" alt="Mathusan" />
           </div>
-          <h2 className="developer-name">Puvanenthira Mathushan</h2>
+          <h2 className="developer-name">Mathusan</h2>
           <p className="developer-role">Software Developer · Backend Systems &amp; Education Tools</p>
           <p className="developer-bio">
             Co-creator of MediCore. Focused on backend engineering, interactive medical assessment logic, clinical workflow automation, and educational UX patterns.

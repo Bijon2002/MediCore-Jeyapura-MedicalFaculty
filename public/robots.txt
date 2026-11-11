@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /reviewer
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /quizzes/attempts
+Disallow: /articles/new
+Disallow: /articles/edit/
+Disallow: /quizzes/new
+Disallow: /quizzes/edit/
+
+Sitemap: https://medcore.lk/sitemap.xml

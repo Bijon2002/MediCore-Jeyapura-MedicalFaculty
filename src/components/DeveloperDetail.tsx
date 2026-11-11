@@ -145,3 +145,4 @@ export const DeveloperDetail: React.FC<DeveloperDetailProps> = ({ slug, onBackTo
     </div>
   );
 };
+

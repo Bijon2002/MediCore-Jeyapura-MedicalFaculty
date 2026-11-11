@@ -175,3 +175,4 @@ export const PolicyPage: React.FC<PolicyPageProps> = ({ type }) => {
     </div>
   );
 };
+

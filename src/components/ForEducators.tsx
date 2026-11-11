@@ -60,3 +60,4 @@ export const ForEducators: React.FC<ForEducatorsProps> = ({ onApplyReviewer, onN
     </div>
   );
 };
+

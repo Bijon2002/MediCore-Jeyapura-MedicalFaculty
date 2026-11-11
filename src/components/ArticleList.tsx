@@ -6,6 +6,7 @@ import type { Subject } from '../client/types/subject.types';
 import { ArticleCard } from './ArticleCard';
 import { ArticleFilter } from './ArticleFilter';
 import { buildQueryArticleParams } from './article-utils';
+import { SEOHead } from './seo/SEOHead';
 import './ArticleList.css';
 
 export interface ArticleListProps {
@@ -139,6 +140,11 @@ export const ArticleList: React.FC<ArticleListProps> = ({ onArticleClick, onSele
 
   return (
     <div className="medcore-public-wrapper">
+      <SEOHead
+        title="Medical Educational Articles & Clinical Guides"
+        description="Browse peer-reviewed clinical articles, anatomical dissection guides, and physiological review papers created by medical students and faculty educators."
+        canonicalPath="/articles"
+      />
       {/* HERO SECTION WITH CLINICAL VISUAL */}
       <section className="public-hero-section">
         <div

@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase';
 import type { Article } from '../client/types/article.types';
 import type { Subject } from '../client/types/subject.types';
 import type { Topic } from '../client/types/topic.types';
+import { SEOHead } from './seo/SEOHead';
 import './Home.css';
 
 export interface HomeProps {
@@ -302,6 +303,11 @@ export const Home: React.FC<HomeProps> = ({
 
   return (
     <div className="pomaii-home-page">
+      <SEOHead
+        title="MediCore | Open Medical Learning Platform"
+        description="Explore medical learning resources, educational articles and quizzes on MediCore. An open-access platform for students and educators to learn, practise and create content."
+        canonicalPath="/"
+      />
       {/* =========================================================================
           LIVE CLINICAL MARQUEE TICKER (Continuous updates banner)
           ========================================================================= */}

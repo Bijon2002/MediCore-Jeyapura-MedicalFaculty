@@ -22,6 +22,12 @@ import { Profile } from './components/Profile';
 import { ReviewerApplication } from './components/ReviewerApplication';
 import { AppPreloader } from './components/AppPreloader';
 import { FloatingAiChat } from './components/FloatingAiChat';
+import { Developers } from './components/Developers';
+import { DeveloperDetail } from './components/DeveloperDetail';
+import { ForStudents } from './components/ForStudents';
+import { ForEducators } from './components/ForEducators';
+import { Features } from './components/Features';
+import { PolicyPage } from './components/PolicyPage';
 import { parseRoute, pushRoute, type RouteState } from './components/route-utils';
 import { useAuth } from './auth/AuthContext';
 import type { Article } from './client/types/article.types';
@@ -293,6 +299,36 @@ function App() {
     pushRoute(`/quizzes/${quizId}`);
   };
 
+  const navigateToFeatures = () => {
+    setRoute({ type: 'features' });
+    pushRoute('/features');
+  };
+
+  const navigateToForStudents = () => {
+    setRoute({ type: 'for-students' });
+    pushRoute('/for-students');
+  };
+
+  const navigateToForEducators = () => {
+    setRoute({ type: 'for-educators' });
+    pushRoute('/for-educators');
+  };
+
+  const navigateToDevelopers = () => {
+    setRoute({ type: 'developers' });
+    pushRoute('/developers');
+  };
+
+  const navigateToDeveloperDetail = (slug: string) => {
+    setRoute({ type: 'developer-detail', slug });
+    pushRoute(`/developers/${slug}`);
+  };
+
+  const navigateToPolicy = (policyType: 'editorial-policy' | 'content-guidelines' | 'medical-disclaimer' | 'privacy-policy' | 'terms') => {
+    setRoute({ type: 'policy', policyType });
+    pushRoute(`/${policyType}`);
+  };
+
   const handleSwitchToWorkspace = () => {
     if (!user) {
       navigateToLogin();
@@ -417,6 +453,35 @@ function App() {
               onNavigateHome={navigateToHome}
               onNavigateToArticles={navigateToArticles}
             />
+          ) : route.type === 'features' ? (
+            <Features
+              onNavigateToQuizzes={navigateToQuizzes}
+              onNavigateToArticles={navigateToArticles}
+            />
+          ) : route.type === 'for-students' ? (
+            <ForStudents
+              onNavigateToQuizzes={navigateToQuizzes}
+              onNavigateToArticles={navigateToArticles}
+              onNavigateToSpecialties={navigateToSubjects}
+              onRegister={navigateToRegister}
+            />
+          ) : route.type === 'for-educators' ? (
+            <ForEducators
+              onApplyReviewer={navigateToApplyReviewer}
+              onNavigateToArticles={navigateToArticles}
+            />
+          ) : route.type === 'developers' ? (
+            <Developers
+              onSelectDeveloper={navigateToDeveloperDetail}
+              onNavigateHome={navigateToHome}
+            />
+          ) : route.type === 'developer-detail' ? (
+            <DeveloperDetail
+              slug={route.slug}
+              onBackToDevelopers={navigateToDevelopers}
+            />
+          ) : route.type === 'policy' ? (
+            <PolicyPage type={route.policyType} />
           ) : route.type === 'login' ? (
             <Login
               onLoginSuccess={handleLoginSuccess}
@@ -528,10 +593,29 @@ function App() {
                   <span>·</span>
                   <button type="button" onClick={navigateToAbout}>About Us</button>
                   <span>·</span>
+                  <button type="button" onClick={navigateToFeatures}>Features</button>
+                  <span>·</span>
+                  <button type="button" onClick={navigateToForStudents}>For Students</button>
+                  <span>·</span>
+                  <button type="button" onClick={navigateToForEducators}>For Educators</button>
+                  <span>·</span>
+                  <button type="button" onClick={navigateToDevelopers}>Developers</button>
+                  <span>·</span>
+                  <button type="button" onClick={() => navigateToPolicy('editorial-policy')}>Editorial Policy</button>
+                  <span>·</span>
+                  <button type="button" onClick={() => navigateToPolicy('medical-disclaimer')}>Medical Disclaimer</button>
+                  <span>·</span>
+                  <button type="button" onClick={() => navigateToPolicy('privacy-policy')}>Privacy Policy</button>
+                  <span>·</span>
+                  <button type="button" onClick={() => navigateToPolicy('terms')}>Terms</button>
+                  <span>·</span>
                   <button type="button" onClick={navigateToContact}>Contact</button>
                   <span>·</span>
                   <button type="button" onClick={handleSwitchToWorkspace}>Clinical Workspace</button>
                 </div>
+                <p className="footer-origin" style={{ fontSize: '12px', color: '#94a3b8', margin: '4px 0 0' }}>
+                  MediCore is a medical education project created by students of the Faculty of Medical Sciences, University of Sri Jayewardenepura, Sri Lanka.
+                </p>
                 <p className="footer-copy">
                   &copy; {new Date().getFullYear()} MedCore Medical Platform. All rights reserved.
                 </p>

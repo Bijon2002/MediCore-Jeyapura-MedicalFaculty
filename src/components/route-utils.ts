@@ -2,6 +2,12 @@ export type RouteState =
   | { type: 'home' }
   | { type: 'about' }
   | { type: 'contact' }
+  | { type: 'features' }
+  | { type: 'for-students' }
+  | { type: 'for-educators' }
+  | { type: 'developers' }
+  | { type: 'developer-detail'; slug: string }
+  | { type: 'policy'; policyType: 'editorial-policy' | 'content-guidelines' | 'medical-disclaimer' | 'privacy-policy' | 'terms' }
   | { type: 'dashboard' }
   | { type: 'reviewer-dashboard' }
   | { type: 'apply-reviewer' }
@@ -32,6 +38,49 @@ export function parseRoute(pathname?: string): RouteState {
   // About route: /about
   if (path === '/about' || path === '/about/') {
     return { type: 'about' };
+  }
+
+  // Features route: /features
+  if (path === '/features' || path === '/features/') {
+    return { type: 'features' };
+  }
+
+  // For Students route: /for-students
+  if (path === '/for-students' || path === '/for-students/') {
+    return { type: 'for-students' };
+  }
+
+  // For Educators route: /for-educators
+  if (path === '/for-educators' || path === '/for-educators/') {
+    return { type: 'for-educators' };
+  }
+
+  // Developers list: /developers
+  if (path === '/developers' || path === '/developers/') {
+    return { type: 'developers' };
+  }
+
+  // Individual Developer route: /developers/:slug
+  const devMatch = path.match(/^\/developers\/([^/]+)\/?$/);
+  if (devMatch) {
+    return { type: 'developer-detail', slug: devMatch[1] };
+  }
+
+  // Trust & Policy routes
+  if (path === '/editorial-policy' || path === '/editorial-policy/') {
+    return { type: 'policy', policyType: 'editorial-policy' };
+  }
+  if (path === '/content-guidelines' || path === '/content-guidelines/') {
+    return { type: 'policy', policyType: 'content-guidelines' };
+  }
+  if (path === '/medical-disclaimer' || path === '/medical-disclaimer/') {
+    return { type: 'policy', policyType: 'medical-disclaimer' };
+  }
+  if (path === '/privacy-policy' || path === '/privacy-policy/') {
+    return { type: 'policy', policyType: 'privacy-policy' };
+  }
+  if (path === '/terms' || path === '/terms/') {
+    return { type: 'policy', policyType: 'terms' };
   }
 
   // Contact route: /contact

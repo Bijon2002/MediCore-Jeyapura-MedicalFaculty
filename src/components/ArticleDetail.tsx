@@ -6,6 +6,7 @@ import {
   getAuthorDisplayName,
   parsePlainTextParagraphs,
 } from './article-utils';
+import { SEOHead } from './seo/SEOHead';
 import './ArticleDetail.css';
 
 export interface ArticleDetailProps {
@@ -165,6 +166,31 @@ export const ArticleDetail: React.FC<ArticleDetailProps> = ({ slug, onBack }) =>
         {/* ARTICLE CONTENT DISPLAY */}
         {!loading && !error && article ? (
           <div className="article-detail-content" data-testid="article-detail-body">
+            <SEOHead
+              title={article.title}
+              description={article.summary || `Read ${article.title} on MediCore open-access medical platform.`}
+              canonicalPath={`/articles/${article.slug || slug}`}
+              ogType="article"
+              ogImage={article.featuredImageUrl || undefined}
+              structuredData={{
+                '@context': 'https://schema.org',
+                '@type': 'Article',
+                headline: article.title,
+                description: article.summary,
+                image: article.featuredImageUrl ? [article.featuredImageUrl] : undefined,
+                datePublished: article.createdAt,
+                dateModified: article.updatedAt || article.createdAt,
+                author: {
+                  '@type': 'Person',
+                  name: authorName,
+                },
+                publisher: {
+                  '@type': 'Organization',
+                  name: 'MediCore',
+                  url: 'https://medcore.lk',
+                },
+              }}
+            />
             {/* Header Metadata */}
             <header className="article-header">
               <div className="article-badges-row">

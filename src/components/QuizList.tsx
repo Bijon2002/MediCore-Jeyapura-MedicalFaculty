@@ -3,6 +3,7 @@ import { getAccessToken } from '../auth/auth-storage';
 import { QuizzesApiClient } from '../client/api/quizzes.api';
 import type { Quiz } from '../client/types/quiz.types';
 import { ApiClientError } from '../client/api/api-client';
+import { SEOHead } from './seo/SEOHead';
 import './QuizList.css';
 
 export interface QuizListProps {
@@ -76,6 +77,11 @@ export const QuizList: React.FC<QuizListProps> = ({
 
   return (
     <div className="medcore-quizzes-page-wrapper">
+      <SEOHead
+        title="Medical Practice Quizzes & Clinical MCQs"
+        description="Practice high-yield clinical MCQs and anatomical quizzes. Features instant scoring, comprehensive diagnostic rationales, and self-assessment tracking."
+        canonicalPath="/quizzes"
+      />
       {/* =========================================================================
           HERO BANNER (POMAII ORGANIC THEME WITH WAVE)
           ========================================================================= */}

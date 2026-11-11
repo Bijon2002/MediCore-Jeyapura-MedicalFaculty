@@ -11,3 +11,4 @@ Disallow: /quizzes/new
 Disallow: /quizzes/edit/
 
 Sitemap: https://medcore.lk/sitemap.xml
+

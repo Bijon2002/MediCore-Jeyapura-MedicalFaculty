@@ -1,4 +1,5 @@
 import React from 'react';
+import { SEOHead } from './seo/SEOHead';
 import './About.css';
 
 export interface AboutProps {
@@ -16,6 +17,11 @@ export const About: React.FC<AboutProps> = ({
 }) => {
   return (
     <div className="medcore-about-page">
+      <SEOHead
+        title="About MediCore | Mission, Origin & Architecture"
+        description="Learn about MediCore, an open-access medical education initiative created by students of the Faculty of Medical Sciences, University of Sri Jayewardenepura, Sri Lanka."
+        canonicalPath="/about"
+      />
       {/* =========================================================================
           HERO BANNER
           ========================================================================= */}

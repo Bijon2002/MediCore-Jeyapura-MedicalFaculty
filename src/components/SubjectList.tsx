@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { SubjectsApiClient } from '../client/api/subjects.api';
 import type { Subject } from '../client/types/subject.types';
+import { SEOHead } from './seo/SEOHead';
 import './SubjectList.css';
 
 export interface SubjectListProps {
@@ -90,6 +91,11 @@ export const SubjectList: React.FC<SubjectListProps> = ({ onSelectSubject }) => 
 
   return (
     <div className="medcore-specialties-page-wrapper">
+      <SEOHead
+        title="Explore Medical Subjects & Specialties"
+        description="Structured medical curriculum modules across Cardiology, Neurology, Surgery, Anatomy, and Pathology. Designed for medical students and clinicians."
+        canonicalPath="/subjects"
+      />
       {/* HERO SECTION */}
       <section className="specialties-hero-section">
         <div

@@ -109,3 +109,4 @@ Create a centralized SEO component `src/components/seo/SEOHead.tsx` managing:
 - Explicit separation between **Content Author** and **Peer Reviewer**.
 - Transparent display of review status (`DRAFT`, `PUBLISHED`, `PEER_REVIEWED`).
 - Prominent **Medical Disclaimer**: MediCore provides open-access educational materials for healthcare students and professionals, not patient diagnoses or medical advice.
+

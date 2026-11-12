@@ -15,7 +15,7 @@ import { Profile } from './Profile';
 import { ImageUploader } from './ImageUploader';
 import './ReviewerDashboard.css';
 
-export type AdminWorkspaceTab = 'OVERVIEW' | 'ARTICLES' | 'QUIZZES' | 'REVIEWERS' | 'SUBJECTS' | 'PROFILE' | 'USERS' | 'HERO_SLIDES';
+export type AdminWorkspaceTab = 'OVERVIEW' | 'ARTICLES' | 'QUIZZES' | 'REVIEWERS' | 'SUBJECTS' | 'PROFILE' | 'USERS' | 'HERO_SLIDES' | 'ADS';
 
 export interface ReviewerDashboardProps {
   onCreateArticle: () => void;
@@ -709,6 +709,33 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
             Hero Slides
           </button>
         )}
+
+        {isAdmin && (
+          <button
+            type="button"
+            onClick={() => handleSetActiveTab('ADS')}
+            style={{
+              background: activeTab === 'ADS' ? 'var(--accent, #0d9488)' : 'var(--surface)',
+              color: activeTab === 'ADS' ? '#ffffff' : 'var(--text-muted)',
+              border: '1px solid var(--border)',
+              padding: '0.5rem 1.25rem',
+              borderRadius: '8px',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+            data-testid="admin-tab-ads"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="3" y="4" width="18" height="16" rx="2" />
+              <path d="M7 8h10M7 12h6M7 16h8" />
+            </svg>
+            Ads
+          </button>
+        )}
       </div>
 
       {/* VIEW: OVERVIEW (ADMIN ONLY) */}
@@ -1337,6 +1364,24 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
             </div>
           ))}
         </div>
+      ) : isAdmin && activeTab === 'ADS' ? (
+        <section className="admin-coming-soon-panel" aria-labelledby="admin-ads-title">
+          <div className="admin-coming-soon-icon" aria-hidden="true">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <rect x="3" y="4" width="18" height="16" rx="2" />
+              <path d="M7 8h10M7 12h6M7 16h8" />
+            </svg>
+          </div>
+          <span className="reviewer-badge">Admin workspace</span>
+          <h1 id="admin-ads-title" className="reviewer-title">Ads</h1>
+          <p className="reviewer-subtitle">
+            A dedicated area for managing future promotional placements in the clinical library and reader sidebar.
+          </p>
+          <div className="admin-coming-soon-status">Coming soon · Discussion pending</div>
+          <p className="admin-coming-soon-note">
+            Ad creation, approval, scheduling, and public display are not enabled yet.
+          </p>
+        </section>
       ) : activeTab === 'QUIZZES' ? (
         /* VIEW: QUIZZES MANAGEMENT */
         <>

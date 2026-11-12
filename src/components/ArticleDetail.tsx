@@ -18,6 +18,7 @@ export const ArticleDetail: React.FC<ArticleDetailProps> = ({ slug, onBack }) =>
   const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [suggestedArticles, setSuggestedArticles] = useState<Article[]>([]);
 
   const fetchArticle = useCallback(async () => {
     if (!slug) {
@@ -35,6 +36,14 @@ export const ArticleDetail: React.FC<ArticleDetailProps> = ({ slug, onBack }) =>
         setError('Article not found.');
       } else {
         setArticle(fetchedArticle);
+        try {
+          const suggestions = await ArticlesApiClient.getArticles({ status: 'PUBLISHED', limit: 6 });
+          setSuggestedArticles(
+            suggestions.data.filter((suggestion) => suggestion.id !== fetchedArticle.id).slice(0, 4),
+          );
+        } catch {
+          setSuggestedArticles([]);
+        }
       }
     } catch (err: any) {
       const errorMessage =
@@ -191,6 +200,8 @@ export const ArticleDetail: React.FC<ArticleDetailProps> = ({ slug, onBack }) =>
                 },
               }}
             />
+            <div className="article-reading-layout">
+              <div className="article-reading-main">
             {/* Header Metadata */}
             <header className="article-header">
               <div className="article-badges-row">
@@ -319,6 +330,40 @@ export const ArticleDetail: React.FC<ArticleDetailProps> = ({ slug, onBack }) =>
               >
                 ← Return to All Articles
               </button>
+            </div>
+              </div>
+
+              <aside className="article-suggested-sidebar" aria-label="Suggested clinical guides">
+                <div className="suggested-sidebar-heading">
+                  <span className="suggested-sidebar-kicker">Continue learning</span>
+                  <h2>Suggested guides</h2>
+                  <p>Explore related peer-reviewed clinical resources.</p>
+                </div>
+                <div className="suggested-article-list">
+                  {suggestedArticles.map((suggestedArticle) => (
+                    <button
+                      type="button"
+                      className="suggested-article-card"
+                      key={suggestedArticle.id}
+                      onClick={() => {
+                        window.location.href = `/articles/${suggestedArticle.slug}`;
+                      }}
+                    >
+                      <span className="suggested-article-image">
+                        {suggestedArticle.featuredImageUrl ? (
+                          <img src={suggestedArticle.featuredImageUrl} alt="" />
+                        ) : (
+                          <span aria-hidden="true">MC</span>
+                        )}
+                      </span>
+                      <span className="suggested-article-copy">
+                        <strong>{suggestedArticle.title}</strong>
+                        <span>{suggestedArticle.subject?.title || 'Clinical Guide'}</span>
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </aside>
             </div>
           </div>
         ) : null}

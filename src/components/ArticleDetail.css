@@ -9,11 +9,119 @@
 
 .medcore-article-detail-container {
   width: 100%;
-  max-width: 880px;
+  max-width: 1220px;
   margin: 0 auto;
   padding: 32px 24px 64px;
   box-sizing: border-box;
   text-align: left;
+}
+
+.article-reading-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  align-items: start;
+  gap: 34px;
+}
+
+.article-reading-main {
+  min-width: 0;
+  max-width: 880px;
+}
+
+.article-suggested-sidebar {
+  position: sticky;
+  top: 24px;
+  padding: 22px;
+  background: linear-gradient(160deg, #f0fdfa, #ffffff 65%);
+  border: 1px solid #ccfbf1;
+  border-radius: 18px;
+  box-shadow: 0 10px 28px rgba(15, 118, 110, 0.08);
+}
+
+.suggested-sidebar-kicker {
+  color: #0f766e;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.suggested-sidebar-heading h2 {
+  margin: 7px 0 5px;
+  color: #0f172a;
+  font-size: 22px;
+  letter-spacing: -0.03em;
+}
+
+.suggested-sidebar-heading p {
+  margin: 0 0 18px;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.suggested-article-list {
+  display: grid;
+  gap: 12px;
+}
+
+.suggested-article-card {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  gap: 10px;
+  width: 100%;
+  padding: 0;
+  color: inherit;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.suggested-article-card:hover strong {
+  color: #0f766e;
+}
+
+.suggested-article-image {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  place-items: center;
+  overflow: hidden;
+  color: #0f766e;
+  background: #ccfbf1;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.suggested-article-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.suggested-article-copy {
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.suggested-article-copy strong {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #1e293b;
+  font-size: 13px;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.suggested-article-copy span {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .article-detail-topbar {
@@ -145,6 +253,14 @@
 }
 
 @media (max-width: 768px) {
+  .article-reading-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .article-suggested-sidebar {
+    position: static;
+  }
+
   .article-title {
     font-size: 28px;
   }

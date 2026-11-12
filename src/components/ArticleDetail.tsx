@@ -168,7 +168,7 @@ export const ArticleDetail: React.FC<ArticleDetailProps> = ({ slug, onBack }) =>
           <div className="article-detail-content" data-testid="article-detail-body">
             <SEOHead
               title={article.title}
-              description={article.summary || `Read ${article.title} on MediCore open-access medical platform.`}
+              description={article.summary || `Read ${article.title} on medcore open-access medical platform.`}
               canonicalPath={`/articles/${article.slug || slug}`}
               ogType="article"
               ogImage={article.featuredImageUrl || undefined}
@@ -186,7 +186,7 @@ export const ArticleDetail: React.FC<ArticleDetailProps> = ({ slug, onBack }) =>
                 },
                 publisher: {
                   '@type': 'Organization',
-                  name: 'MediCore',
+                  name: 'medcore',
                   url: 'https://medcore.lk',
                 },
               }}

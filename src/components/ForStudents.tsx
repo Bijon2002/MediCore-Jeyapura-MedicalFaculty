@@ -70,7 +70,7 @@ export const ForStudents: React.FC<ForStudentsProps> = ({
 
       <div className="static-callout-banner">
         <h2>Start Your Free Clinical Journey Today</h2>
-        <p>Join medical students and resident doctors who rely on MediCore for day-to-day clinical preparation.</p>
+        <p>Join medical students and resident doctors who rely on medcore for day-to-day clinical preparation.</p>
         <button type="button" className="static-white-btn" onClick={onRegister}>
           Create Student Account
         </button>

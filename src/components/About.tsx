@@ -1,5 +1,6 @@
 import React from 'react';
 import { SEOHead } from './seo/SEOHead';
+import { useScrollReveal } from '../hooks/useScrollReveal';
 import './About.css';
 
 export interface AboutProps {
@@ -15,6 +16,8 @@ export const About: React.FC<AboutProps> = ({
   onNavigateToContact,
   onNavigateToApplyReviewer,
 }) => {
+  useScrollReveal();
+
   return (
     <div className="medcore-about-page">
       <SEOHead
@@ -40,7 +43,7 @@ export const About: React.FC<AboutProps> = ({
           </svg>
         </div>
 
-        <div className="about-hero-container">
+        <div className="about-hero-container hero-slide-up">
           <nav className="about-breadcrumbs" aria-label="Breadcrumb">
             <button type="button" className="breadcrumb-btn" onClick={onNavigateHome}>
               Home
@@ -60,9 +63,9 @@ export const About: React.FC<AboutProps> = ({
       {/* =========================================================================
           MISSION & VISION
           ========================================================================= */}
-      <section className="about-section mission-section">
+      <section className="about-section mission-section reveal-on-scroll">
         <div className="about-container">
-          <div className="mission-grid">
+          <div className="mission-grid reveal-stagger">
             <div className="mission-card">
               <div className="mission-icon">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -97,7 +100,7 @@ export const About: React.FC<AboutProps> = ({
       {/* =========================================================================
           FOUR PILLARS OF CLINICAL RIGOR
           ========================================================================= */}
-      <section className="about-section pillars-section">
+      <section className="about-section pillars-section reveal-on-scroll">
         <div className="about-container">
           <div className="about-section-header">
             <span className="about-section-tag">Quality Assurance</span>
@@ -105,7 +108,7 @@ export const About: React.FC<AboutProps> = ({
             <p>Every article published on MedCore adheres to strict editorial and scientific benchmarks.</p>
           </div>
 
-          <div className="pillars-grid">
+          <div className="pillars-grid reveal-stagger">
             <div className="pillar-item">
               <div className="pillar-number">01</div>
               <h3>Evidence-Based Medicine</h3>
@@ -144,7 +147,7 @@ export const About: React.FC<AboutProps> = ({
       {/* =========================================================================
           EDITORIAL WORKFLOW
           ========================================================================= */}
-      <section className="about-section workflow-section">
+      <section className="about-section workflow-section reveal-on-scroll">
         <div className="about-container">
           <div className="workflow-card">
             <div className="about-section-header">
@@ -191,7 +194,7 @@ export const About: React.FC<AboutProps> = ({
       {/* =========================================================================
           CALL TO ACTION / JOIN REVIEW BOARD
           ========================================================================= */}
-      <section className="about-section cta-section">
+      <section className="about-section cta-section reveal-on-scroll">
         <div className="about-container">
           <div className="about-cta-card">
             <h2>Are You a Clinician or Medical Educator?</h2>

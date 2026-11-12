@@ -11,8 +11,8 @@ export const Developers: React.FC<DevelopersProps> = ({ onSelectDeveloper }) => 
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'AboutPage',
-    name: 'MediCore Development Team',
-    description: 'The software engineers behind the MediCore open-access medical education platform.',
+    name: 'medcore Development Team',
+    description: 'The software engineers behind the medcore open-access medical education platform.',
     mainEntity: [
       {
         '@type': 'Person',
@@ -35,17 +35,17 @@ export const Developers: React.FC<DevelopersProps> = ({ onSelectDeveloper }) => 
   return (
     <div className="developers-page">
       <SEOHead
-        title="MediCore Development Team"
-        description="Meet the software engineering team behind MediCore, an open-access medical education platform created with modern web technologies."
+        title="medcore Development Team"
+        description="Meet the software engineering team behind medcore, an open-access medical education platform created with modern web technologies."
         canonicalPath="/developers"
         structuredData={structuredData}
       />
 
       <div className="developers-hero">
         <div className="dev-tag-pill">ENGINEERING &amp; ARCHITECTURE</div>
-        <h1 className="developers-title">The Engineers Behind MediCore</h1>
+        <h1 className="developers-title">The Engineers Behind medcore</h1>
         <p className="developers-subtitle">
-          MediCore was conceived and built with modern full-stack web technologies to democratize high-yield clinical resources for medical students and clinicians worldwide.
+          medcore was conceived and built with modern full-stack web technologies to democratize high-yield clinical resources for medical students and clinicians worldwide.
         </p>
       </div>
 
@@ -59,7 +59,7 @@ export const Developers: React.FC<DevelopersProps> = ({ onSelectDeveloper }) => 
           <h2 className="developer-name">Bijosilin</h2>
           <p className="developer-role">Software Developer · Full-Stack &amp; Product Architecture</p>
           <p className="developer-bio">
-            Co-creator of MediCore. Specialized in modern React architectures, TypeScript ecosystem, scalable database design with Supabase, and clinical knowledge delivery systems.
+            Co-creator of medcore. Specialized in modern React architectures, TypeScript ecosystem, scalable database design with Supabase, and clinical knowledge delivery systems.
           </p>
           <div className="developer-links">
             <a href="https://bijonn.pages.dev/" target="_blank" rel="noopener noreferrer" className="dev-btn portfolio">
@@ -92,7 +92,7 @@ export const Developers: React.FC<DevelopersProps> = ({ onSelectDeveloper }) => 
           <h2 className="developer-name">Mathusan</h2>
           <p className="developer-role">Software Developer · Backend Systems &amp; Education Tools</p>
           <p className="developer-bio">
-            Co-creator of MediCore. Focused on backend engineering, interactive medical assessment logic, clinical workflow automation, and educational UX patterns.
+            Co-creator of medcore. Focused on backend engineering, interactive medical assessment logic, clinical workflow automation, and educational UX patterns.
           </p>
           <div className="developer-links">
             <span className="dev-badge-tech">React 19</span>
@@ -117,7 +117,7 @@ export const Developers: React.FC<DevelopersProps> = ({ onSelectDeveloper }) => 
         <div className="origin-text">
           <h3>Academic &amp; Institutional Origin</h3>
           <p>
-            MediCore is a medical education project created by students of the <strong>Faculty of Medical Sciences, University of Sri Jayewardenepura, Sri Lanka</strong>. MediCore is developed independently as an open-access academic initiative to support medical education internationally.
+            medcore is a medical education project created by students of the <strong>Faculty of Medical Sciences, University of Sri Jayewardenepura, Sri Lanka</strong>. medcore is developed independently as an open-access academic initiative to support medical education internationally.
           </p>
         </div>
       </div>

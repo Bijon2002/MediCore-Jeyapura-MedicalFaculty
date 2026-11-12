@@ -291,22 +291,8 @@ export const Header: React.FC<HeaderProps> = ({
           </nav>
         )}
 
-        {/* RIGHT SECTION: SEARCH, FAVORITES, WORKSPACE SWITCHER & PROFILE DROPDOWN */}
+        {/* RIGHT SECTION: FAVORITES, WORKSPACE SWITCHER & PROFILE DROPDOWN */}
         <div className="header-right">
-          {/* Quick Action Icon: Search */}
-          <button
-            type="button"
-            className="header-action-icon-btn"
-            onClick={onNavigateToArticles}
-            title="Search clinical library"
-            aria-label="Search articles"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-          </button>
-
           {/* Quick Action Icon: Favorites */}
           <button
             type="button"

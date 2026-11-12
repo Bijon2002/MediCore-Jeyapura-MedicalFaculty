@@ -13,16 +13,16 @@ export const DeveloperDetail: React.FC<DeveloperDetailProps> = ({ slug, onBackTo
   const developerData = isBijosilin
     ? {
         name: 'Bijosilin',
-        title: 'Software Developer & Co-creator of MediCore',
+        title: 'Software Developer & Co-creator of medcore',
         initials: 'BM',
         colorClass: '',
         metaDesc:
-          'Explore the technical contributions, architecture work, and profile of Bijosilin, software developer and co-creator of MediCore medical platform.',
+          'Explore the technical contributions, architecture work, and profile of Bijosilin, software developer and co-creator of medcore medical platform.',
         portfolio: 'https://bijonn.pages.dev/',
         github: 'https://github.com/Bijon2002',
         linkedin: 'https://linkedin.com/in/marisilin-bijosilin',
         roleDescription:
-          'Bijosilin is a software developer responsible for frontend architecture, state synchronization, database integration, and UI design systems for MediCore.',
+          'Bijosilin is a software developer responsible for frontend architecture, state synchronization, database integration, and UI design systems for medcore.',
         contributions: [
           'Engineered responsive React 19 frontend architecture using Vite and TypeScript.',
           'Integrated Supabase PostgreSQL database schemas with Row Level Security (RLS) policies.',
@@ -34,11 +34,11 @@ export const DeveloperDetail: React.FC<DeveloperDetailProps> = ({ slug, onBackTo
       }
     : {
         name: 'Mathusan',
-        title: 'Software Developer & Co-creator of MediCore',
+        title: 'Software Developer & Co-creator of medcore',
         initials: 'PM',
         colorClass: 'alt',
         metaDesc:
-          'Explore the contributions and engineering background of Mathusan, software developer and co-creator of the MediCore medical education platform.',
+          'Explore the contributions and engineering background of Mathusan, software developer and co-creator of the medcore medical education platform.',
         portfolio: null,
         github: null,
         linkedin: null,
@@ -60,7 +60,7 @@ export const DeveloperDetail: React.FC<DeveloperDetailProps> = ({ slug, onBackTo
     jobTitle: developerData.title,
     worksFor: {
       '@type': 'Organization',
-      name: 'MediCore',
+      name: 'medcore',
       url: 'https://medcore.lk',
     },
     ...(developerData.portfolio || developerData.github || developerData.linkedin
@@ -118,7 +118,7 @@ export const DeveloperDetail: React.FC<DeveloperDetailProps> = ({ slug, onBackTo
         <h2>About the Developer</h2>
         <p className="profile-bio-text">{developerData.roleDescription}</p>
 
-        <h2>Key Project Contributions to MediCore</h2>
+        <h2>Key Project Contributions to medcore</h2>
         <ul className="profile-contributions-list">
           {developerData.contributions.map((item, idx) => (
             <li key={idx}>{item}</li>

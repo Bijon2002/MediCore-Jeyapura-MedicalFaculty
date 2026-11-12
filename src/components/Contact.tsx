@@ -64,8 +64,8 @@ export const Contact: React.FC<ContactProps> = ({ onNavigateHome, onNavigateToAr
   return (
     <div className="medcore-contact-page">
       <SEOHead
-        title="Contact Editorial & Support | MediCore"
-        description="Contact the MediCore medical editorial board, submit clinical article inquiries, or provide platform feedback."
+        title="Contact Editorial & Support | medcore"
+        description="Contact the medcore medical editorial board, submit clinical article inquiries, or provide platform feedback."
         canonicalPath="/contact"
       />
       {/* =========================================================================

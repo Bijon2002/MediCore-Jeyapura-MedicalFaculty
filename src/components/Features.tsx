@@ -12,7 +12,7 @@ export const Features: React.FC<FeaturesProps> = ({ onNavigateToQuizzes, onNavig
     <div className="static-page-wrapper">
       <SEOHead
         title="Platform Capabilities & Clinical Tools"
-        description="Discover MediCore platform features: high-yield interactive medical quizzes, peer-reviewed clinical articles, DOCX file import, instant avatar sync, and floating AI assistant."
+        description="Discover medcore platform features: high-yield interactive medical quizzes, peer-reviewed clinical articles, DOCX file import, instant avatar sync, and floating AI assistant."
         canonicalPath="/features"
       />
 

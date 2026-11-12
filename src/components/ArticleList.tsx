@@ -7,6 +7,7 @@ import { ArticleCard } from './ArticleCard';
 import { ArticleFilter } from './ArticleFilter';
 import { buildQueryArticleParams } from './article-utils';
 import { SEOHead } from './seo/SEOHead';
+import { useScrollReveal } from '../hooks/useScrollReveal';
 import './ArticleList.css';
 
 export interface ArticleListProps {
@@ -86,6 +87,8 @@ export const ArticleList: React.FC<ArticleListProps> = ({ onArticleClick, onSele
     }
   };
 
+  useScrollReveal(loading);
+
   // Client-side filtering & sorting for smooth UX
   const filteredArticles = useMemo(() => {
     let result = [...articles];
@@ -161,7 +164,7 @@ export const ArticleList: React.FC<ArticleListProps> = ({ onArticleClick, onSele
           </svg>
         </div>
 
-        <div className="public-hero-container">
+        <div className="public-hero-container hero-slide-up">
           <div className="public-hero-badge">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <path d="M12 2L2 7l10 5 10-5-10-5z" />
@@ -481,7 +484,7 @@ export const ArticleList: React.FC<ArticleListProps> = ({ onArticleClick, onSele
             </div>
 
             {/* ARTICLE GRID */}
-            <div className="article-grid" data-testid="article-grid">
+            <div className="article-grid reveal-stagger" data-testid="article-grid">
               {gridArticles.map((article) => (
                 <ArticleCard
                   key={article.id}

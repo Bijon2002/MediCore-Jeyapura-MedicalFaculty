@@ -7,6 +7,8 @@ import type { Article } from '../client/types/article.types';
 import type { Subject } from '../client/types/subject.types';
 import type { Topic } from '../client/types/topic.types';
 import { SEOHead } from './seo/SEOHead';
+import { useScrollReveal } from '../hooks/useScrollReveal';
+import { AnimatedCounter } from './AnimatedCounter';
 import './Home.css';
 
 export interface HomeProps {
@@ -64,6 +66,9 @@ export const Home: React.FC<HomeProps> = ({
   // Newsletter state
   const [newsletterEmail, setNewsletterEmail] = useState<string>('');
   const [newsletterSubscribed, setNewsletterSubscribed] = useState<boolean>(false);
+
+  // Activate scroll-reveal animations across sections & cards
+  useScrollReveal(loading);
 
   useEffect(() => {
     let isMounted = true;
@@ -304,8 +309,8 @@ export const Home: React.FC<HomeProps> = ({
   return (
     <div className="pomaii-home-page">
       <SEOHead
-        title="MediCore | Open Medical Learning Platform"
-        description="Explore medical learning resources, educational articles and quizzes on MediCore. An open-access platform for students and educators to learn, practise and create content."
+        title="medcore | Open Medical Learning Platform"
+        description="Explore medical learning resources, educational articles and quizzes on medcore. An open-access platform for students and educators to learn, practise and create content."
         canonicalPath="/"
       />
       {/* =========================================================================
@@ -405,7 +410,7 @@ export const Home: React.FC<HomeProps> = ({
           )}
 
           {/* MAIN HERO TEXT CONTENT BLOCK */}
-          <div className="hero-text-block">
+          <div className="hero-text-block hero-slide-up">
             <div className="hero-eyebrow-pill">
               <span>{activeHero.eyebrow}</span>
               <svg className="eyebrow-svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
@@ -548,7 +553,7 @@ export const Home: React.FC<HomeProps> = ({
           )}
 
           {/* Overlapping Floating Interactive Search & Filter Card */}
-          <div className="hero-floating-filter-card">
+          <div className="hero-floating-filter-card hero-slide-up">
             <form className="filter-card-grid" onSubmit={handleHeroSearch}>
               {/* Field 1: Topic */}
               <div className="filter-cell">
@@ -674,8 +679,8 @@ export const Home: React.FC<HomeProps> = ({
       {/* =========================================================================
           2. TRUST PILLARS STRIP (4 Pillars with Clean Vector SVG Icons)
           ========================================================================= */}
-      <section className="pomaii-trust-strip-section">
-        <div className="strip-container">
+      <section className="pomaii-trust-strip-section reveal-on-scroll">
+        <div className="strip-container reveal-stagger">
           <div className="trust-pillar-card">
             <div className="pillar-icon-box">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -733,7 +738,7 @@ export const Home: React.FC<HomeProps> = ({
       {/* =========================================================================
           3. POPULAR CLINICAL GUIDES (With Interactive Slideshow / Carousel)
           ========================================================================= */}
-      <section className="pomaii-popular-section">
+      <section className="pomaii-popular-section reveal-on-scroll">
         <div className="pomaii-section-container">
           <div className="section-title-row">
             <div className="section-title-left">
@@ -851,9 +856,9 @@ export const Home: React.FC<HomeProps> = ({
       {/* =========================================================================
           4. SPECIALTY CATEGORY FILTER PILLS (With Clean Vector SVGs, No Emojis)
           ========================================================================= */}
-      <section className="pomaii-categories-strip-section">
+      <section className="pomaii-categories-strip-section reveal-on-scroll">
         <div className="pomaii-section-container">
-          <div className="category-pills-row">
+          <div className="category-pills-row reveal-stagger">
             {subjects.length > 0 ? (
               subjects.slice(0, 8).map((sub, idx) => {
                 const bgColors = ['bg-orange', 'bg-teal', 'bg-green', 'bg-blue', 'bg-amber', 'bg-purple', 'bg-emerald', 'bg-rose'];
@@ -957,7 +962,7 @@ export const Home: React.FC<HomeProps> = ({
       {/* =========================================================================
           6. WIDE FEATURED PROMO BANNER (With Clean Medical Vector Badge)
           ========================================================================= */}
-      <section className="pomaii-promo-banner-section">
+      <section className="pomaii-promo-banner-section reveal-on-scroll">
         <div className="pomaii-section-container">
           <div className="wide-forest-banner">
             <div
@@ -998,10 +1003,10 @@ export const Home: React.FC<HomeProps> = ({
       {/* =========================================================================
           7. METRICS & TRUST STATS STRIP (Clean Vector SVG Icons)
           ========================================================================= */}
-      <section className="pomaii-stats-strip-section">
+      <section className="pomaii-stats-strip-section reveal-on-scroll">
         <div className="pomaii-section-container">
           <div className="stats-inner-wrapper">
-            <div className="stats-items-row">
+            <div className="stats-items-row reveal-stagger">
               <div className="stat-pill-item">
                 <div className="stat-icon-wrapper">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#154734" strokeWidth="2">
@@ -1010,7 +1015,12 @@ export const Home: React.FC<HomeProps> = ({
                   </svg>
                 </div>
                 <div className="stat-text-meta">
-                  <strong>{counts.topics > 0 ? `${counts.topics}+` : (topics.length > 0 ? `${topics.length}+` : '36+')}</strong>
+                  <strong>
+                    <AnimatedCounter
+                      value={counts.topics > 0 ? counts.topics : (topics.length > 0 ? topics.length : 36)}
+                      suffix="+"
+                    />
+                  </strong>
                   <span>Clinical Topics</span>
                 </div>
               </div>
@@ -1025,7 +1035,12 @@ export const Home: React.FC<HomeProps> = ({
                   </svg>
                 </div>
                 <div className="stat-text-meta">
-                  <strong>{counts.subjects > 0 ? counts.subjects : (subjects.length > 0 ? subjects.length : 6)}</strong>
+                  <strong>
+                    <AnimatedCounter
+                      value={counts.subjects > 0 ? counts.subjects : (subjects.length > 0 ? subjects.length : 6)}
+                      suffix=""
+                    />
+                  </strong>
                   <span>Medical Specialties</span>
                 </div>
               </div>
@@ -1038,7 +1053,12 @@ export const Home: React.FC<HomeProps> = ({
                   </svg>
                 </div>
                 <div className="stat-text-meta">
-                  <strong>{counts.articles > 0 ? `${counts.articles}+` : (articles.length > 0 ? `${articles.length}+` : '24+')}</strong>
+                  <strong>
+                    <AnimatedCounter
+                      value={counts.articles > 0 ? counts.articles : (articles.length > 0 ? articles.length : 24)}
+                      suffix="+"
+                    />
+                  </strong>
                   <span>Published Guides</span>
                 </div>
               </div>
@@ -1051,7 +1071,13 @@ export const Home: React.FC<HomeProps> = ({
                   </svg>
                 </div>
                 <div className="stat-text-meta">
-                  <strong>{userCount !== null ? `${userCount}+` : '—'}</strong>
+                  <strong>
+                    {userCount !== null ? (
+                      <AnimatedCounter value={userCount} suffix="+" />
+                    ) : (
+                      '—'
+                    )}
+                  </strong>
                   <span>Registered Learners</span>
                 </div>
               </div>
@@ -1093,7 +1119,7 @@ export const Home: React.FC<HomeProps> = ({
       {/* =========================================================================
           8. MULTI-COLUMN FOOTER
           ========================================================================= */}
-      <footer className="pomaii-main-footer">
+      <footer className="pomaii-main-footer reveal-on-scroll">
         <div className="pomaii-section-container">
           <div className="footer-columns-grid">
             {/* Col 1: Brand & Bio */}

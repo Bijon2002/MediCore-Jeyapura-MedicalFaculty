@@ -12,7 +12,7 @@ export const ForEducators: React.FC<ForEducatorsProps> = ({ onApplyReviewer, onN
     <div className="static-page-wrapper">
       <SEOHead
         title="Create Medical Learning Content"
-        description="Author, curate, and peer-review clinical education content on MediCore. A platform for professors, consultants, and senior clinicians to publish high-yield teaching resources."
+        description="Author, curate, and peer-review clinical education content on medcore. A platform for professors, consultants, and senior clinicians to publish high-yield teaching resources."
         canonicalPath="/for-educators"
       />
 

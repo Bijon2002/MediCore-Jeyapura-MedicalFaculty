@@ -12,14 +12,14 @@ export const PolicyPage: React.FC<PolicyPageProps> = ({ type }) => {
       case 'editorial-policy':
         return {
           title: 'Editorial Policy & Content Standards',
-          metaDesc: 'MediCore editorial policy, peer-review standards, source verification rules, and medical content quality guidelines.',
+          metaDesc: 'medcore editorial policy, peer-review standards, source verification rules, and medical content quality guidelines.',
           canonical: '/editorial-policy',
           tag: 'EDITORIAL GOVERNANCE',
-          heading: 'MediCore Editorial & Review Standards',
+          heading: 'medcore Editorial & Review Standards',
           content: (
             <>
               <p>
-                MediCore adheres to a high standard of academic accuracy to ensure our medical learning resources provide reliable educational value for students and healthcare trainees.
+                medcore adheres to a high standard of academic accuracy to ensure our medical learning resources provide reliable educational value for students and healthcare trainees.
               </p>
               <h3>1. Creator Attribution</h3>
               <p>
@@ -44,7 +44,7 @@ export const PolicyPage: React.FC<PolicyPageProps> = ({ type }) => {
       case 'content-guidelines':
         return {
           title: 'Content Creation Guidelines',
-          metaDesc: 'Guidelines and formatting criteria for authors and educators drafting medical articles and quizzes on MediCore.',
+          metaDesc: 'Guidelines and formatting criteria for authors and educators drafting medical articles and quizzes on medcore.',
           canonical: '/content-guidelines',
           tag: 'CONTRIBUTOR GUIDELINES',
           heading: 'Clinical Content Authoring Guidelines',
@@ -72,18 +72,18 @@ export const PolicyPage: React.FC<PolicyPageProps> = ({ type }) => {
       case 'medical-disclaimer':
         return {
           title: 'Medical Education Disclaimer',
-          metaDesc: 'Educational disclaimer for MediCore. The platform provides educational materials for medical students and clinicians, not patient diagnoses or treatment.',
+          metaDesc: 'Educational disclaimer for medcore. The platform provides educational materials for medical students and clinicians, not patient diagnoses or treatment.',
           canonical: '/medical-disclaimer',
           tag: 'IMPORTANT NOTICE',
           heading: 'Medical & Educational Disclaimer',
           content: (
             <>
               <div className="disclaimer-alert-box">
-                <strong>MediCore is exclusively an academic educational platform.</strong> The contents, quizzes, algorithms, and articles on this website are designed for educational study by medical students, healthcare trainees, and educators.
+                <strong>medcore is exclusively an academic educational platform.</strong> The contents, quizzes, algorithms, and articles on this website are designed for educational study by medical students, healthcare trainees, and educators.
               </div>
               <h3>1. Not Medical Advice</h3>
               <p>
-                The materials provided on MediCore do not constitute medical advice, clinical diagnosis, or treatment recommendations for individuals. Patients and the general public should never use MediCore to diagnose or treat a health problem. Always consult a qualified medical professional for health concerns.
+                The materials provided on medcore do not constitute medical advice, clinical diagnosis, or treatment recommendations for individuals. Patients and the general public should never use medcore to diagnose or treat a health problem. Always consult a qualified medical professional for health concerns.
               </p>
               <h3>2. Clinical Decision-Making</h3>
               <p>
@@ -91,7 +91,7 @@ export const PolicyPage: React.FC<PolicyPageProps> = ({ type }) => {
               </p>
               <h3>3. Institutional Independence</h3>
               <p>
-                MediCore is a student-created initiative originating from the Faculty of Medical Sciences, University of Sri Jayewardenepura, Sri Lanka. It does not represent an official institutional policy or official endorsement by the university.
+                medcore is a student-created initiative originating from the Faculty of Medical Sciences, University of Sri Jayewardenepura, Sri Lanka. It does not represent an official institutional policy or official endorsement by the university.
               </p>
             </>
           ),
@@ -100,14 +100,14 @@ export const PolicyPage: React.FC<PolicyPageProps> = ({ type }) => {
       case 'privacy-policy':
         return {
           title: 'Privacy Policy',
-          metaDesc: 'MediCore privacy policy explaining how user profile data, assessment results, and account information are safely handled.',
+          metaDesc: 'medcore privacy policy explaining how user profile data, assessment results, and account information are safely handled.',
           canonical: '/privacy-policy',
           tag: 'DATA PROTECTION',
           heading: 'Privacy Policy',
           content: (
             <>
               <p>
-                At MediCore, we take user privacy and account security seriously. This policy explains what information we collect and how it is used.
+                At medcore, we take user privacy and account security seriously. This policy explains what information we collect and how it is used.
               </p>
               <h3>1. Information We Collect</h3>
               <p>
@@ -119,7 +119,7 @@ export const PolicyPage: React.FC<PolicyPageProps> = ({ type }) => {
               </p>
               <h3>3. No Third-Party Data Selling</h3>
               <p>
-                MediCore does not sell, trade, or monetize personal user data or assessment histories to third parties or advertisers.
+                medcore does not sell, trade, or monetize personal user data or assessment histories to third parties or advertisers.
               </p>
             </>
           ),
@@ -129,22 +129,22 @@ export const PolicyPage: React.FC<PolicyPageProps> = ({ type }) => {
       default:
         return {
           title: 'Terms of Use',
-          metaDesc: 'Terms of service and usage conditions for the MediCore open-access medical learning platform.',
+          metaDesc: 'Terms of service and usage conditions for the medcore open-access medical learning platform.',
           canonical: '/terms',
           tag: 'LEGAL TERMS',
           heading: 'Terms of Use',
           content: (
             <>
               <p>
-                By accessing or using MediCore (medcore.lk), you agree to be bound by these Terms of Use and our Medical Disclaimer.
+                By accessing or using medcore (medcore.lk), you agree to be bound by these Terms of Use and our Medical Disclaimer.
               </p>
               <h3>1. Educational Use Only</h3>
               <p>
-                You agree to use MediCore solely for educational, academic, and professional training purposes. You agree not to misuse or misrepresent content as patient-specific clinical advice.
+                You agree to use medcore solely for educational, academic, and professional training purposes. You agree not to misuse or misrepresent content as patient-specific clinical advice.
               </p>
               <h3>2. User-Generated Content</h3>
               <p>
-                Authors grant MediCore an open-access license to distribute submitted educational articles and question banks to medical learners worldwide while retaining moral authorship rights.
+                Authors grant medcore an open-access license to distribute submitted educational articles and question banks to medical learners worldwide while retaining moral authorship rights.
               </p>
               <h3>3. Prohibited Conduct</h3>
               <p>

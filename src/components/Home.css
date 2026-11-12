@@ -1506,11 +1506,12 @@
   gap: 12px;
   cursor: pointer;
   margin-bottom: 16px;
+  user-select: none;
 }
 
 .footer-brand-icon {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 10px;
   background: #ffffff;
   border: 1px solid #e2e8f0;
@@ -1519,7 +1520,15 @@
   justify-content: center;
   overflow: hidden;
   padding: 2px;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+  flex-shrink: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.footer-logo-row:hover .footer-brand-icon {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+  border-color: #0284c7;
 }
 
 .footer-brand-logo-img {
@@ -1530,16 +1539,19 @@
 }
 
 .footer-brand-title {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 800;
   color: #0f172a;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   margin: 0;
+  line-height: 1.1;
+  font-family: var(--sans);
 }
 
 .footer-brand-tagline {
   font-size: 11px;
   color: #64748b;
+  display: block;
 }
 
 .footer-brand-bio {

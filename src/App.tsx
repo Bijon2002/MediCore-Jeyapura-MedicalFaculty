@@ -614,7 +614,7 @@ function App() {
                   <button type="button" onClick={handleSwitchToWorkspace}>Clinical Workspace</button>
                 </div>
                 <p className="footer-origin" style={{ fontSize: '12px', color: '#94a3b8', margin: '4px 0 0' }}>
-                  MediCore is a medical education project created by students of the Faculty of Medical Sciences, University of Sri Jayewardenepura, Sri Lanka.
+                  medcore is a medical education project created by students of the Faculty of Medical Sciences, University of Sri Jayewardenepura, Sri Lanka.
                 </p>
                 <p className="footer-copy">
                   &copy; {new Date().getFullYear()} MedCore Medical Platform. All rights reserved.

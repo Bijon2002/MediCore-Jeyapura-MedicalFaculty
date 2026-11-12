@@ -628,8 +628,8 @@ function App() {
         </main>
       </div>
 
-      {/* FLOATING AI ASSISTANT ON LEFT SIDE */}
-      <FloatingAiChat />
+      {/* FLOATING AI ASSISTANT — only on public pages, not in workspace/dashboard */}
+      {!hasSidebar && <FloatingAiChat />}
     </div>
   );
 }

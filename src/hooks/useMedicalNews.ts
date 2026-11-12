@@ -107,3 +107,4 @@ export function useMedicalNews() {
 
   return { news, loading };
 }
+

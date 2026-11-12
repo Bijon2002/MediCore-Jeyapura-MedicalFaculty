@@ -6,7 +6,7 @@ export const FloatingAiChat: React.FC = () => {
 
   return (
     <div className="medcore-floating-ai-wrapper">
-      {/* FLOATING BOT BUTTON (LEFT SIDE) */}
+      {/* FLOATING BOT BUTTON */}
       <button
         type="button"
         className={`floating-ai-bot-btn ${isOpen ? 'active' : ''}`}
@@ -36,7 +36,7 @@ export const FloatingAiChat: React.FC = () => {
         <span className="bot-label-tooltip">AI Copilot</span>
       </button>
 
-      {/* FLOATING CHAT WINDOW (POPS UP FROM RIGHT SIDE) */}
+      {/* FLOATING CHAT WINDOW */}
       {isOpen && (
         <div className="floating-ai-chat-card" role="dialog" aria-label="MedCore AI Assistant Dialog">
           {/* HEADER */}
@@ -85,6 +85,7 @@ export const FloatingAiChat: React.FC = () => {
             gap: '16px',
             background: 'linear-gradient(180deg, #ffffff 0%, #f0fdfa 100%)'
           }}>
+            {/* SVG AI icon instead of emoji */}
             <div style={{
               width: '72px',
               height: '72px',
@@ -93,11 +94,18 @@ export const FloatingAiChat: React.FC = () => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '34px',
               border: '1px solid rgba(0, 150, 155, 0.25)',
               boxShadow: '0 8px 20px -4px rgba(0, 150, 155, 0.2)'
             }}>
-              🤖
+              <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#00969b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" />
+                <rect x="4" y="8" width="16" height="12" rx="4" />
+                <circle cx="9" cy="13" r="1.2" fill="#00969b" stroke="none" />
+                <circle cx="15" cy="13" r="1.2" fill="#00969b" stroke="none" />
+                <path d="M9 17h6" strokeWidth="2" />
+                <line x1="2" y1="14" x2="4" y2="14" strokeWidth="2" />
+                <line x1="20" y1="14" x2="22" y2="14" strokeWidth="2" />
+              </svg>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -130,6 +138,7 @@ export const FloatingAiChat: React.FC = () => {
               We are actively developing our board-certified clinical assistant. Soon you will be able to query diagnosis pathways, ECG pearls, and pharmacology correlations in real-time.
             </p>
 
+            {/* SVG wrench/settings icon instead of emoji */}
             <div style={{
               display: 'flex',
               alignItems: 'center',
@@ -142,8 +151,10 @@ export const FloatingAiChat: React.FC = () => {
               fontWeight: 600,
               color: '#00969b'
             }}>
-              <span>🛠️</span>
-              <span>Architecture & Fine-Tuning in Progress</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00969b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+              </svg>
+              <span>Architecture &amp; Fine-Tuning in Progress</span>
             </div>
 
             <button
@@ -171,4 +182,3 @@ export const FloatingAiChat: React.FC = () => {
     </div>
   );
 };
-

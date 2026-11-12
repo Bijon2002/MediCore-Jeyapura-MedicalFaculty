@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+﻿import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { ArticlesApiClient } from '../client/api/articles.api';
 import { SubjectsApiClient } from '../client/api/subjects.api';
 import { TopicsApiClient } from '../client/api/topics.api';
@@ -1021,7 +1021,7 @@ export const Home: React.FC<HomeProps> = ({
             <div className="hiw-step-card">
               <div className="hiw-step-top">
                 <span className="hiw-step-number">STEP 01</span>
-                <div className="hiw-step-icon">🔬</div>
+                <div className="hiw-step-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2v6"/><path d="M18 2v6"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M9 12h6"/><path d="M9 16h6"/></svg></div>
               </div>
               <h3 className="hiw-step-heading">Discover &amp; Explore</h3>
               <p className="hiw-step-text">
@@ -1039,7 +1039,7 @@ export const Home: React.FC<HomeProps> = ({
             <div className="hiw-step-card">
               <div className="hiw-step-top">
                 <span className="hiw-step-number">STEP 02</span>
-                <div className="hiw-step-icon">🧠</div>
+                <div className="hiw-step-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96-.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-1.16z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96-.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-1.16z"/></svg></div>
               </div>
               <h3 className="hiw-step-heading">Synthesize &amp; Learn</h3>
               <p className="hiw-step-text">
@@ -1057,7 +1057,7 @@ export const Home: React.FC<HomeProps> = ({
             <div className="hiw-step-card">
               <div className="hiw-step-top">
                 <span className="hiw-step-number">STEP 03</span>
-                <div className="hiw-step-icon">⚡</div>
+                <div className="hiw-step-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
               </div>
               <h3 className="hiw-step-heading">Practice &amp; Master</h3>
               <p className="hiw-step-text">
@@ -1292,3 +1292,4 @@ export const Home: React.FC<HomeProps> = ({
     </div>
   );
 };
+

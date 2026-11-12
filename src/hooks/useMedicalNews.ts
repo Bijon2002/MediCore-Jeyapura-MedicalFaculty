@@ -9,6 +9,7 @@ export interface MedicalNewsItem {
   description?: string;
   publishedAt?: string;
   region?: 'worldwide' | 'sri-lanka';
+  imageUrl?: string;
 }
 
 const FALLBACK_NEWS: MedicalNewsItem[] = [
@@ -97,16 +98,18 @@ export function useMedicalNews() {
         const res = await fetch(url);
         if (res.ok) {
           const data = await res.json();
-          if (data.articles && data.articles.length > 0) {
-            const liveItems: MedicalNewsItem[] = data.articles.map(
-              (a: { title: string; source: { name: string }; url?: string; description?: string; publishedAt?: string }, idx: number) => ({
+          const articles = data.articles || data.results;
+          if (articles && articles.length > 0) {
+            const liveItems: MedicalNewsItem[] = articles.map(
+              (a: { title: string; source?: { name?: string }; source_id?: string; url?: string; link?: string; description?: string; publishedAt?: string; pubDate?: string; image?: string; image_url?: string }, idx: number) => ({
                 id: `${region}-${dateKey}-${idx}`,
                 headline: a.title.replace(/\s*-\s*[^-]*$/, ''),
-                source: a.source?.name || 'Medical News',
-                time: a.publishedAt ? new Date(a.publishedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Today',
-                publishedAt: a.publishedAt,
+                source: a.source?.name || a.source_id || 'Medical News',
+                time: (a.publishedAt || a.pubDate) ? new Date(a.publishedAt || a.pubDate || '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Today',
+                publishedAt: a.publishedAt || a.pubDate,
                 description: a.description,
-                url: a.url,
+                url: a.url || a.link,
+                imageUrl: a.image || a.image_url,
                 region,
               }),
             );
@@ -123,16 +126,23 @@ export function useMedicalNews() {
     const fetchNews = async () => {
       setLoading(true);
       try {
+        const newsDataApiKey = (import.meta as any).env?.VITE_NEWSDATA_API_KEY;
         const apiKey = (import.meta as any).env?.VITE_GNEWS_API_KEY;
-        if (apiKey) {
+        if (newsDataApiKey || apiKey) {
+          const worldwideUrl = newsDataApiKey
+            ? `https://newsdata.io/api/1/news?apikey=${newsDataApiKey}&category=health&language=en&country=us,gb,au,in`
+            : `https://gnews.io/api/v4/top-headlines?topic=health&lang=en&max=8&apikey=${apiKey}`;
+          const sriLankaUrl = newsDataApiKey
+            ? `https://newsdata.io/api/1/news?apikey=${newsDataApiKey}&category=health&language=en&country=lk`
+            : `https://gnews.io/api/v4/top-headlines?topic=health&country=lk&lang=en&max=8&apikey=${apiKey}`;
           const [worldwide, sriLanka] = await Promise.all([
             fetchFeed(
-              `https://gnews.io/api/v4/top-headlines?topic=health&lang=en&max=8&apikey=${apiKey}`,
+              worldwideUrl,
               'worldwide',
               FALLBACK_NEWS,
             ),
             fetchFeed(
-              `https://gnews.io/api/v4/top-headlines?topic=health&country=lk&lang=en&max=8&apikey=${apiKey}`,
+              sriLankaUrl,
               'sri-lanka',
               FALLBACK_NEWS.filter((item) => /WHO|clinical|medical|sepsis/i.test(item.headline)).slice(0, 4),
             ),

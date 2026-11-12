@@ -68,6 +68,7 @@ export const Home: React.FC<HomeProps> = ({
   const carouselTrackRef = useRef<HTMLDivElement>(null);
   const [carouselIndex, setCarouselIndex] = useState<number>(0);
   const [isCarouselHovered, setIsCarouselHovered] = useState<boolean>(false);
+  const [dailyNewsIndex, setDailyNewsIndex] = useState<number>(0);
 
   // Newsletter state
   const [newsletterEmail, setNewsletterEmail] = useState<string>('');
@@ -188,6 +189,18 @@ export const Home: React.FC<HomeProps> = ({
     return () => clearInterval(interval);
   }, [isCarouselHovered, topViewedArticles.length]);
 
+  useEffect(() => {
+    setDailyNewsIndex(0);
+  }, [medicalNews.length]);
+
+  useEffect(() => {
+    if (medicalNews.length < 2) return;
+    const interval = setInterval(() => {
+      setDailyNewsIndex((current) => (current + 1) % Math.min(medicalNews.length, 3));
+    }, 5600);
+    return () => clearInterval(interval);
+  }, [medicalNews.length]);
+
   // Fallback card images when article has no featured image
   const fallbackCardImages = [
     '/images/cardio-heart.jpg',
@@ -201,6 +214,8 @@ export const Home: React.FC<HomeProps> = ({
     const wordCount = (article.content || '').split(/\s+/).filter(Boolean).length;
     return `${Math.max(2, Math.ceil(wordCount / 200))} min read`;
   };
+
+  const dailyNewsItem = medicalNews[dailyNewsIndex] || medicalNews[0];
 
   // Hero slides data with medical images and distinct layouts
   const defaultHeroSlides = [
@@ -984,8 +999,20 @@ export const Home: React.FC<HomeProps> = ({
               </svg>
             </button>
           </div>
-          {medicalNews[0] && (
-            <article className="daily-news-feature-card">
+          {dailyNewsItem && (
+            <article className="daily-news-feature-card" key={dailyNewsItem.id}>
+              <div className="daily-news-feature-media">
+                <img
+                  src={dailyNewsItem.imageUrl || '/images/cardio-heart.jpg'}
+                  alt=""
+                  loading="lazy"
+                  onError={(event) => {
+                    event.currentTarget.src = '/images/cardio-heart.jpg';
+                  }}
+                />
+                <div className="daily-news-feature-media-overlay" />
+                <span className="daily-news-feature-label">Featured update</span>
+              </div>
               <div className="daily-news-feature-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                   <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
@@ -995,16 +1022,51 @@ export const Home: React.FC<HomeProps> = ({
               </div>
               <div className="daily-news-feature-content">
                 <div className="daily-news-meta">
-                  <span>{medicalNews[0].source}</span>
-                  <time>{medicalNews[0].time || 'Today'}</time>
+                  <span>{dailyNewsItem.source}</span>
+                  <time>{dailyNewsItem.time || 'Today'}</time>
                 </div>
-                <h3>{medicalNews[0].headline}</h3>
-                <p>{medicalNews[0].description || 'Stay informed with a concise daily view of the medical developments shaping clinical practice and health policy.'}</p>
+                <h3>{dailyNewsItem.headline}</h3>
+                <p>{dailyNewsItem.description || 'Stay informed with a concise daily view of the medical developments shaping clinical practice and health policy.'}</p>
               </div>
               <button type="button" className="daily-news-read-btn" onClick={onNavigateToInfoHub}>
                 Open Information Hub
                 <span aria-hidden="true">→</span>
               </button>
+              {medicalNews.length > 1 && (
+                <div className="daily-news-carousel-controls" aria-label="Medical news carousel controls">
+                  <button
+                    type="button"
+                    className="daily-news-carousel-arrow"
+                    onClick={() => setDailyNewsIndex((current) => (current - 1 + Math.min(medicalNews.length, 3)) % Math.min(medicalNews.length, 3))}
+                    aria-label="Previous medical news story"
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <polyline points="15 18 9 12 15 6" />
+                    </svg>
+                  </button>
+                  <div className="daily-news-carousel-dots">
+                    {medicalNews.slice(0, 3).map((item, index) => (
+                      <button
+                        key={item.id}
+                        type="button"
+                        className={`daily-news-carousel-dot ${index === dailyNewsIndex ? 'active' : ''}`}
+                        onClick={() => setDailyNewsIndex(index)}
+                        aria-label={`Show medical news story ${index + 1}`}
+                      />
+                    ))}
+                  </div>
+                  <button
+                    type="button"
+                    className="daily-news-carousel-arrow"
+                    onClick={() => setDailyNewsIndex((current) => (current + 1) % Math.min(medicalNews.length, 3))}
+                    aria-label="Next medical news story"
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                  </button>
+                </div>
+              )}
             </article>
           )}
         </div>

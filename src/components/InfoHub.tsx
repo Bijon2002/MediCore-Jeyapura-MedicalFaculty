@@ -10,6 +10,16 @@ export interface InfoHubProps {
 const NewsCard: React.FC<{ item: MedicalNewsItem }> = ({ item }) => {
   const content = (
     <>
+      <div className="info-news-card-media">
+        <img
+          src={item.imageUrl || '/images/medical-hero-3.jpg'}
+          alt=""
+          loading="lazy"
+          onError={(event) => {
+            event.currentTarget.src = '/images/medical-hero-3.jpg';
+          }}
+        />
+      </div>
       <div className="info-news-card-meta">
         <span>{item.source}</span>
         <time>{item.time || 'Today'}</time>

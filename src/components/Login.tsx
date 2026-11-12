@@ -54,6 +54,17 @@ export const Login: React.FC<LoginProps> = ({
 
   return (
     <div className="medcore-login-page-wrapper">
+      <video
+        className="auth-background-video"
+        autoPlay
+        muted
+        loop
+        playsInline
+        poster="/images/medical-hero-2.jpg"
+        aria-hidden="true"
+      >
+        <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" type="video/mp4" />
+      </video>
       <div className="medcore-login-split-card">
         {/* LEFT PANEL: MEDICAL VISUAL SHOWCASE */}
         <div

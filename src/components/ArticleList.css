@@ -484,12 +484,36 @@
   overflow: hidden;
 }
 
+.featured-banner-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+}
+
+.featured-banner-visual.has-featured-image::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(2, 40, 91, 0.3), rgba(13, 46, 33, 0.78));
+  z-index: 1;
+}
+
 .featured-banner-visual::after {
   content: '';
   position: absolute;
   inset: 0;
   background: radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
   pointer-events: none;
+  z-index: 2;
+}
+
+.featured-banner-visual > *:not(.featured-banner-image) {
+  position: relative;
+  z-index: 3;
 }
 
 .featured-badge-tag {
@@ -761,6 +785,29 @@
   box-shadow: 0 16px 32px -4px rgba(15, 23, 42, 0.1), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
   border-color: rgba(249, 115, 22, 0.35);
   outline: none;
+}
+
+/* Keep uploaded and generated visuals aligned across every grid row. */
+.card-image-container {
+  height: 180px;
+  position: relative;
+  overflow: hidden;
+  background: #e0f2fe;
+  flex-shrink: 0;
+}
+
+.card-featured-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.card-image-container .card-read-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
 }
 
 /* Visual Banners on Cards */

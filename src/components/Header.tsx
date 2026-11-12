@@ -16,6 +16,7 @@ export interface HeaderProps {
   onNavigateToQuizAttempts?: () => void;
   onNavigateToAbout?: () => void;
   onNavigateToContact?: () => void;
+  onNavigateToInfoHub?: () => void;
   onSwitchToWorkspace?: () => void;
   isWorkspaceView?: boolean;
   activeRouteType?: string;
@@ -35,6 +36,7 @@ export const Header: React.FC<HeaderProps> = ({
   onNavigateToQuizAttempts,
   onNavigateToAbout,
   onNavigateToContact,
+  onNavigateToInfoHub,
   onSwitchToWorkspace,
   isWorkspaceView = false,
   activeRouteType = 'home',
@@ -275,6 +277,14 @@ export const Header: React.FC<HeaderProps> = ({
 
             <button
               type="button"
+              className={`nav-tab-btn ${activeRouteType === 'info-hub' ? 'active' : ''}`}
+              onClick={() => handleNavClick(onNavigateToInfoHub)}
+            >
+              Info Hub
+            </button>
+
+            <button
+              type="button"
               className={`nav-tab-btn ${activeRouteType === 'about' ? 'active' : ''}`}
               onClick={() => handleNavClick(onNavigateToAbout)}
             >
@@ -288,6 +298,7 @@ export const Header: React.FC<HeaderProps> = ({
             >
               Contact
             </button>
+
           </nav>
         )}
 
@@ -529,6 +540,13 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => handleNavClick(onNavigateToQuizzes)}
           >
             Quizzes
+          </button>
+          <button
+            type="button"
+            className={`mobile-nav-item ${activeRouteType === 'info-hub' ? 'active' : ''}`}
+            onClick={() => handleNavClick(onNavigateToInfoHub)}
+          >
+            Info Hub
           </button>
           <button
             type="button"

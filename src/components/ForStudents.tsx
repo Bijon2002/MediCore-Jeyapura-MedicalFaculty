@@ -44,7 +44,7 @@ export const ForStudents: React.FC<ForStudentsProps> = ({
 
       <div className="static-feature-grid">
         <div className="static-card">
-          <div className="static-card-icon">🧠</div>
+          <div className="static-card-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4a3 3 0 0 0-3 3 3 3 0 0 0-2 5 3 3 0 0 0 3 5h2V4Z" /><path d="M15 4a3 3 0 0 1 3 3 3 3 0 0 1 2 5 3 3 0 0 1-3 5h-2V4Z" /><path d="M12 4v16" /></svg></div>
           <h3>Active Recall &amp; Board MCQs</h3>
           <p>
             Reinforce clinical retention with peer-reviewed multiple choice questions modeled after USMLE Step 1/2 and regional clinical licensing exams.
@@ -52,7 +52,7 @@ export const ForStudents: React.FC<ForStudentsProps> = ({
         </div>
 
         <div className="static-card">
-          <div className="static-card-icon">🫀</div>
+          <div className="static-card-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20S4 15 4 9a4 4 0 0 1 7-2 4 4 0 0 1 7 2c0 6-6 10-6 10Z" /><path d="M4 12h4l2-3 2 5 2-3h6" /></svg></div>
           <h3>High-Yield Specialty Guides</h3>
           <p>
             Dive into cardiovascular medicine, surgical anatomy, neurology, and pediatrics with verified diagnostic algorithms and physiological mechanisms.
@@ -60,7 +60,7 @@ export const ForStudents: React.FC<ForStudentsProps> = ({
         </div>
 
         <div className="static-card">
-          <div className="static-card-icon">📝</div>
+          <div className="static-card-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4zM8 8h8M8 12h8M8 16h5" /></svg></div>
           <h3>Contribute &amp; Author Knowledge</h3>
           <p>
             Solidify your understanding by drafting clinical guides and submitting them for faculty peer-review to build your verified academic portfolio.

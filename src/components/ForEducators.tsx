@@ -34,7 +34,7 @@ export const ForEducators: React.FC<ForEducatorsProps> = ({ onApplyReviewer, onN
 
       <div className="static-feature-grid">
         <div className="static-card">
-          <div className="static-card-icon">🩺</div>
+          <div className="static-card-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3v6a4 4 0 0 0 8 0V3M5 3h6M13 3h6M12 13v4a4 4 0 0 0 4 4h3" /><path d="M8 6h3M13 6h3" /></svg></div>
           <h3>Peer-Review Governance</h3>
           <p>
             Ensure medical accuracy and educational rigor by reviewing student submissions and validating evidence-based references before publication.
@@ -42,7 +42,7 @@ export const ForEducators: React.FC<ForEducatorsProps> = ({ onApplyReviewer, onN
         </div>
 
         <div className="static-card">
-          <div className="static-card-icon">📚</div>
+          <div className="static-card-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v17H6a2 2 0 0 0-2 2V5Z" /><path d="M4 20a2 2 0 0 1 2-2h13M8 7h7M8 11h7" /></svg></div>
           <h3>Structured Clinical Tooling</h3>
           <p>
             Create diagnostic algorithms, case vignettes, and multi-step practice questions using rich clinical formatting tools and DOCX import capabilities.
@@ -50,7 +50,7 @@ export const ForEducators: React.FC<ForEducatorsProps> = ({ onApplyReviewer, onN
         </div>
 
         <div className="static-card">
-          <div className="static-card-icon">🌍</div>
+          <div className="static-card-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" /></svg></div>
           <h3>Open-Access Educational Impact</h3>
           <p>
             Democratize healthcare education by making high-quality clinical teaching materials freely accessible to under-resourced medical faculties worldwide.

@@ -11,6 +11,16 @@ export class SubjectsApiClient {
   private static cache = new Map<string, { data: SubjectListResponse; timestamp: number }>();
   private static CACHE_TTL = 45000; // 45 seconds
 
+  private static normalizeSubject(raw: Record<string, unknown>): Subject {
+    return {
+      ...(raw as unknown as Subject),
+      iconUrl: (raw.iconUrl ?? raw.icon_url) as string | null | undefined,
+      orderIndex: Number(raw.orderIndex ?? raw.order_index ?? 0),
+      createdAt: (raw.createdAt ?? raw.created_at) as string | Date,
+      updatedAt: (raw.updatedAt ?? raw.updated_at) as string | Date,
+    };
+  }
+
   /**
    * Retrieves a paginated list of subjects sorted by orderIndex.
    */
@@ -49,7 +59,7 @@ export class SubjectsApiClient {
     const totalPages = Math.ceil(total / limit);
 
     const result: SubjectListResponse = {
-      data: (data as unknown as Subject[]) || [],
+      data: (data || []).map((subject) => this.normalizeSubject(subject as Record<string, unknown>)),
       meta: {
         total,
         page,
@@ -84,7 +94,7 @@ export class SubjectsApiClient {
     }
 
     this.clearCache();
-    return data as unknown as Subject;
+    return this.normalizeSubject(data as Record<string, unknown>);
   }
 
   /**
@@ -105,7 +115,7 @@ export class SubjectsApiClient {
     }
 
     this.clearCache();
-    return data as unknown as Subject;
+    return this.normalizeSubject(data as Record<string, unknown>);
   }
 
   /**
@@ -131,7 +141,8 @@ export class SubjectsApiClient {
       throw new Error(error?.message || 'Failed to create subject');
     }
 
-    return inserted as unknown as Subject;
+    this.clearCache();
+    return this.normalizeSubject(inserted as Record<string, unknown>);
   }
 
   /**
@@ -163,7 +174,8 @@ export class SubjectsApiClient {
       throw new Error(error?.message || 'Failed to update subject');
     }
 
-    return updated as unknown as Subject;
+    this.clearCache();
+    return this.normalizeSubject(updated as Record<string, unknown>);
   }
 
   /**

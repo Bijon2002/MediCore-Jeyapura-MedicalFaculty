@@ -9,6 +9,7 @@
   font-family: var(--sans);
   max-width: 100%;
   box-sizing: border-box;
+  overflow: visible;
 }
 
 .medcore-shell-body {
@@ -22,6 +23,7 @@
 .medcore-shell-body.public-layout {
   display: block;
   width: 100%;
+  overflow: visible;
 }
 
 .medcore-main {
@@ -30,10 +32,23 @@
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
+  overflow: visible;
 }
 
 .medcore-main.public-content {
   width: 100%;
+}
+
+.medcore-main.workspace-content {
+  margin-left: 260px;
+  width: calc(100% - 260px);
+}
+
+@media (max-width: 1024px) {
+  .medcore-main.workspace-content {
+    margin-left: 0;
+    width: 100%;
+  }
 }
 
 /* Secondary Footer for inner pages */

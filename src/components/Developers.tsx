@@ -113,7 +113,7 @@ export const Developers: React.FC<DevelopersProps> = ({ onSelectDeveloper }) => 
       </div>
 
       <div className="institutional-origin-strip">
-        <div className="origin-icon">🎓</div>
+        <div className="origin-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m3 9 9-5 9 5-9 5-9-5Z" /><path d="M7 11v5c3 2 7 2 10 0v-5M21 9v6" /></svg></div>
         <div className="origin-text">
           <h3>Academic &amp; Institutional Origin</h3>
           <p>

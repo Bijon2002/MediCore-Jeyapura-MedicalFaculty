@@ -98,6 +98,67 @@ export const About: React.FC<AboutProps> = ({
       </section>
 
       {/* =========================================================================
+          FOUNDER & DEVELOPMENT TEAM
+          ========================================================================= */}
+      <section className="about-section people-section reveal-on-scroll">
+        <div className="about-container">
+          <div className="about-section-header">
+            <span className="about-section-tag">People Behind MedCore</span>
+            <h2>Founder &amp; Development Team</h2>
+            <p>Meet the people building an open, practical, and academically rigorous medical learning platform.</p>
+          </div>
+
+          <div className="founder-profile-card">
+            <div className="founder-profile-mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 21a8 8 0 0 1 16 0M8 3.5 12 2l4 1.5" />
+              </svg>
+            </div>
+            <div>
+              <span className="people-card-label">Founder – MedCore</span>
+              <h3>Thuvarakan Srikaran</h3>
+              <p className="people-card-role">Founder | Medical Student</p>
+              <p>
+                Thuvarakan S. is the founder of MedCore, an emerging medical education platform established with the vision of making high-quality medical knowledge accessible to students, healthcare professionals, and educators.
+              </p>
+              <p>
+                He is a third-year medical student at the University of Sri Jayewardenepura, Sri Lanka, with a strong passion for medical education, clinical learning, and academic development.
+              </p>
+              <p>
+                Through MedCore, he aims to bridge the gap between theoretical knowledge and practical clinical understanding by creating opportunities for expert-led learning, educational webinars, academic resources, and collaborative knowledge sharing.
+              </p>
+              <p>
+                His vision is to build MedCore into a trusted medical education platform that empowers the next generation of healthcare professionals.
+              </p>
+              <strong className="founder-signature">Building knowledge. Inspiring healthcare. Shaping the future.</strong>
+            </div>
+          </div>
+
+          <div className="people-team-grid">
+            <article className="people-team-card">
+              <img src="/Developers/bijon.png" alt="Bijosilin" />
+              <div>
+                <span className="people-card-label">Co-Creator &amp; Lead Engineer</span>
+                <h3>Bijosilin</h3>
+                <p className="people-card-role">Full-Stack &amp; Product Architecture</p>
+                <p>Leads React, TypeScript, Supabase architecture, scalable database design, and clinical knowledge delivery systems.</p>
+              </div>
+            </article>
+            <article className="people-team-card">
+              <img src="/Developers/mathu.jpeg" alt="Mathusan" />
+              <div>
+                <span className="people-card-label">Co-Creator &amp; Software Developer</span>
+                <h3>Mathusan</h3>
+                <p className="people-card-role">Backend Systems &amp; Education Tools</p>
+                <p>Focuses on backend engineering, assessment logic, clinical workflow automation, and educational user experience.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
           FOUR PILLARS OF CLINICAL RIGOR
           ========================================================================= */}
       <section className="about-section pillars-section reveal-on-scroll">

@@ -139,6 +139,7 @@ export class TopicsApiClient {
       throw new Error(error?.message || 'Failed to create topic');
     }
 
+    this.clearCache();
     return inserted as unknown as Topic;
   }
 
@@ -172,6 +173,7 @@ export class TopicsApiClient {
       throw new Error(error?.message || 'Failed to update topic');
     }
 
+    this.clearCache();
     return updated as unknown as Topic;
   }
 

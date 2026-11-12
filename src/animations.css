@@ -2,6 +2,10 @@
    MEDCORE WEBSITE-WIDE SCROLL ANIMATIONS & SMOOTH TRANSITIONS
    ========================================================================= */
 
+html {
+  scroll-behavior: smooth;
+}
+
 /* Reveal base states */
 .reveal-on-scroll {
   opacity: 0;
@@ -114,6 +118,10 @@ a, button, input, select, textarea {
 
 /* Respect user's reduced motion settings */
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   .reveal-on-scroll,
   .reveal-stagger > *,
   .hero-fade-in,
@@ -124,6 +132,10 @@ a, button, input, select, textarea {
     transform: none !important;
     animation: none !important;
     transition: none !important;
+  }
+
+  .auth-background-video {
+    display: none;
   }
 }
 

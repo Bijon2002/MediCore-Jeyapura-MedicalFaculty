@@ -5,6 +5,7 @@ import { QuizzesApiClient } from '../client/api/quizzes.api';
 import type { Quiz } from '../client/types/quiz.types';
 import { ApiClientError } from '../client/api/api-client';
 import { SEOHead } from './seo/SEOHead';
+import { useScrollReveal } from '../hooks/useScrollReveal';
 import './QuizList.css';
 
 export interface QuizListProps {
@@ -25,6 +26,8 @@ export const QuizList: React.FC<QuizListProps> = ({
   const [unauthenticated, setUnauthenticated] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [authNotice, setAuthNotice] = useState<boolean>(false);
+
+  useScrollReveal(loading);
 
   const handleViewAttempts = () => {
     const token = getAccessToken();
@@ -320,7 +323,7 @@ export const QuizList: React.FC<QuizListProps> = ({
                 </p>
               </div>
             ) : (
-              <div className="quiz-grid">
+              <div className="quiz-grid reveal-stagger">
                 {filteredQuizzes.map((quiz) => {
                   const questionCount = quiz.questions?.length ?? 0;
                   return (
@@ -347,7 +350,7 @@ export const QuizList: React.FC<QuizListProps> = ({
                         </div>
 
                         <div className="quiz-title-and-icon">
-                          <div className="quiz-icon-emblem">🩺</div>
+                          <div className="quiz-icon-emblem" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 3v6a4 4 0 0 0 8 0V3M5 3h6M13 3h6M12 13v4a4 4 0 0 0 4 4h3" /><path d="M8 6h3M13 6h3" /></svg></div>
                           <h2 className="quiz-card-title">{quiz.title}</h2>
                         </div>
 

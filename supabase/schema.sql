@@ -96,10 +96,14 @@ CREATE TABLE IF NOT EXISTS public.articles (
     subject_id UUID REFERENCES public.subjects(id) ON DELETE SET NULL,
     topic_id UUID REFERENCES public.topics(id) ON DELETE SET NULL,
     featured_image_url TEXT,
+    is_featured BOOLEAN NOT NULL DEFAULT false,
     published_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+ALTER TABLE public.articles
+    ADD COLUMN IF NOT EXISTS is_featured BOOLEAN NOT NULL DEFAULT false;
 
 CREATE INDEX IF NOT EXISTS idx_articles_author ON public.articles(author_id);
 CREATE INDEX IF NOT EXISTS idx_articles_status ON public.articles(status);

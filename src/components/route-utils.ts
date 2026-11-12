@@ -2,6 +2,7 @@ export type RouteState =
   | { type: 'home' }
   | { type: 'about' }
   | { type: 'contact' }
+  | { type: 'info-hub' }
   | { type: 'features' }
   | { type: 'for-students' }
   | { type: 'for-educators' }
@@ -86,6 +87,11 @@ export function parseRoute(pathname?: string): RouteState {
   // Contact route: /contact
   if (path === '/contact' || path === '/contact/') {
     return { type: 'contact' };
+  }
+
+  // Information Hub route: /info-hub
+  if (path === '/info-hub' || path === '/info-hub/') {
+    return { type: 'info-hub' };
   }
 
   // Login route: /login

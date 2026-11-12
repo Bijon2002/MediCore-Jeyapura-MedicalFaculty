@@ -29,6 +29,7 @@ export interface Article {
   content: string;
   summary?: string | null;
   featuredImageUrl?: string | null;
+  isFeatured?: boolean;
   status: ArticleStatus;
   publishedAt?: string | Date | null;
   createdAt: string | Date;
@@ -46,6 +47,7 @@ export interface CreateArticleInput {
   content: string;
   summary?: string;
   featuredImageUrl?: string;
+  isFeatured?: boolean;
   status?: ArticleStatus;
   slug?: string;
   subjectId?: string;
@@ -57,6 +59,7 @@ export interface UpdateArticleInput {
   content?: string;
   summary?: string;
   featuredImageUrl?: string;
+  isFeatured?: boolean;
   status?: ArticleStatus;
   slug?: string;
   subjectId?: string;

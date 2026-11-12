@@ -4,6 +4,7 @@ import { Sidebar } from './components/Sidebar';
 import { Home } from './components/Home';
 import { About } from './components/About';
 import { Contact } from './components/Contact';
+import { InfoHub } from './components/InfoHub';
 import { Dashboard } from './components/Dashboard';
 import { ReviewerDashboard } from './components/ReviewerDashboard';
 import { ArticleEditor } from './components/ArticleEditor';
@@ -72,6 +73,10 @@ function App() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [route]);
+
   const navigateToHome = () => {
     setRoute({ type: 'home' });
     pushRoute('/');
@@ -85,6 +90,11 @@ function App() {
   const navigateToContact = () => {
     setRoute({ type: 'contact' });
     pushRoute('/contact');
+  };
+
+  const navigateToInfoHub = () => {
+    setRoute({ type: 'info-hub' });
+    pushRoute('/info-hub');
   };
 
   const navigateToLogin = () => {
@@ -401,6 +411,7 @@ function App() {
         onNavigateToQuizAttempts={navigateToQuizAttempts}
         onNavigateToAbout={navigateToAbout}
         onNavigateToContact={navigateToContact}
+        onNavigateToInfoHub={navigateToInfoHub}
         onSwitchToWorkspace={handleSwitchToWorkspace}
         isWorkspaceView={hasSidebar}
         activeRouteType={route.type}
@@ -441,6 +452,7 @@ function App() {
               onNavigateToQuizzes={navigateToQuizzes}
               onNavigateToAbout={navigateToAbout}
               onNavigateToContact={navigateToContact}
+              onNavigateToInfoHub={navigateToInfoHub}
               onSearchSubmit={() => navigateToArticles()}
             />
           ) : route.type === 'about' ? (
@@ -455,6 +467,8 @@ function App() {
               onNavigateHome={navigateToHome}
               onNavigateToArticles={navigateToArticles}
             />
+          ) : route.type === 'info-hub' ? (
+            <InfoHub onNavigateHome={navigateToHome} />
           ) : route.type === 'features' ? (
             <Features
               onNavigateToQuizzes={navigateToQuizzes}

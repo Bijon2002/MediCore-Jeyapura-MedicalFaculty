@@ -20,6 +20,7 @@ export interface HomeProps {
   onNavigateToQuizzes: () => void;
   onNavigateToAbout: () => void;
   onNavigateToContact: () => void;
+  onNavigateToInfoHub: () => void;
   onSearchSubmit?: (searchTerm: string) => void;
 }
 
@@ -34,6 +35,7 @@ export const Home: React.FC<HomeProps> = ({
   onNavigateToQuizzes,
   onNavigateToAbout,
   onNavigateToContact,
+  onNavigateToInfoHub,
   onSearchSubmit,
 }) => {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -754,6 +756,9 @@ export const Home: React.FC<HomeProps> = ({
                   </svg>
                 </span>
               </h2>
+              <p className="pomaii-section-description">
+                Explore focused, practical resources selected to support exam preparation and confident clinical learning.
+              </p>
             </div>
 
             {/* Slideshow Controls & View All */}
@@ -899,6 +904,109 @@ export const Home: React.FC<HomeProps> = ({
               </button>
             )}
           </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          4.5 LEARNING NETWORK (Audience pathways)
+          ========================================================================= */}
+      <section className="learning-network-section reveal-on-scroll">
+        <div className="pomaii-section-container">
+          <div className="learning-network-header">
+            <div>
+              <span className="hiw-label">Built For Clinical Growth</span>
+              <h2 className="hiw-title">One platform for every stage of practice</h2>
+            </div>
+            <p>
+              Move from foundational anatomy to confident clinical decisions with resources designed around the way healthcare professionals learn.
+            </p>
+          </div>
+
+          <div className="learning-network-grid reveal-stagger">
+            <article className="learning-network-card">
+              <div className="learning-network-icon student-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <path d="m3 9 9-5 9 5-9 5-9-5Z" />
+                  <path d="M7 11v5c2.8 2.4 7.2 2.4 10 0v-5M21 10v6" />
+                </svg>
+              </div>
+              <span className="learning-network-kicker">For Students</span>
+              <h3>Build exam-ready foundations</h3>
+              <p>Review structured systems, practise high-yield questions, and connect mechanisms to clinical presentations.</p>
+              <button type="button" onClick={onNavigateToQuizzes}>Explore question banks <span aria-hidden="true">→</span></button>
+            </article>
+
+            <article className="learning-network-card">
+              <div className="learning-network-icon clinician-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <path d="M6 3h12v18H6z" />
+                  <path d="M9 7h6M9 11h6M9 15h3M16 3v4" />
+                </svg>
+              </div>
+              <span className="learning-network-kicker">For Clinicians</span>
+              <h3>Keep decisions evidence-led</h3>
+              <p>Use concise algorithms, case debriefs, and updated reference material when time and clarity matter most.</p>
+              <button type="button" onClick={onNavigateToArticles}>Read clinical guides <span aria-hidden="true">→</span></button>
+            </article>
+
+            <article className="learning-network-card">
+              <div className="learning-network-icon educator-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" />
+                  <path d="M8 6h8M8 10h8" />
+                </svg>
+              </div>
+              <span className="learning-network-kicker">For Educators</span>
+              <h3>Share knowledge that lasts</h3>
+              <p>Contribute practical teaching resources and help shape a trusted, open clinical learning community.</p>
+              <button type="button" onClick={onNavigateToAbout}>Meet the MedCore team <span aria-hidden="true">→</span></button>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
+          4.75 TODAY'S MEDICAL NEWS
+          ========================================================================= */}
+      <section className="daily-news-section reveal-on-scroll">
+        <div className="pomaii-section-container">
+          <div className="daily-news-heading">
+            <div>
+              <span className="hiw-label">Worldwide Information Hub</span>
+              <h2>Today&apos;s Medical News</h2>
+            </div>
+            <button type="button" className="daily-news-more-btn" onClick={onNavigateToInfoHub}>
+              More News
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </button>
+          </div>
+          {medicalNews[0] && (
+            <article className="daily-news-feature-card">
+              <div className="daily-news-feature-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" />
+                  <path d="M8 6h8M8 10h6" />
+                </svg>
+              </div>
+              <div className="daily-news-feature-content">
+                <div className="daily-news-meta">
+                  <span>{medicalNews[0].source}</span>
+                  <time>{medicalNews[0].time || 'Today'}</time>
+                </div>
+                <h3>{medicalNews[0].headline}</h3>
+                <p>{medicalNews[0].description || 'Stay informed with a concise daily view of the medical developments shaping clinical practice and health policy.'}</p>
+              </div>
+              <button type="button" className="daily-news-read-btn" onClick={onNavigateToInfoHub}>
+                Open Information Hub
+                <span aria-hidden="true">→</span>
+              </button>
+            </article>
+          )}
         </div>
       </section>
 

@@ -121,14 +121,14 @@ export const ArticleList: React.FC<ArticleListProps> = ({ onArticleClick, onSele
   // Featured article (first published article when viewing page 1 with no search filter)
   const featuredArticle = useMemo(() => {
     if (page === 1 && !search && selectedSubjectSlug === 'all' && filteredArticles.length > 0) {
-      return filteredArticles[0];
+      return filteredArticles.find((article) => article.isFeatured) || filteredArticles[0];
     }
     return null;
   }, [page, search, selectedSubjectSlug, filteredArticles]);
 
   const gridArticles = useMemo(() => {
     if (featuredArticle) {
-      return filteredArticles.slice(1);
+      return filteredArticles.filter((article) => article.id !== featuredArticle.id);
     }
     return filteredArticles;
   }, [featuredArticle, filteredArticles]);
@@ -394,7 +394,15 @@ export const ArticleList: React.FC<ArticleListProps> = ({ onArticleClick, onSele
                   }
                 }}
               >
-                <div className="featured-banner-visual">
+                <div className={`featured-banner-visual ${featuredArticle.featuredImageUrl ? 'has-featured-image' : ''}`}>
+                  {featuredArticle.featuredImageUrl ? (
+                    <img
+                      src={featuredArticle.featuredImageUrl}
+                      alt=""
+                      className="featured-banner-image"
+                      aria-hidden="true"
+                    />
+                  ) : null}
                   <div className="featured-badge-tag">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="#ea580c">
                       <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />

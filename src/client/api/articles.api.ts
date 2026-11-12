@@ -10,6 +10,43 @@ import type {
 export class ArticlesApiClient {
   private static cache = new Map<string, { data: ArticleListResponse; timestamp: number }>();
   private static CACHE_TTL = 30000; // 30 seconds
+  private static FEATURED_ARTICLE_STORAGE_KEY = 'medcore_featured_article_id';
+
+  private static getStoredFeaturedArticleId(): string | null {
+    if (typeof window === 'undefined') return null;
+    return window.localStorage.getItem(this.FEATURED_ARTICLE_STORAGE_KEY);
+  }
+
+  private static normalizeArticle(raw: Record<string, unknown>): Article {
+    const author = raw.author as Record<string, unknown> | null | undefined;
+    const subject = raw.subject as Record<string, unknown> | null | undefined;
+    const topic = raw.topic as Record<string, unknown> | null | undefined;
+
+    return {
+      ...(raw as unknown as Article),
+      featuredImageUrl: (raw.featuredImageUrl ?? raw.featured_image_url) as string | null | undefined,
+      isFeatured:
+        Boolean(raw.isFeatured ?? raw.is_featured) ||
+        raw.id === this.getStoredFeaturedArticleId(),
+      publishedAt: (raw.publishedAt ?? raw.published_at) as string | Date | null | undefined,
+      createdAt: (raw.createdAt ?? raw.created_at) as string | Date,
+      updatedAt: (raw.updatedAt ?? raw.updated_at) as string | Date,
+      authorId: (raw.authorId ?? raw.author_id) as string,
+      subjectId: (raw.subjectId ?? raw.subject_id) as string | null | undefined,
+      topicId: (raw.topicId ?? raw.topic_id) as string | null | undefined,
+      author: author
+        ? {
+            id: String(author.id || ''),
+            email: String(author.email || ''),
+            firstName: (author.firstName ?? author.first_name) as string,
+            lastName: (author.lastName ?? author.last_name) as string,
+            avatarUrl: (author.avatarUrl ?? author.avatar_url) as string | null | undefined,
+          }
+        : undefined,
+      subject: subject ? (subject as unknown as Article['subject']) : null,
+      topic: topic ? (topic as unknown as Article['topic']) : null,
+    };
+  }
 
   /**
    * Retrieves a paginated list of articles with optional filtering and search from Supabase.
@@ -58,7 +95,7 @@ export class ArticlesApiClient {
     const totalPages = Math.ceil(total / limit);
 
     const result: ArticleListResponse = {
-      data: (data as unknown as Article[]) || [],
+      data: data?.map((article) => this.normalizeArticle(article as unknown as Record<string, unknown>)) || [],
       meta: {
         total,
         page,
@@ -93,7 +130,7 @@ export class ArticlesApiClient {
     }
 
     this.clearCache();
-    return data as unknown as Article;
+    return this.normalizeArticle(data as unknown as Record<string, unknown>);
   }
 
   /**
@@ -114,7 +151,7 @@ export class ArticlesApiClient {
     }
 
     this.clearCache();
-    return data as unknown as Article;
+    return this.normalizeArticle(data as unknown as Record<string, unknown>);
   }
 
   /**
@@ -158,7 +195,8 @@ export class ArticlesApiClient {
       throw new Error(error?.message || 'Failed to create article');
     }
 
-    return inserted as unknown as Article;
+    this.clearCache();
+    return this.normalizeArticle(inserted as unknown as Record<string, unknown>);
   }
 
   /**
@@ -193,7 +231,21 @@ export class ArticlesApiClient {
       throw new Error(error?.message || 'Failed to update article');
     }
 
-    return updated as unknown as Article;
+    this.clearCache();
+    return this.normalizeArticle(updated as unknown as Record<string, unknown>);
+  }
+
+  static async setFeaturedArticle(id: string, isFeatured: boolean): Promise<Article> {
+    if (typeof window !== 'undefined') {
+      if (isFeatured) {
+        window.localStorage.setItem(this.FEATURED_ARTICLE_STORAGE_KEY, id);
+      } else {
+        window.localStorage.removeItem(this.FEATURED_ARTICLE_STORAGE_KEY);
+      }
+    }
+
+    this.clearCache();
+    return this.getArticleById(id);
   }
 
   /**

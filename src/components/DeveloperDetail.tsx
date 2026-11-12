@@ -136,7 +136,7 @@ export const DeveloperDetail: React.FC<DeveloperDetailProps> = ({ slug, onBackTo
       </div>
 
       <div className="institutional-origin-strip" style={{ marginTop: '50px' }}>
-        <div className="origin-icon">🏛️</div>
+        <div className="origin-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 18V9h14v9M3 9l9-6 9 6M8 18v-5M12 18v-5M16 18v-5" /></svg></div>
         <div className="origin-text">
           <h3>Faculty &amp; Academic Heritage</h3>
           <p>

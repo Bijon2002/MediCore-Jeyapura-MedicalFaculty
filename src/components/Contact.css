@@ -31,7 +31,7 @@
   background-size: cover;
   background-position: center 30%;
   z-index: 1;
-  opacity: 0.45;
+  opacity: 0.32;
 }
 
 .contact-hero-scenic-overlay {
@@ -40,7 +40,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.55) 0%, rgba(15, 23, 42, 0.35) 50%, rgba(250, 250, 247, 0.5) 85%, #fafaf7 100%);
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0.88) 0%, rgba(241, 245, 249, 0.9) 48%, rgba(250, 250, 247, 0.96) 84%, #fafaf7 100%);
   z-index: 1;
 }
 
@@ -75,6 +75,21 @@
   gap: 8px;
   font-size: 13px;
   margin-bottom: 18px;
+  color: #334155;
+}
+
+.contact-breadcrumbs .breadcrumb-btn {
+  color: #0f766e;
+  font-weight: 700;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+.contact-breadcrumbs .breadcrumb-active,
+.contact-breadcrumbs .breadcrumb-sep {
+  color: #475569;
 }
 
 .contact-hero-tag {
@@ -95,11 +110,11 @@
   font-size: 42px;
   font-weight: 850;
   line-height: 1.15;
-  color: #ffffff;
+  color: #091e13;
   letter-spacing: -0.035em;
   margin: 0 0 16px;
   max-width: 860px;
-  text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 @media (max-width: 768px) {
@@ -111,10 +126,10 @@
 .contact-hero-subtitle {
   font-size: 17px;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.9);
+  color: #1e293b;
   margin: 0;
   max-width: 740px;
-  text-shadow: 0 1px 6px rgba(0,0,0,0.3);
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.65);
   font-weight: 500;
 }
 

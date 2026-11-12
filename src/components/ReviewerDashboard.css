@@ -9,6 +9,85 @@
   gap: 32px;
 }
 
+.admin-overview {
+  position: relative;
+}
+
+.admin-overview > div:first-child {
+  box-shadow: 0 16px 36px rgba(2, 132, 199, 0.08);
+}
+
+.admin-overview .reviewer-stat-card {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
+}
+
+.admin-overview .reviewer-stat-card::after {
+  content: '';
+  position: absolute;
+  right: -24px;
+  bottom: -34px;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: rgba(2, 132, 199, 0.06);
+}
+
+.admin-overview .reviewer-stat-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(2, 132, 199, 0.32);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.09);
+}
+
+.admin-overview-grid {
+  margin-top: 4px;
+}
+
+.admin-overview-card {
+  transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
+}
+
+.admin-overview-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(13, 148, 136, 0.35) !important;
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+}
+
+.admin-subject-thumbnail {
+  width: 34px;
+  height: 34px;
+  margin-right: 10px;
+  border-radius: 9px;
+  vertical-align: middle;
+  object-fit: cover;
+  border: 1px solid var(--border);
+}
+
+.hero-slide-editor-heading {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.7fr) minmax(280px, 1.3fr);
+  gap: 20px;
+  align-items: start;
+  padding-bottom: 6px;
+}
+
+.hero-slide-editor-heading > div:first-child {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.hero-slide-editor-heading strong {
+  color: var(--text-h);
+  font-size: 17px;
+}
+
+.hero-slide-editor-heading .medcore-image-uploader {
+  margin: 0;
+}
+
 .reviewer-header {
   display: flex;
   align-items: center;
@@ -21,6 +100,46 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.reviewer-section-title {
+  margin: 0;
+  color: var(--text-h);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.admin-inline-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  align-items: center;
+}
+
+.admin-inline-form input,
+.admin-inline-form select {
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+}
+
+.admin-inline-form input:focus,
+.admin-inline-form select:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.admin-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .reviewer-badge {
@@ -268,6 +387,25 @@
 .btn-action-edit:hover {
   border-color: var(--accent);
   color: var(--accent);
+}
+
+.btn-feature-article {
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(249, 115, 22, 0.35);
+  background: #fff7ed;
+  color: #c2410c;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-feature-article:hover,
+.btn-feature-article.active {
+  background: #f97316;
+  border-color: #f97316;
+  color: #ffffff;
 }
 
 .btn-action-delete {

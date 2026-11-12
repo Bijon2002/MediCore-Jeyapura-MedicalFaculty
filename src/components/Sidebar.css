@@ -24,6 +24,7 @@
   flex-shrink: 0;
   z-index: 80;
   transition: transform 0.3s ease, width 0.3s ease;
+  overflow: hidden;
   user-select: none;
 }
 
@@ -31,6 +32,8 @@
   padding: 20px 14px;
   flex: 1;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
   display: flex;
   flex-direction: column;
   gap: 24px;

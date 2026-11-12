@@ -9,6 +9,7 @@ import type { Topic } from '../client/types/topic.types';
 import { SEOHead } from './seo/SEOHead';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { AnimatedCounter } from './AnimatedCounter';
+import { useMedicalNews } from '../hooks/useMedicalNews';
 import './Home.css';
 
 export interface HomeProps {
@@ -47,6 +48,9 @@ export const Home: React.FC<HomeProps> = ({
 
   // Registered user count for stats strip
   const [userCount, setUserCount] = useState<number | null>(null);
+
+  // Live medical news feed for Clinical Dispatch marquee
+  const { news: medicalNews } = useMedicalNews();
 
   // Search widget state
   const [searchTopic, setSearchTopic] = useState<string>('');
@@ -266,7 +270,7 @@ export const Home: React.FC<HomeProps> = ({
           ...(parsed[i] || {}),
         }));
       }
-    } catch {}
+    } catch { }
     return defaultHeroSlides;
   };
 
@@ -323,15 +327,14 @@ export const Home: React.FC<HomeProps> = ({
         </div>
         <div className="marquee-scroll-wrapper">
           <MarqueeElement className="clinical-marquee-content" behavior="scroll" direction="left" scrollamount="6">
-            <span>2026 ACC/AHA Valvular Heart Disease Clinical Guidelines Published</span>
-            <span className="ticker-divider">•</span>
-            <span>USMLE Step 1 High-Yield Question Bank Updated</span>
-            <span className="ticker-divider">•</span>
-            <span>Surgical Approach to the Thoracic Wall Peer-Reviewed by Board-Certified Surgeons</span>
-            <span className="ticker-divider">•</span>
-            <span>Over 50,000 Medical Students &amp; Physicians Learning Daily on MedCore</span>
-            <span className="ticker-divider">•</span>
-            <span>Sepsis Resuscitation Protocols Aligned with Surviving Sepsis Campaign</span>
+            {medicalNews.map((item, idx) => (
+              <React.Fragment key={item.id}>
+                <span>
+                  <strong>{item.headline}</strong> {item.source ? `(${item.source})` : ''}
+                </span>
+                {idx < medicalNews.length - 1 && <span className="ticker-divider">•</span>}
+              </React.Fragment>
+            ))}
           </MarqueeElement>
         </div>
       </section>
@@ -381,7 +384,7 @@ export const Home: React.FC<HomeProps> = ({
           </svg>
         </button>
 
-        <div className={`pomaii-hero-content-container ${activeHero.layout}`}>
+        <div key={heroSlide} className={`pomaii-hero-content-container ${activeHero.layout} hero-slide-animated-block`}>
           {/* SLIDE 1 (LAYOUT-RIGHT): Floating Surgical Milestones Badge on the Left */}
           {activeHero.layout === 'layout-right' && (
             <div className="hero-floating-badge-card surgical-badge-left">
@@ -745,7 +748,7 @@ export const Home: React.FC<HomeProps> = ({
               <h2 className="pomaii-section-heading">
                 Popular Clinical Guides
                 <span className="svg-icon-badge">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#154734" strokeWidth="2">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00285b" strokeWidth="2">
                     <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" />
                     <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
                   </svg>
@@ -1001,6 +1004,77 @@ export const Home: React.FC<HomeProps> = ({
       </section>
 
       {/* =========================================================================
+          6.5 HOW MEDCORE WORKS (Clinical Learning & Practice Pathways)
+          ========================================================================= */}
+      <section className="how-it-works-section reveal-on-scroll">
+        <div className="pomaii-section-container">
+          <div className="hiw-header">
+            <span className="hiw-label">Structured Clinical Pathway</span>
+            <h2 className="hiw-title">How MedCore Empowers Your Learning</h2>
+            <p className="hiw-desc">
+              From foundational medical knowledge to bedside diagnostic mastery, follow our evidence-based three-step continuum.
+            </p>
+          </div>
+
+          <div className="hiw-steps-grid reveal-stagger">
+            {/* Step 1 */}
+            <div className="hiw-step-card">
+              <div className="hiw-step-top">
+                <span className="hiw-step-number">STEP 01</span>
+                <div className="hiw-step-icon">🔬</div>
+              </div>
+              <h3 className="hiw-step-heading">Discover &amp; Explore</h3>
+              <p className="hiw-step-text">
+                Browse open-access clinical guides across Cardiology, Neurology, Pediatrics, and Surgical Anatomy curated by academic clinicians.
+              </p>
+              <div className="hiw-step-feature-tag">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                <span>Zero paywalls, 100% peer-reviewed</span>
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="hiw-step-card">
+              <div className="hiw-step-top">
+                <span className="hiw-step-number">STEP 02</span>
+                <div className="hiw-step-icon">🧠</div>
+              </div>
+              <h3 className="hiw-step-heading">Synthesize &amp; Learn</h3>
+              <p className="hiw-step-text">
+                Study high-yield differential diagnostic algorithms, ECG interpretation pearls, and operative theater techniques with interactive visuals.
+              </p>
+              <div className="hiw-step-feature-tag">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                <span>Evidence-based clinical guidelines</span>
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="hiw-step-card">
+              <div className="hiw-step-top">
+                <span className="hiw-step-number">STEP 03</span>
+                <div className="hiw-step-icon">⚡</div>
+              </div>
+              <h3 className="hiw-step-heading">Practice &amp; Master</h3>
+              <p className="hiw-step-text">
+                Test diagnostic recall with USMLE-aligned question banks and case challenges. Receive instant rationales for every option.
+              </p>
+              <div className="hiw-step-feature-tag">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                <span>Diagnostic case simulations</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* =========================================================================
           7. METRICS & TRUST STATS STRIP (Clean Vector SVG Icons)
           ========================================================================= */}
       <section className="pomaii-stats-strip-section reveal-on-scroll">
@@ -1009,7 +1083,7 @@ export const Home: React.FC<HomeProps> = ({
             <div className="stats-items-row reveal-stagger">
               <div className="stat-pill-item">
                 <div className="stat-icon-wrapper">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#154734" strokeWidth="2">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00285b" strokeWidth="2">
                     <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                     <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
                   </svg>
@@ -1027,7 +1101,7 @@ export const Home: React.FC<HomeProps> = ({
 
               <div className="stat-pill-item">
                 <div className="stat-icon-wrapper">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#154734" strokeWidth="2">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00285b" strokeWidth="2">
                     <rect x="3" y="3" width="7" height="7" rx="1" />
                     <rect x="14" y="3" width="7" height="7" rx="1" />
                     <rect x="14" y="14" width="7" height="7" rx="1" />
@@ -1047,7 +1121,7 @@ export const Home: React.FC<HomeProps> = ({
 
               <div className="stat-pill-item">
                 <div className="stat-icon-wrapper">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#154734" strokeWidth="2">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00285b" strokeWidth="2">
                     <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
                     <polyline points="14 2 14 8 20 8" />
                   </svg>
@@ -1065,7 +1139,7 @@ export const Home: React.FC<HomeProps> = ({
 
               <div className="stat-pill-item">
                 <div className="stat-icon-wrapper">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#154734" strokeWidth="2">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00285b" strokeWidth="2">
                     <circle cx="12" cy="12" r="10" />
                     <polyline points="12 6 12 12 16 14" />
                   </svg>

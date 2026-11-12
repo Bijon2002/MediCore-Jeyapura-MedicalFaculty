@@ -286,7 +286,7 @@ export const Contact: React.FC<ContactProps> = ({ onNavigateHome, onNavigateToAr
 
               {/* Quick Link to Articles */}
               <div style={{ marginTop: '20px', padding: '24px', background: '#f4f8f5', borderRadius: '20px', border: '1px solid #e2ede6', textAlign: 'center' }}>
-                <p style={{ fontSize: '14px', color: '#154734', margin: '0 0 14px', fontWeight: 700 }}>Looking for clinical reference materials?</p>
+                <p style={{ fontSize: '14px', color: '#00285b', margin: '0 0 14px', fontWeight: 700 }}>Looking for clinical reference materials?</p>
                 <button
                   type="button"
                   onClick={onNavigateToArticles}
@@ -294,7 +294,7 @@ export const Contact: React.FC<ContactProps> = ({ onNavigateHome, onNavigateToAr
                     display: 'inline-flex',
                     alignItems: 'center',
                     gap: '8px',
-                    background: '#154734',
+                    background: '#00285b',
                     color: '#fff',
                     border: 'none',
                     padding: '12px 24px',

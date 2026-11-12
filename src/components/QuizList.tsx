@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getAccessToken } from '../auth/auth-storage';
+import { useAuth } from '../auth/AuthContext';
 import { QuizzesApiClient } from '../client/api/quizzes.api';
 import type { Quiz } from '../client/types/quiz.types';
 import { ApiClientError } from '../client/api/api-client';
@@ -17,11 +18,25 @@ export const QuizList: React.FC<QuizListProps> = ({
   onViewAttempts,
   onNavigateToLogin,
 }) => {
+  const { user } = useAuth();
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [unauthenticated, setUnauthenticated] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [authNotice, setAuthNotice] = useState<boolean>(false);
+
+  const handleViewAttempts = () => {
+    const token = getAccessToken();
+    if (!user && !token) {
+      setAuthNotice(true);
+      setTimeout(() => setAuthNotice(false), 5000);
+      return;
+    }
+    if (onViewAttempts) {
+      onViewAttempts();
+    }
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -170,7 +185,7 @@ export const QuizList: React.FC<QuizListProps> = ({
         {unauthenticated && (
           <div className="quiz-guest-preview-card">
             <div className="guest-icon-box">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#154734" strokeWidth="2">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00285b" strokeWidth="2">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />
               </svg>
@@ -257,7 +272,7 @@ export const QuizList: React.FC<QuizListProps> = ({
                 <button
                   type="button"
                   className="quiz-history-btn"
-                  onClick={onViewAttempts}
+                  onClick={handleViewAttempts}
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <circle cx="12" cy="12" r="10" />
@@ -267,6 +282,29 @@ export const QuizList: React.FC<QuizListProps> = ({
                 </button>
               )}
             </div>
+
+            {authNotice && (
+              <div className="quiz-auth-notice-toast" role="alert">
+                <div className="auth-notice-icon-box">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#b45309" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
+                </div>
+                <div className="auth-notice-text">
+                  <strong>Sign in Required</strong>
+                  <p>Please sign in to your MedCore student or educator account to view your saved quiz attempts and performance breakdown.</p>
+                </div>
+                <button
+                  type="button"
+                  className="auth-notice-action-btn"
+                  onClick={onNavigateToLogin || (() => (window.location.href = '/login'))}
+                >
+                  Sign In Now
+                </button>
+              </div>
+            )}
 
             {filteredQuizzes.length === 0 ? (
               <div className="quiz-state-card quiz-empty-state">
@@ -286,22 +324,32 @@ export const QuizList: React.FC<QuizListProps> = ({
                 {filteredQuizzes.map((quiz) => {
                   const questionCount = quiz.questions?.length ?? 0;
                   return (
-                    <div key={quiz.id} className="quiz-card">
+                    <div key={quiz.id} className="quiz-card card-hover-lift">
+                      <div className="quiz-card-top-bar" />
                       <div className="quiz-card-content">
-                        <div className="quiz-badges">
-                          {quiz.subject?.title && (
-                            <span className="quiz-badge quiz-subject-badge">
-                              {quiz.subject.title}
-                            </span>
-                          )}
-                          {quiz.topic?.title && (
-                            <span className="quiz-badge quiz-topic-badge">
-                              {quiz.topic.title}
-                            </span>
-                          )}
+                        <div className="quiz-card-header-row">
+                          <div className="quiz-badges">
+                            {quiz.subject?.title && (
+                              <span className="quiz-badge quiz-subject-badge">
+                                {quiz.subject.title}
+                              </span>
+                            )}
+                            {quiz.topic?.title && (
+                              <span className="quiz-badge quiz-topic-badge">
+                                {quiz.topic.title}
+                              </span>
+                            )}
+                          </div>
+                          <span className="quiz-difficulty-tag">
+                            <span className="difficulty-dot" />
+                            USMLE High-Yield
+                          </span>
                         </div>
 
-                        <h2 className="quiz-card-title">{quiz.title}</h2>
+                        <div className="quiz-title-and-icon">
+                          <div className="quiz-icon-emblem">🩺</div>
+                          <h2 className="quiz-card-title">{quiz.title}</h2>
+                        </div>
 
                         {quiz.description && (
                           <p className="quiz-card-description">{quiz.description}</p>
@@ -309,13 +357,13 @@ export const QuizList: React.FC<QuizListProps> = ({
 
                         <div className="quiz-card-footer">
                           <div className="quiz-meta-count">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00969b" strokeWidth="2.2">
                               <circle cx="12" cy="12" r="10" />
                               <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
                               <line x1="12" y1="17" x2="12.01" y2="17" />
                             </svg>
                             <span>
-                              {questionCount} {questionCount === 1 ? 'Question' : 'Questions'}
+                              <strong>{questionCount}</strong> {questionCount === 1 ? 'Question' : 'Questions'}
                             </span>
                           </div>
 

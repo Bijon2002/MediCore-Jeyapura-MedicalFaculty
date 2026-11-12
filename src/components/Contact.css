@@ -85,7 +85,7 @@
   border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
-  color: #154734;
+  color: #00285b;
   text-transform: uppercase;
   letter-spacing: 0.6px;
   margin-bottom: 18px;
@@ -215,13 +215,13 @@
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
-  border-color: #154734;
+  border-color: #00285b;
   box-shadow: 0 0 0 3px rgba(21, 71, 52, 0.12);
 }
 
 .btn-submit-contact {
   padding: 14px 28px;
-  background: linear-gradient(135deg, #154734 0%, #0d2e21 100%);
+  background: linear-gradient(135deg, #00285b 0%, #0d2e21 100%);
   color: #ffffff;
   font-size: 15px;
   font-weight: 700;
@@ -311,7 +311,7 @@
   height: 44px;
   border-radius: 12px;
   background: #f0fdf4;
-  color: #154734;
+  color: #00285b;
   display: flex;
   align-items: center;
   justify-content: center;

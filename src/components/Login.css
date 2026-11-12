@@ -1,4 +1,25 @@
-/* MedCore Modern Clinical Split Login Styles */
+/* MedCore Modern Clinical Split Login Styles with Animated Ambient Background */
+
+@keyframes authGradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes floatOrb {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    transform: translate(40px, 30px) scale(1.12);
+  }
+}
 
 .medcore-login-page-wrapper {
   display: flex;
@@ -6,9 +27,41 @@
   justify-content: center;
   min-height: calc(100vh - 120px);
   padding: 48px 24px;
-  background-color: #fafaf7;
-  background-image: radial-gradient(circle at 10% 20%, rgba(21, 71, 52, 0.04) 0%, transparent 50%),
-                    radial-gradient(circle at 90% 80%, rgba(234, 88, 12, 0.04) 0%, transparent 50%);
+  background: linear-gradient(-45deg, #09131f, #0d3224, #00969b, #0369a1, #0f172a);
+  background-size: 350% 350%;
+  animation: authGradientFlow 14s ease infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.medcore-login-page-wrapper::before {
+  content: '';
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(circle, rgba(0, 150, 155, 0.3) 0%, transparent 60%);
+  border-radius: 50%;
+  filter: blur(50px);
+  animation: floatOrb 10s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.medcore-login-page-wrapper::after {
+  content: '';
+  position: absolute;
+  bottom: -10%;
+  right: -10%;
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(circle, rgba(2, 132, 199, 0.25) 0%, transparent 60%);
+  border-radius: 50%;
+  filter: blur(50px);
+  animation: floatOrb 12s ease-in-out infinite alternate-reverse;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .medcore-login-split-card {
@@ -17,10 +70,13 @@
   max-width: 1040px;
   min-height: 600px;
   background: #ffffff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 20px 50px -10px rgba(15, 23, 42, 0.08), 0 4px 12px rgba(15, 23, 42, 0.03);
+  box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.35), 0 10px 24px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 1;
+  animation: heroSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* =========================================================================
@@ -41,12 +97,10 @@
 .login-visual-scrim {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(15, 23, 42, 0.4) 0%,
-    rgba(15, 23, 42, 0.75) 60%,
-    rgba(15, 23, 42, 0.95) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(15, 23, 42, 0.4) 0%,
+      rgba(15, 23, 42, 0.75) 60%,
+      rgba(15, 23, 42, 0.95) 100%);
   z-index: 1;
 }
 
@@ -278,7 +332,7 @@
 
 .input-with-icon:focus-within {
   background: #ffffff;
-  border-color: #154734;
+  border-color: #00285b;
   box-shadow: 0 0 0 3px rgba(21, 71, 52, 0.1);
 }
 
@@ -303,7 +357,7 @@
   align-items: center;
   justify-content: center;
   padding: 14px 24px;
-  background: linear-gradient(135deg, #154734 0%, #1e5e46 100%);
+  background: linear-gradient(135deg, #00285b 0%, #1e5e46 100%);
   color: #ffffff;
   border: none;
   border-radius: 12px;
@@ -316,7 +370,7 @@
 }
 
 .login-submit-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #123d2c 0%, #154734 100%);
+  background: linear-gradient(135deg, #123d2c 0%, #00285b 100%);
   transform: translateY(-1px);
   box-shadow: 0 8px 24px rgba(21, 71, 52, 0.35);
 }
@@ -339,8 +393,13 @@
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .login-footer-info {
@@ -418,4 +477,3 @@
     font-size: 20px;
   }
 }
-

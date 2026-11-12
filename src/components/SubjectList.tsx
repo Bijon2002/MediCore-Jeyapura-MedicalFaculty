@@ -83,7 +83,7 @@ export const SubjectList: React.FC<SubjectListProps> = ({ onSelectSubject }) => 
       );
     }
     return (
-      <svg viewBox="0 0 24 24" fill="none" stroke="#154734" strokeWidth="2" className="subject-specialty-svg">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#00285b" strokeWidth="2" className="subject-specialty-svg">
         <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
       </svg>
     );
@@ -158,163 +158,163 @@ export const SubjectList: React.FC<SubjectListProps> = ({ onSelectSubject }) => 
 
       <section className="medcore-subject-list-container">
 
-      {/* ERROR STATE */}
-      {error && !loading ? (
-        <div className="state-card error-state" data-testid="subject-error-state">
-          <div className="error-icon-wrapper">
-            <svg
-              className="error-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="8" x2="12" y2="12" />
-              <line x1="12" y1="16" x2="12.01" y2="16" />
-            </svg>
-          </div>
-          <h3 className="error-title">Unable to Load Subjects</h3>
-          <p className="error-message">{error}</p>
-          <button
-            type="button"
-            className="btn btn-primary retry-btn"
-            onClick={fetchSubjects}
-            data-testid="retry-subjects-button"
-          >
-            <svg
-              className="btn-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="23 4 23 10 17 10" />
-              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
-            </svg>
-            Retry
-          </button>
-        </div>
-      ) : null}
-
-      {/* LOADING STATE */}
-      {loading ? (
-        <div className="subject-grid-skeleton" data-testid="subject-loading-state">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <div key={index} className="skeleton-subject-card">
-              <div className="skeleton-subject-icon" />
-              <div className="skeleton-subject-body">
-                <div className="skeleton-title" />
-                <div className="skeleton-text" />
-                <div className="skeleton-text short" />
-                <div className="skeleton-meta" />
-              </div>
+        {/* ERROR STATE */}
+        {error && !loading ? (
+          <div className="state-card error-state" data-testid="subject-error-state">
+            <div className="error-icon-wrapper">
+              <svg
+                className="error-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
             </div>
-          ))}
-        </div>
-      ) : null}
-
-      {/* EMPTY STATE */}
-      {!loading && !error && subjects.length === 0 ? (
-        <div className="state-card empty-state" data-testid="subject-empty-state">
-          <div className="empty-icon-wrapper">
-            <svg
-              className="empty-icon"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+            <h3 className="error-title">Unable to Load Subjects</h3>
+            <p className="error-message">{error}</p>
+            <button
+              type="button"
+              className="btn btn-primary retry-btn"
+              onClick={fetchSubjects}
+              data-testid="retry-subjects-button"
             >
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-            </svg>
+              <svg
+                className="btn-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="23 4 23 10 17 10" />
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+              </svg>
+              Retry
+            </button>
           </div>
-          <h3 className="empty-title">No Subjects Found</h3>
-          <p className="empty-message">There are currently no medical subjects available in the platform.</p>
-        </div>
-      ) : null}
+        ) : null}
 
-      {/* SUBJECT GRID */}
-      {!loading && !error && filteredSubjects.length > 0 ? (
-        <div className="subject-grid" data-testid="subject-grid">
-          {filteredSubjects.map((subject) => (
-            <div
-              key={subject.id}
-              className="medcore-subject-card"
-              onClick={() => onSelectSubject(subject)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  onSelectSubject(subject);
-                }
-              }}
-              data-testid={`subject-card-${subject.id}`}
-            >
-              <div className="subject-card-header">
-                <div className="subject-icon-box">
-                  {subject.iconUrl ? (
-                    <img src={subject.iconUrl} alt={subject.title} className="subject-custom-icon" />
-                  ) : (
-                    getSpecialtyIcon(subject.title)
-                  )}
+        {/* LOADING STATE */}
+        {loading ? (
+          <div className="subject-grid-skeleton" data-testid="subject-loading-state">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div key={index} className="skeleton-subject-card">
+                <div className="skeleton-subject-icon" />
+                <div className="skeleton-subject-body">
+                  <div className="skeleton-title" />
+                  <div className="skeleton-text" />
+                  <div className="skeleton-text short" />
+                  <div className="skeleton-meta" />
                 </div>
-                <div className="subject-badge-pill">Clinical Specialty</div>
               </div>
+            ))}
+          </div>
+        ) : null}
 
-              <h3 className="subject-card-title">{subject.title}</h3>
-
-              <p className="subject-card-description">
-                {subject.description || `Explore topics, anatomical structures, and clinical principles in ${subject.title}.`}
-              </p>
-
-              <div className="subject-card-footer">
-                <span className="subject-topic-count">
-                  <svg
-                    className="meta-icon"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <polygon points="12 2 2 7 12 12 22 7 12 2" />
-                    <polyline points="2 17 12 22 22 17" />
-                    <polyline points="2 12 12 17 22 12" />
-                  </svg>
-                  {subject._count?.topics !== undefined
-                    ? `${subject._count.topics} ${subject._count.topics === 1 ? 'Topic' : 'Topics'}`
-                    : 'Explore Topics'}
-                </span>
-                <span className="subject-explore-link">
-                  <span>Explore Curriculum</span>
-                  <svg
-                    className="arrow-icon"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                    <polyline points="12 5 19 12 12 19" />
-                  </svg>
-                </span>
-              </div>
+        {/* EMPTY STATE */}
+        {!loading && !error && subjects.length === 0 ? (
+          <div className="state-card empty-state" data-testid="subject-empty-state">
+            <div className="empty-icon-wrapper">
+              <svg
+                className="empty-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+              </svg>
             </div>
-          ))}
-        </div>
-      ) : null}
-    </section>
-  </div>
+            <h3 className="empty-title">No Subjects Found</h3>
+            <p className="empty-message">There are currently no medical subjects available in the platform.</p>
+          </div>
+        ) : null}
+
+        {/* SUBJECT GRID */}
+        {!loading && !error && filteredSubjects.length > 0 ? (
+          <div className="subject-grid" data-testid="subject-grid">
+            {filteredSubjects.map((subject) => (
+              <div
+                key={subject.id}
+                className="medcore-subject-card"
+                onClick={() => onSelectSubject(subject)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onSelectSubject(subject);
+                  }
+                }}
+                data-testid={`subject-card-${subject.id}`}
+              >
+                <div className="subject-card-header">
+                  <div className="subject-icon-box">
+                    {subject.iconUrl ? (
+                      <img src={subject.iconUrl} alt={subject.title} className="subject-custom-icon" />
+                    ) : (
+                      getSpecialtyIcon(subject.title)
+                    )}
+                  </div>
+                  <div className="subject-badge-pill">Clinical Specialty</div>
+                </div>
+
+                <h3 className="subject-card-title">{subject.title}</h3>
+
+                <p className="subject-card-description">
+                  {subject.description || `Explore topics, anatomical structures, and clinical principles in ${subject.title}.`}
+                </p>
+
+                <div className="subject-card-footer">
+                  <span className="subject-topic-count">
+                    <svg
+                      className="meta-icon"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                      <polyline points="2 17 12 22 22 17" />
+                      <polyline points="2 12 12 17 22 12" />
+                    </svg>
+                    {subject._count?.topics !== undefined
+                      ? `${subject._count.topics} ${subject._count.topics === 1 ? 'Topic' : 'Topics'}`
+                      : 'Explore Topics'}
+                  </span>
+                  <span className="subject-explore-link">
+                    <span>Explore Curriculum</span>
+                    <svg
+                      className="arrow-icon"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                      <polyline points="12 5 19 12 12 19" />
+                    </svg>
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </section>
+    </div>
   );
 };

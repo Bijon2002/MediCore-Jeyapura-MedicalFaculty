@@ -80,7 +80,7 @@
 .breadcrumb-btn {
   background: none;
   border: none;
-  color: #154734;
+  color: #00285b;
   font-weight: 700;
   cursor: pointer;
   padding: 0;
@@ -108,7 +108,7 @@
   border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
-  color: #154734;
+  color: #00285b;
   text-transform: uppercase;
   letter-spacing: 0.6px;
   margin-bottom: 18px;
@@ -217,7 +217,7 @@
   height: 52px;
   border-radius: 14px;
   background: #f0fdf4;
-  color: #154734;
+  color: #00285b;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -314,6 +314,7 @@
   .workflow-timeline {
     flex-direction: column;
   }
+
   .timeline-connector {
     transform: rotate(90deg);
   }
@@ -334,7 +335,7 @@
   font-size: 11px;
   font-weight: 800;
   background: #f0fdf4;
-  color: #154734;
+  color: #00285b;
   padding: 3px 10px;
   border-radius: 999px;
   text-transform: uppercase;
@@ -370,7 +371,7 @@
 }
 
 .about-cta-card {
-  background: linear-gradient(135deg, #154734 0%, #0d2e21 100%);
+  background: linear-gradient(135deg, #00285b 0%, #0d2e21 100%);
   color: #ffffff;
   border-radius: 24px;
   padding: 56px 40px;

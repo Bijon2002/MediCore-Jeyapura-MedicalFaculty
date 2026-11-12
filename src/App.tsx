@@ -28,6 +28,7 @@ import { ForStudents } from './components/ForStudents';
 import { ForEducators } from './components/ForEducators';
 import { Features } from './components/Features';
 import { PolicyPage } from './components/PolicyPage';
+import { PageTransition } from './components/PageTransition';
 import { parseRoute, pushRoute, type RouteState } from './components/route-utils';
 import { useAuth } from './auth/AuthContext';
 import type { Article } from './client/types/article.types';
@@ -430,6 +431,7 @@ function App() {
 
         {/* MAIN CONTENT AREA */}
         <main className={`medcore-main ${hasSidebar ? 'workspace-content' : 'public-content'}`}>
+          <PageTransition pageKey={route.type + (('slug' in route && route.slug) || ('quizId' in route && route.quizId) || ('articleId' in route && route.articleId) || ('subjectSlug' in route && route.subjectSlug) || ('policyType' in route && route.policyType) || '')}>
           {route.type === 'home' ? (
             <Home
               onNavigateToArticles={navigateToArticles}
@@ -571,6 +573,7 @@ function App() {
               }}
             />
           )}
+          </PageTransition>
 
           {/* FOOTER (Shown on secondary pages, Home has its own comprehensive Pomaii footer) */}
           {route.type !== 'home' ? (

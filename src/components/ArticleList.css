@@ -79,7 +79,7 @@
   border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
-  color: #154734;
+  color: #00285b;
   text-transform: uppercase;
   letter-spacing: 0.6px;
   margin-bottom: 18px;
@@ -173,6 +173,7 @@
     gap: 14px;
     padding: 12px 16px;
   }
+
   .metric-divider {
     display: none;
   }
@@ -238,7 +239,7 @@
 
 .search-input-wrapper:focus-within {
   background: #ffffff;
-  border-color: #154734;
+  border-color: #00285b;
   box-shadow: 0 0 0 3px rgba(21, 71, 52, 0.1);
 }
 
@@ -332,9 +333,9 @@
 }
 
 .specialty-pill-btn.active {
-  background: #154734;
+  background: #00285b;
   color: #ffffff;
-  border-color: #154734;
+  border-color: #00285b;
   box-shadow: 0 4px 12px rgba(21, 71, 52, 0.25);
 }
 
@@ -473,7 +474,7 @@
 .featured-banner-visual {
   width: 320px;
   min-height: 260px;
-  background: linear-gradient(135deg, #154734 0%, #0d2e21 100%);
+  background: linear-gradient(135deg, #00285b 0%, #0d2e21 100%);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -654,13 +655,16 @@
   .featured-spotlight-card {
     flex-direction: column;
   }
+
   .featured-banner-visual {
     width: 100%;
     min-height: 180px;
   }
+
   .featured-details {
     padding: 24px;
   }
+
   .featured-title {
     font-size: 22px;
   }
@@ -837,9 +841,20 @@
 }
 
 @keyframes gentle-pulse {
-  0% { transform: scale(0.96); opacity: 0.75; }
-  50% { transform: scale(1.06); opacity: 1; }
-  100% { transform: scale(0.96); opacity: 0.75; }
+  0% {
+    transform: scale(0.96);
+    opacity: 0.75;
+  }
+
+  50% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(0.96);
+    opacity: 0.75;
+  }
 }
 
 .banner-subtag {
@@ -933,7 +948,7 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #f97316, #154734);
+  background: linear-gradient(135deg, #f97316, #00285b);
   color: #ffffff;
   display: flex;
   align-items: center;
@@ -1072,19 +1087,22 @@
   margin-bottom: 16px;
 }
 
-.empty-icon, .error-icon {
+.empty-icon,
+.error-icon {
   width: 28px;
   height: 28px;
 }
 
-.empty-title, .error-title {
+.empty-title,
+.error-title {
   font-size: 20px;
   font-weight: 700;
   color: #0f172a;
   margin: 0 0 8px;
 }
 
-.empty-message, .error-message {
+.empty-message,
+.error-message {
   font-size: 15px;
   color: #475569;
   max-width: 460px;
@@ -1192,7 +1210,15 @@
 }
 
 @keyframes skeleton-pulse {
-  0% { opacity: 0.6; }
-  50% { opacity: 1; }
-  100% { opacity: 0.6; }
+  0% {
+    opacity: 0.6;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.6;
+  }
 }

@@ -81,7 +81,7 @@
   border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
-  color: #154734;
+  color: #00285b;
   text-transform: uppercase;
   letter-spacing: 0.6px;
   margin-bottom: 18px;
@@ -126,7 +126,7 @@
 }
 
 .specialties-search-pill-box:focus-within {
-  border-color: #154734;
+  border-color: #00285b;
   box-shadow: 0 6px 20px rgba(21, 71, 52, 0.12);
 }
 
@@ -192,7 +192,7 @@
 }
 
 .medcore-subject-card:focus-visible {
-  outline: 2px solid #154734;
+  outline: 2px solid #00285b;
   outline-offset: 2px;
 }
 
@@ -228,7 +228,7 @@
 .subject-badge-pill {
   font-size: 11.5px;
   font-weight: 700;
-  color: #154734;
+  color: #00285b;
   background: #f0fdf4;
   border: 1px solid #dcfce7;
   padding: 4px 12px;
@@ -342,6 +342,13 @@
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
 }

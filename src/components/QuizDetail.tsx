@@ -270,10 +270,24 @@ export const QuizDetail: React.FC<QuizDetailProps> = ({ quizId, onBackToQuizzes 
 
               {!submitResult && (
                 <span className="meta-item answered-status">
-                  Answered: {answeredCount} of {totalQuestions}
+                  Answered: <strong>{answeredCount}</strong> of <strong>{totalQuestions}</strong>
                 </span>
               )}
             </div>
+
+            {!submitResult && totalQuestions > 0 && (
+              <div className="quiz-progress-wrapper">
+                <div className="quiz-progress-track">
+                  <div
+                    className="quiz-progress-fill"
+                    style={{ width: `${Math.round((answeredCount / totalQuestions) * 100)}%` }}
+                  />
+                </div>
+                <span className="quiz-progress-label">
+                  {Math.round((answeredCount / totalQuestions) * 100)}% Completed
+                </span>
+              </div>
+            )}
           </header>
 
           {/* RESULTS CARD (AFTER SUBMISSION) */}
@@ -366,7 +380,12 @@ export const QuizDetail: React.FC<QuizDetailProps> = ({ quizId, onBackToQuizzes 
               return (
                 <div key={question.id} className="quiz-question-card">
                   <div className="question-header">
-                    <span className="question-number">Question {qIdx + 1}</span>
+                    <div className="question-header-top">
+                      <span className="question-number">Question {qIdx + 1} of {totalQuestions}</span>
+                      <span className="question-status-pill">
+                        {selectedOptionId ? '✓ Answered' : '○ Pending'}
+                      </span>
+                    </div>
                     <h2 className="question-text">{question.question}</h2>
                   </div>
 
@@ -379,6 +398,7 @@ export const QuizDetail: React.FC<QuizDetailProps> = ({ quizId, onBackToQuizzes 
                   <div className="options-group" role="radiogroup" aria-label={`Question ${qIdx + 1}`}>
                     {question.options.map((option, oIdx) => {
                       const isSelected = selectedOptionId === option.id;
+                      const optionLetter = String.fromCharCode(65 + oIdx);
                       let resultClass = '';
                       let statusText: string | null = null;
 
@@ -401,9 +421,12 @@ export const QuizDetail: React.FC<QuizDetailProps> = ({ quizId, onBackToQuizzes 
                           disabled={Boolean(submitResult) || submitting}
                           role="radio"
                           aria-checked={isSelected}
-                          aria-label={`Option ${oIdx + 1}: ${option.optionText}${statusText ? ` - ${statusText}` : ''}`}
+                          aria-label={`Option ${optionLetter}: ${option.optionText}${statusText ? ` - ${statusText}` : ''}`}
                           data-testid={`option-${question.id}-${option.id}`}
                         >
+                          <span className="option-letter-badge">
+                            {optionLetter}
+                          </span>
                           <span className="option-indicator">
                             {resultClass === 'correct' ? (
                               <svg className="result-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">

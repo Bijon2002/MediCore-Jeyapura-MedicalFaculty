@@ -1,66 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import './FloatingAiChat.css';
-
-interface ChatMessage {
-  id: string;
-  sender: 'ai' | 'user';
-  text: string;
-  timestamp: string;
-}
 
 export const FloatingAiChat: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [inputMessage, setInputMessage] = useState('');
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: 'welcome-1',
-      sender: 'ai',
-      text: 'Hello! I am MedCore AI, your clinical learning copilot. How can I assist with your studies, clinical algorithms, or medical board prep today?',
-      timestamp: 'Just now',
-    },
-  ]);
-  const [isTyping, setIsTyping] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  // Auto-scroll to bottom of messages
-  useEffect(() => {
-    if (isOpen) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages, isOpen, isTyping]);
-
-  const handleSendMessage = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    const trimmed = inputMessage.trim();
-    if (!trimmed) return;
-
-    const userMsg: ChatMessage = {
-      id: `user-${Date.now()}`,
-      sender: 'user',
-      text: trimmed,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    };
-
-    setMessages((prev) => [...prev, userMsg]);
-    setInputMessage('');
-    setIsTyping(true);
-
-    // Placeholder simulation response — will be connected to real backend later
-    setTimeout(() => {
-      const aiReply: ChatMessage = {
-        id: `ai-${Date.now()}`,
-        sender: 'ai',
-        text: `Thank you for asking about "${trimmed}". MedCore AI model is currently initializing in preview mode. Full clinical diagnostic synthesis and USMLE integration will be fully activated soon!`,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      };
-      setMessages((prev) => [...prev, aiReply]);
-      setIsTyping(false);
-    }, 900);
-  };
-
-  const handleQuickPrompt = (promptText: string) => {
-    setInputMessage(promptText);
-  };
 
   return (
     <div className="medcore-floating-ai-wrapper">
@@ -94,7 +36,7 @@ export const FloatingAiChat: React.FC = () => {
         <span className="bot-label-tooltip">AI Copilot</span>
       </button>
 
-      {/* FLOATING CHAT WINDOW (POPS UP FROM LEFT SIDE) */}
+      {/* FLOATING CHAT WINDOW (POPS UP FROM RIGHT SIDE) */}
       {isOpen && (
         <div className="floating-ai-chat-card" role="dialog" aria-label="MedCore AI Assistant Dialog">
           {/* HEADER */}
@@ -111,9 +53,9 @@ export const FloatingAiChat: React.FC = () => {
               </div>
               <div>
                 <h3 className="chat-header-title">MedCore AI Copilot</h3>
-                <span className="chat-header-status">
-                  <span className="status-dot-green" />
-                  Clinical Assistant Active
+                <span className="chat-header-status" style={{ color: '#00969b' }}>
+                  <span className="status-dot-green" style={{ backgroundColor: '#00969b' }} />
+                  Under Construction
                 </span>
               </div>
             </div>
@@ -131,87 +73,99 @@ export const FloatingAiChat: React.FC = () => {
             </button>
           </div>
 
-          {/* CHAT MESSAGES BODY */}
-          <div className="chat-card-messages">
-            {messages.map((msg) => (
-              <div key={msg.id} className={`chat-bubble-row ${msg.sender}`}>
-                {msg.sender === 'ai' && (
-                  <div className="chat-bubble-avatar">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                    </svg>
-                  </div>
-                )}
-                <div className="chat-bubble-content">
-                  <p className="chat-bubble-text">{msg.text}</p>
-                  <span className="chat-bubble-time">{msg.timestamp}</span>
-                </div>
-              </div>
-            ))}
+          {/* UNDER CONSTRUCTION CONTENT */}
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '36px 24px',
+            textAlign: 'center',
+            flex: 1,
+            gap: '16px',
+            background: 'linear-gradient(180deg, #ffffff 0%, #f0fdfa 100%)'
+          }}>
+            <div style={{
+              width: '72px',
+              height: '72px',
+              borderRadius: '24px',
+              background: 'linear-gradient(135deg, rgba(0, 150, 155, 0.12), rgba(0, 150, 155, 0.25))',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '34px',
+              border: '1px solid rgba(0, 150, 155, 0.25)',
+              boxShadow: '0 8px 20px -4px rgba(0, 150, 155, 0.2)'
+            }}>
+              🤖
+            </div>
 
-            {isTyping && (
-              <div className="chat-bubble-row ai">
-                <div className="chat-bubble-avatar">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                  </svg>
-                </div>
-                <div className="chat-bubble-content typing-indicator">
-                  <span className="dot" />
-                  <span className="dot" />
-                  <span className="dot" />
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <span style={{
+                display: 'inline-block',
+                alignSelf: 'center',
+                padding: '4px 12px',
+                borderRadius: '9999px',
+                background: 'rgba(0, 150, 155, 0.1)',
+                color: '#00969b',
+                fontWeight: 700,
+                fontSize: '11px',
+                letterSpacing: '0.05em',
+                textTransform: 'uppercase'
+              }}>
+                Coming Soon
+              </span>
+              <h3 style={{ margin: '4px 0 0', color: '#0f172a', fontSize: '18px', fontWeight: 800 }}>
+                AI Clinical Agent
+              </h3>
+            </div>
+
+            <p style={{
+              color: '#64748b',
+              fontSize: '13.5px',
+              lineHeight: 1.6,
+              margin: 0,
+              maxWidth: '280px'
+            }}>
+              We are actively developing our board-certified clinical assistant. Soon you will be able to query diagnosis pathways, ECG pearls, and pharmacology correlations in real-time.
+            </p>
+
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '10px 16px',
+              background: '#ffffff',
+              border: '1px dashed rgba(0, 150, 155, 0.4)',
+              borderRadius: '12px',
+              fontSize: '12.5px',
+              fontWeight: 600,
+              color: '#00969b'
+            }}>
+              <span>🛠️</span>
+              <span>Architecture & Fine-Tuning in Progress</span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              style={{
+                marginTop: '8px',
+                padding: '8px 20px',
+                background: '#00969b',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '10px',
+                fontWeight: 700,
+                fontSize: '13px',
+                cursor: 'pointer',
+                boxShadow: '0 4px 12px rgba(0, 150, 155, 0.25)',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              Got it, thanks!
+            </button>
           </div>
-
-          {/* QUICK PROMPT CHIPS */}
-          <div className="chat-quick-prompts">
-            <button
-              type="button"
-              className="quick-chip"
-              onClick={() => handleQuickPrompt('Explain high-yield ECG findings for ischemia')}
-            >
-              ECG Pearls
-            </button>
-            <button
-              type="button"
-              className="quick-chip"
-              onClick={() => handleQuickPrompt('What are key USMLE Step 1 acid-base rules?')}
-            >
-              Acid-Base
-            </button>
-            <button
-              type="button"
-              className="quick-chip"
-              onClick={() => handleQuickPrompt('Summarize Sepsis-3 diagnostic criteria')}
-            >
-              Sepsis-3
-            </button>
-          </div>
-
-          {/* INPUT FORM */}
-          <form className="chat-input-form" onSubmit={handleSendMessage}>
-            <input
-              type="text"
-              className="chat-input-field"
-              placeholder="Ask a clinical question..."
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-            />
-            <button
-              type="submit"
-              className="chat-send-btn"
-              disabled={!inputMessage.trim()}
-              aria-label="Send message"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <line x1="22" y1="2" x2="11" y2="13" />
-                <polygon points="22 2 15 22 11 13 2 9 22 2" />
-              </svg>
-            </button>
-          </form>
         </div>
       )}
     </div>

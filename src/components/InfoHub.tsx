@@ -7,16 +7,25 @@ export interface InfoHubProps {
   onNavigateHome: () => void;
 }
 
-const NewsCard: React.FC<{ item: MedicalNewsItem }> = ({ item }) => {
+const fallbackImages = [
+  '/images/cardio-heart.jpg',
+  '/images/neuro-brain.jpg',
+  '/images/emergency-care.jpg',
+  '/images/thorax-anatomy.jpg',
+  '/images/medical-hero-2.jpg',
+];
+
+const NewsCard: React.FC<{ item: MedicalNewsItem; index: number; onSelect: (item: MedicalNewsItem) => void }> = ({ item, index, onSelect }) => {
+  const fallbackImage = fallbackImages[index % fallbackImages.length];
   const content = (
     <>
       <div className="info-news-card-media">
         <img
-          src={item.imageUrl || '/images/medical-hero-3.jpg'}
+          src={item.imageUrl || fallbackImage}
           alt=""
           loading="lazy"
           onError={(event) => {
-            event.currentTarget.src = '/images/medical-hero-3.jpg';
+            event.currentTarget.src = fallbackImage;
           }}
         />
       </div>
@@ -26,21 +35,20 @@ const NewsCard: React.FC<{ item: MedicalNewsItem }> = ({ item }) => {
       </div>
       <h3>{item.headline}</h3>
       {item.description && <p>{item.description}</p>}
-      {item.url && <span className="info-news-card-link">Read source <span aria-hidden="true">→</span></span>}
+      <span className="info-news-card-link">Read article <span aria-hidden="true">→</span></span>
     </>
   );
 
-  return item.url ? (
-    <a className="info-news-card" href={item.url} target="_blank" rel="noopener noreferrer">
+  return (
+    <button type="button" className="info-news-card info-news-card-button" onClick={() => onSelect(item)} aria-label={`Read ${item.headline}`}>
       {content}
-    </a>
-  ) : (
-    <article className="info-news-card">{content}</article>
+    </button>
   );
 };
 
 export const InfoHub: React.FC<InfoHubProps> = ({ onNavigateHome }) => {
-  const { news, sriLankaNews, loading } = useMedicalNews();
+  const { news, sriLankaNews, loading, error } = useMedicalNews();
+  const [selectedNews, setSelectedNews] = React.useState<MedicalNewsItem | null>(null);
 
   return (
     <div className="info-hub-page">
@@ -78,10 +86,11 @@ export const InfoHub: React.FC<InfoHubProps> = ({ onNavigateHome }) => {
             </div>
             <p>Top health, research, and clinical updates from trusted sources.</p>
           </div>
+          {error && <p className="info-news-status" role="status">{error}</p>}
           {loading && <div className="info-news-grid info-news-skeleton-grid">{[1, 2, 3].map((item) => <div key={item} className="info-news-skeleton" />)}</div>}
           {!loading && (
             <div className="info-news-grid">
-              {news.slice(0, 8).map((item) => <NewsCard key={item.id} item={item} />)}
+              {news.slice(0, 8).map((item, index) => <NewsCard key={item.id} item={item} index={index} onSelect={setSelectedNews} />)}
             </div>
           )}
         </section>
@@ -95,12 +104,60 @@ export const InfoHub: React.FC<InfoHubProps> = ({ onNavigateHome }) => {
             <p>Regional health information and medical developments relevant to Sri Lankan learners and clinicians.</p>
           </div>
           <div className="info-news-grid">
-            {(sriLankaNews.length > 0 ? sriLankaNews : news.slice(0, 4)).map((item) => (
-              <NewsCard key={`lk-${item.id}`} item={{ ...item, region: 'sri-lanka' }} />
+            {(sriLankaNews.length > 0 ? sriLankaNews : news.slice(0, 4)).map((item, index) => (
+              <NewsCard key={`lk-${item.id}`} item={{ ...item, region: 'sri-lanka' }} index={index} onSelect={setSelectedNews} />
             ))}
           </div>
         </section>
+
+        <section className="info-sources-section">
+          <div className="info-section-heading">
+            <div>
+              <span className="info-section-kicker">Trusted starting points</span>
+              <h2>Medical News Sources</h2>
+            </div>
+            <p>Use the original publishers for full context. MedCore links out rather than reproducing source articles.</p>
+          </div>
+          <div className="info-sources-grid">
+            <div className="info-source-group">
+              <h3>Sri Lankan medical news</h3>
+              <a href="https://health.gov.lk/" target="_blank" rel="noopener noreferrer">Sri Lanka Ministry of Health <span aria-hidden="true">↗</span></a>
+              <a href="https://www.newsfirst.lk/" target="_blank" rel="noopener noreferrer">NewsFirst <span aria-hidden="true">↗</span></a>
+              <a href="https://www.adaderana.lk/" target="_blank" rel="noopener noreferrer">Ada Derana <span aria-hidden="true">↗</span></a>
+              <a href="https://www.dailymirror.lk/" target="_blank" rel="noopener noreferrer">Daily Mirror <span aria-hidden="true">↗</span></a>
+            </div>
+            <div className="info-source-group">
+              <h3>International medical news</h3>
+              <a href="https://www.who.int/rss-feeds/news-english.xml" target="_blank" rel="noopener noreferrer">WHO News RSS <span aria-hidden="true">↗</span></a>
+              <a href="https://www.who.int/api/news/diseaseoutbreaknews" target="_blank" rel="noopener noreferrer">WHO Disease Outbreak News <span aria-hidden="true">↗</span></a>
+              <a href="https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=medical&retmode=json" target="_blank" rel="noopener noreferrer">PubMed medical research <span aria-hidden="true">↗</span></a>
+              <a href="https://news.google.com/rss/search?q=medical+health+news&hl=en&gl=US&ceid=US:en" target="_blank" rel="noopener noreferrer">Google News medical RSS <span aria-hidden="true">↗</span></a>
+            </div>
+          </div>
+        </section>
       </main>
+
+      {selectedNews && (
+        <div className="info-news-reader-backdrop" role="presentation" onClick={() => setSelectedNews(null)}>
+          <article className="info-news-reader" role="dialog" aria-modal="true" aria-labelledby="news-reader-title" onClick={(event) => event.stopPropagation()}>
+            <button type="button" className="info-news-reader-close" onClick={() => setSelectedNews(null)} aria-label="Close article">×</button>
+            <img src={selectedNews.imageUrl || fallbackImages[0]} alt="" />
+            <div className="info-news-reader-body">
+              <div className="info-news-card-meta">
+                <span>{selectedNews.source}</span>
+                <time>{selectedNews.time || 'Today'}</time>
+              </div>
+              <h2 id="news-reader-title">{selectedNews.headline}</h2>
+              <p>{selectedNews.content || selectedNews.description || 'Open the original publisher for the complete article.'}</p>
+              {selectedNews.url && (
+                <a className="info-news-reader-source" href={selectedNews.url} target="_blank" rel="noopener noreferrer">
+                  Read original article <span aria-hidden="true">→</span>
+                </a>
+              )}
+            </div>
+          </article>
+        </div>
+      )}
     </div>
   );
 };

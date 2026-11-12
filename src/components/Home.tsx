@@ -1000,7 +1000,22 @@ export const Home: React.FC<HomeProps> = ({
             </button>
           </div>
           {dailyNewsItem && (
-            <article className="daily-news-feature-card" key={dailyNewsItem.id}>
+            <article
+              className="daily-news-feature-card"
+              key={dailyNewsItem.id}
+              role="button"
+              tabIndex={0}
+              onClick={(event) => {
+                if ((event.target as HTMLElement).closest('button, a')) return;
+                onNavigateToInfoHub();
+              }}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  onNavigateToInfoHub();
+                }
+              }}
+            >
               <div className="daily-news-feature-media">
                 <img
                   src={dailyNewsItem.imageUrl || '/images/cardio-heart.jpg'}

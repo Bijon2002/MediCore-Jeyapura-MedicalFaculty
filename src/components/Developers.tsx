@@ -16,7 +16,7 @@ export const Developers: React.FC<DevelopersProps> = ({ onSelectDeveloper }) => 
     mainEntity: [
       {
         '@type': 'Person',
-        name: 'Bijosilin',
+        name: 'Bijosilin Marisilin',
         jobTitle: 'Software Developer & Co-creator',
         sameAs: [
           'https://bijonn.pages.dev/',
@@ -26,7 +26,7 @@ export const Developers: React.FC<DevelopersProps> = ({ onSelectDeveloper }) => 
       },
       {
         '@type': 'Person',
-        name: 'Mathusan',
+        name: 'Puvanenthira Mathushan',
         jobTitle: 'Software Developer & Co-creator',
       },
     ],
@@ -54,12 +54,15 @@ export const Developers: React.FC<DevelopersProps> = ({ onSelectDeveloper }) => 
         <div className="developer-card">
           <div className="developer-badge">Co-Creator &amp; Lead Engineer</div>
           <div className="developer-avatar-wrapper">
-            <img className="developer-avatar" src="/Developers/bijon.png" alt="Bijosilin" />
+            <img className="developer-avatar" src="/Developers/bijon.png" alt="Bijosilin Marisilin" />
           </div>
-          <h2 className="developer-name">Bijosilin</h2>
-          <p className="developer-role">Software Developer · Full-Stack &amp; Product Architecture</p>
+          <h2 className="developer-name">Bijosilin Marisilin</h2>
+          <p className="developer-role">Software Engineering Graduate · Software Engineer · Full-Stack &amp; Product Architecture</p>
+          <div className="developer-meta-chips">
+            <span className="dev-meta-chip location">📍 Jaffna, Northern Province, Sri Lanka</span>
+          </div>
           <p className="developer-bio">
-            Co-creator of medcore. Specialized in modern React architectures, TypeScript ecosystem, scalable database design with Supabase, and clinical knowledge delivery systems.
+            Co-creator and lead architect of medcore. Software Engineering graduate who built production systems serving 5 government districts. Specializes in React, TypeScript, Supabase architecture, scalable database design, and clinical knowledge delivery systems.
           </p>
           <div className="developer-links">
             <a href="https://bijonn.pages.dev/" target="_blank" rel="noopener noreferrer" className="dev-btn portfolio">
@@ -68,7 +71,7 @@ export const Developers: React.FC<DevelopersProps> = ({ onSelectDeveloper }) => 
             <a href="https://github.com/Bijon2002" target="_blank" rel="noopener noreferrer" className="dev-btn github">
               GitHub
             </a>
-            <a href="https://linkedin.com/in/marisilin-bijosilin" target="_blank" rel="noopener noreferrer" className="dev-btn linkedin">
+            <a href="https://www.linkedin.com/in/marisilin-bijosilin/" target="_blank" rel="noopener noreferrer" className="dev-btn linkedin">
               LinkedIn
             </a>
           </div>
@@ -83,22 +86,25 @@ export const Developers: React.FC<DevelopersProps> = ({ onSelectDeveloper }) => 
           )}
         </div>
 
-        {/* Mathusan Card */}
+        {/* Puvanenthira Mathushan Card */}
         <div className="developer-card">
           <div className="developer-badge">Co-Creator &amp; Software Developer</div>
           <div className="developer-avatar-wrapper">
-            <img className="developer-avatar alt" src="/Developers/mathu.jpeg" alt="Mathusan" />
+            <img className="developer-avatar alt" src="/Developers/mathu.jpeg" alt="Puvanenthira Mathushan" />
           </div>
-          <h2 className="developer-name">Mathusan</h2>
-          <p className="developer-role">Software Developer · Backend Systems &amp; Education Tools</p>
+          <h2 className="developer-name">Puvanenthira Mathushan</h2>
+          <p className="developer-role">Backend Systems &amp; Education Tools · CS Undergraduate</p>
+          <div className="developer-meta-chips">
+            <span className="dev-meta-chip">🎓 SLIIT Northern Uni</span>
+            <span className="dev-meta-chip location">📍 Jaffna District, Northern Province, Sri Lanka</span>
+          </div>
           <p className="developer-bio">
-            Co-creator of medcore. Focused on backend engineering, interactive medical assessment logic, clinical workflow automation, and educational UX patterns.
+            Co-creator of medcore. Undergraduate in Computer Science at SLIIT Northern University. Focuses on backend engineering, assessment logic, clinical workflow automation, and educational user experience.
           </p>
           <div className="developer-links">
-            <span className="dev-badge-tech">React 19</span>
-            <span className="dev-badge-tech">TypeScript</span>
-            <span className="dev-badge-tech">Supabase</span>
-            <span className="dev-badge-tech">Vite</span>
+            <a href="https://www.linkedin.com/in/puvanenthira-mathushan/" target="_blank" rel="noopener noreferrer" className="dev-btn linkedin">
+              LinkedIn
+            </a>
           </div>
           {onSelectDeveloper && (
             <button

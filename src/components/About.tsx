@@ -96,7 +96,7 @@ export const About: React.FC<AboutProps> = ({
         <div className="about-container">
           <div className="about-section-header">
             <span className="about-section-tag">People Behind MedCore</span>
-            <h2>Founder, Team &amp; Supporters</h2>
+            <h2>Founder &amp; Engineering Team</h2>
             <p>Meet the people building, engineering, and championing an open, practical, and academically rigorous medical learning platform.</p>
           </div>
 
@@ -144,53 +144,113 @@ export const About: React.FC<AboutProps> = ({
               <div className="developer-info-col">
                 <span className="people-card-label">Co-Creator &amp; Lead Engineer</span>
                 <h3>Bijosilin Marisilin</h3>
-                <p className="people-card-role">Full-Stack &amp; Product Architecture</p>
-                <p>Leads React, TypeScript, Supabase architecture, scalable database design, and clinical knowledge delivery systems.</p>
+                <p className="people-card-role">
+                  Software Engineering Graduate · Software Engineer · Full-Stack &amp; Product Architecture
+                </p>
+
+                <div className="dev-badges-row">
+                  <span className="dev-chip location-chip">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z" />
+                      <circle cx="12" cy="10" r="3" />
+                    </svg>
+                    Jaffna, Northern Province, Sri Lanka
+                  </span>
+                  <span className="dev-chip achievement-chip">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                    </svg>
+                    Built production systems serving 5 govt districts
+                  </span>
+                </div>
+
+                <p>
+                  Bijosilin Marisilin is the co-creator and lead software architect of MedCore. With extensive experience in full-stack architecture, machine learning research, and cloud infrastructure, he has engineered mission-critical production platforms serving five government administrative districts across Sri Lanka.
+                </p>
+                <p>
+                  At MedCore, he leads the overall technical design, engineered the high-performance React 19 single-page application with TypeScript, designed the Supabase PostgreSQL database schemas with granular Row Level Security (RLS), and architected the clinical knowledge authoring, search, and delivery pipelines.
+                </p>
+                <p>
+                  His work centers on uniting modern software reliability, medical informatics, and scalable cloud systems to provide barrier-free, academically rigorous learning resources for medical students and clinicians.
+                </p>
+
+                <div className="dev-social-actions">
+                  <a
+                    href="https://www.linkedin.com/in/marisilin-bijosilin/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="dev-linkedin-btn"
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                    </svg>
+                    <span>LinkedIn Profile</span>
+                  </a>
+                </div>
               </div>
             </article>
+
             <article className="people-team-card developer-profile-card">
               <div className="developer-photo-wrapper">
                 <img
                   src="/Developers/mathu.jpeg"
-                  alt="Mathusan - Co-Creator & Software Developer"
+                  alt="Puvanenthira Mathushan - Co-Creator & Software Developer"
                   className="developer-photo-img"
                   loading="lazy"
                 />
               </div>
               <div className="developer-info-col">
                 <span className="people-card-label">Co-Creator &amp; Software Developer</span>
-                <h3>Mathusan</h3>
-                <p className="people-card-role">Backend Systems &amp; Education Tools</p>
-                <p>Focuses on backend engineering, assessment logic, clinical workflow automation, and educational user experience.</p>
+                <h3>Puvanenthira Mathushan</h3>
+                <p className="people-card-role">
+                  Backend Systems &amp; Education Tools · Computer Science Undergraduate
+                </p>
+
+                <div className="dev-badges-row">
+                  <span className="dev-chip education-chip">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                      <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                    </svg>
+                    Undergraduate - Computer Science | SLIIT Northern Uni
+                  </span>
+                  <span className="dev-chip location-chip">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z" />
+                      <circle cx="12" cy="10" r="3" />
+                    </svg>
+                    Jaffna District, Northern Province, Sri Lanka
+                  </span>
+                </div>
+
+                <p>
+                  Puvanenthira Mathushan is the co-creator and software developer of MedCore, currently pursuing his undergraduate studies in Computer Science at SLIIT Northern University, Jaffna District.
+                </p>
+                <p>
+                  Within MedCore, he focuses on backend engineering, data modeling, assessment scoring algorithms, and education workflow automation. He co-architected the interactive clinical quiz engine, timed examination modules, and specialty categorization models that empower medical students to test diagnostic knowledge against board-style question banks.
+                </p>
+                <p>
+                  He is dedicated to engineering practical, student-centric academic tools and optimizing full-stack applications that streamline complex medical learning into intuitive, high-yield digital experiences.
+                </p>
+
+                <div className="dev-social-actions">
+                  <a
+                    href="https://www.linkedin.com/in/puvanenthira-mathushan/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="dev-linkedin-btn"
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                    </svg>
+                    <span>LinkedIn Profile</span>
+                  </a>
+                </div>
               </div>
             </article>
           </div>
 
-          {/* SUPPORTERS SECTION */}
-          <div className="supporters-section-wrapper">
-            <div className="supporters-header">
-              <span className="people-card-label">Community &amp; Academic Advocates</span>
-              <h3>Supporters – MedCore</h3>
-              <p>Dedicated medical learners and academic champions advocating for open-access clinical education.</p>
-            </div>
 
-            <div className="supporters-grid">
-              <article className="people-team-card supporter-card">
-                <div className="supporter-avatar-box" aria-hidden="true">
-                  <span className="supporter-initials">BJ</span>
-                  <span className="supporter-badge-icon" title="Medical Student Supporter">🩺</span>
-                </div>
-                <div>
-                  <span className="people-card-label">Supporter – MedCore</span>
-                  <h3>Bernard Sutharsan Johnathan</h3>
-                  <p className="people-card-role">Supporter | 3rd Year Medical Student</p>
-                  <p>
-                    Bernard Sutharsan Johnathan is a third-year medical student at the University of Sri Jayewardenepura, Sri Lanka. As a supporter of MedCore, he contributes to its vision of promoting accessible, high-quality medical education and empowering the next generation of healthcare professionals.
-                  </p>
-                </div>
-              </article>
-            </div>
-          </div>
         </div>
       </section>
 

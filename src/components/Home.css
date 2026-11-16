@@ -2138,13 +2138,64 @@
   background: #0d3224;
 }
 
-.newsletter-success-msg {
-  font-size: 13px;
+.footer-newsletter-header-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.footer-newsletter-header-row .footer-column-heading {
+  margin: 0;
+}
+
+.newsletter-coming-soon-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #0d9488;
+  background: rgba(13, 148, 136, 0.1);
+  border: 1px solid rgba(13, 148, 136, 0.25);
+  border-radius: 999px;
+}
+
+.newsletter-coming-soon-box {
+  background: #f0fdfa;
+  border: 1px solid #ccfbf1;
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.newsletter-cs-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  color: #0d9488;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.newsletter-cs-pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #0d9488;
+  box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.3);
+}
+
+.newsletter-cs-text {
+  font-size: 12.5px;
+  color: #134e4a;
+  line-height: 1.45;
+  margin: 0;
   font-weight: 600;
-  color: #00285b;
-  background: #ecfdf5;
-  padding: 8px 12px;
-  border-radius: 8px;
 }
 
 .footer-bottom-copyright-row {

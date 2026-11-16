@@ -1477,13 +1477,22 @@ export const Home: React.FC<HomeProps> = ({
 
             {/* Col 5: Newsletter */}
             <div className="footer-newsletter-column">
-              <h4 className="footer-column-heading">Newsletter</h4>
+              <div className="footer-newsletter-header-row">
+                <h4 className="footer-column-heading">Newsletter</h4>
+                <span className="newsletter-coming-soon-badge">Coming Soon</span>
+              </div>
               <p className="newsletter-explainer">
                 Subscribe for weekly clinical pearls, high-yield summaries, and updates.
               </p>
               {newsletterSubscribed ? (
-                <div className="newsletter-success-msg">
-                  Thank you! You are subscribed to MedCore Clinical Briefs.
+                <div className="newsletter-success-msg newsletter-coming-soon-box">
+                  <div className="newsletter-cs-badge-pill">
+                    <span className="newsletter-cs-pulse" />
+                    <span>COMING SOON</span>
+                  </div>
+                  <p className="newsletter-cs-text">
+                    MedCore Weekly Clinical Pearls &amp; Summaries newsletter is currently under development. Stay tuned!
+                  </p>
                 </div>
               ) : (
                 <form className="footer-newsletter-form" onSubmit={handleNewsletterSubmit}>

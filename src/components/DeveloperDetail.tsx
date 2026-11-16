@@ -12,17 +12,24 @@ export const DeveloperDetail: React.FC<DeveloperDetailProps> = ({ slug, onBackTo
 
   const developerData = isBijosilin
     ? {
-        name: 'Bijosilin',
-        title: 'Software Developer & Co-creator of medcore',
+        name: 'Bijosilin Marisilin',
+        title: 'Software Engineering Graduate & Software Engineer · Co-creator of medcore',
+        pronouns: null,
         initials: 'BM',
         colorClass: '',
         metaDesc:
-          'Explore the technical contributions, architecture work, and profile of Bijosilin, software developer and co-creator of medcore medical platform.',
+          'Explore the technical contributions, architecture work, and profile of Bijosilin Marisilin, software engineering graduate, software engineer, and co-creator of medcore medical platform.',
         portfolio: 'https://bijonn.pages.dev/',
         github: 'https://github.com/Bijon2002',
-        linkedin: 'https://linkedin.com/in/marisilin-bijosilin',
+        linkedin: 'https://www.linkedin.com/in/marisilin-bijosilin/',
+        location: 'Jaffna, Northern Province, Sri Lanka',
+        achievement: 'Built production systems serving 5 govt districts',
         roleDescription:
-          'Bijosilin is a software developer responsible for frontend architecture, state synchronization, database integration, and UI design systems for medcore.',
+          'Bijosilin Marisilin is the co-creator and lead software architect of medcore. A Software Engineering graduate currently working as a Software Engineer, he has built mission-critical production platforms serving five government administrative districts across Sri Lanka.',
+        elaboration: [
+          'At medcore, he leads the overall technical design — engineering the high-performance React 19 single-page application with TypeScript, designing the Supabase PostgreSQL database schemas with granular Row Level Security (RLS), and architecting the clinical knowledge authoring, search, and delivery pipelines.',
+          'His work centers on uniting modern software reliability, medical informatics, and scalable cloud systems to provide barrier-free, academically rigorous learning resources for medical students and clinicians worldwide.',
+        ],
         contributions: [
           'Engineered responsive React 19 frontend architecture using Vite and TypeScript.',
           'Integrated Supabase PostgreSQL database schemas with Row Level Security (RLS) policies.',
@@ -33,24 +40,32 @@ export const DeveloperDetail: React.FC<DeveloperDetailProps> = ({ slug, onBackTo
         technologies: ['React 19', 'TypeScript', 'Vite', 'Supabase', 'PostgreSQL', 'Cloudflare Pages', 'HTML5 / CSS3', 'Git'],
       }
     : {
-        name: 'Mathusan',
+        name: 'Puvanenthira Mathushan',
         title: 'Software Developer & Co-creator of medcore',
+        pronouns: null,
         initials: 'PM',
         colorClass: 'alt',
         metaDesc:
-          'Explore the contributions and engineering background of Mathusan, software developer and co-creator of the medcore medical education platform.',
+          'Explore the contributions and engineering background of Puvanenthira Mathushan, software developer, CS undergraduate at SLIIT Northern University, and co-creator of the medcore medical education platform.',
         portfolio: null,
         github: null,
-        linkedin: null,
+        linkedin: 'https://www.linkedin.com/in/puvanenthira-mathushan/',
+        location: 'Jaffna District, Northern Province, Sri Lanka',
+        achievement: 'Undergraduate – Computer Science | SLIIT Northern Uni',
         roleDescription:
-          'Puvanenthira is a software developer focused on medical question banks, assessment logic, scoring algorithms, and content management workflows.',
+          'Puvanenthira Mathushan is the co-creator and software developer of medcore, currently pursuing his undergraduate degree in Computer Science at SLIIT Northern University, Jaffna. He brings strong backend engineering skills and a keen focus on building practical, student-centric academic tools.',
+        elaboration: [
+          'Within medcore, Mathushan focuses on backend engineering, data modelling, assessment scoring algorithms, and educational workflow automation. He co-architected the interactive clinical quiz engine, timed examination modules, and specialty categorization models that empower medical students to test diagnostic knowledge against board-style question banks.',
+          'He is dedicated to optimizing full-stack applications that streamline complex medical learning into intuitive, high-yield digital experiences — bridging the gap between computer science and clinical education.',
+        ],
         contributions: [
           'Co-architected interactive medical question bank and instant assessment grading engine.',
           'Contributed to database schema design for quizzes, questions, options, and student attempts.',
           'Built topic-based categorization system aligning clinical articles with medical specialties.',
           'Engineered review workflows for faculty medical review applications and peer assessments.',
+          'Developed timed examination modules and specialty-based diagnostic question banks.',
         ],
-        technologies: ['React', 'TypeScript', 'Vite', 'PostgreSQL', 'Supabase Auth', 'Algorithmic Logic'],
+        technologies: ['React', 'TypeScript', 'Vite', 'PostgreSQL', 'Supabase Auth', 'Algorithmic Logic', 'Node.js'],
       };
 
   const personStructuredData = {
@@ -93,7 +108,25 @@ export const DeveloperDetail: React.FC<DeveloperDetailProps> = ({ slug, onBackTo
         <div className="profile-header-meta">
           <div className="dev-tag-pill">VERIFIED DEVELOPER</div>
           <h1 className="profile-dev-name">{developerData.name}</h1>
+          {developerData.pronouns && (
+            <span className="dev-pronouns-badge">{developerData.pronouns}</span>
+          )}
           <p className="profile-dev-title">{developerData.title}</p>
+          <div className="profile-chips-row">
+            <span className="dev-chip location-chip">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              {developerData.location}
+            </span>
+            <span className="dev-chip achievement-chip">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+              </svg>
+              {developerData.achievement}
+            </span>
+          </div>
           <div className="profile-links-row">
             {developerData.portfolio && (
               <a href={developerData.portfolio} target="_blank" rel="noopener noreferrer" className="dev-btn portfolio">
@@ -117,6 +150,9 @@ export const DeveloperDetail: React.FC<DeveloperDetailProps> = ({ slug, onBackTo
       <div className="profile-content-section">
         <h2>About the Developer</h2>
         <p className="profile-bio-text">{developerData.roleDescription}</p>
+        {developerData.elaboration.map((para, idx) => (
+          <p key={idx} className="profile-bio-text" style={{ marginTop: '14px' }}>{para}</p>
+        ))}
 
         <h2>Key Project Contributions to medcore</h2>
         <ul className="profile-contributions-list">

@@ -3,19 +3,19 @@
    MedCore Clinical Platform — Pomaii Organic Clinical Theme
    ========================================================================= */
 
-/* ── POPUP OVERLAY ───────────────────────────────────────────────────────── */
+/* ── POPUP OVERLAY (Portaled to document.body) ─────────────────────────── */
 .mdb-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(6, 13, 24, 0.72);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  z-index: 10000;
+  background: rgba(6, 13, 24, 0.78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 999999;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
-  animation: mdb-fade-in 0.25s ease;
+  padding: 20px;
+  animation: mdb-fade-in 0.25s ease-out;
 }
 
 @keyframes mdb-fade-in {
@@ -27,13 +27,13 @@
 .mdb-popup {
   position: relative;
   background: var(--surface, #ffffff);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 24px;
   box-shadow:
-    0 32px 80px rgba(0, 0, 0, 0.35),
-    0 8px 24px rgba(0, 0, 0, 0.14);
+    0 32px 80px rgba(0, 0, 0, 0.4),
+    0 8px 24px rgba(0, 0, 0, 0.16);
   padding: 40px 36px 32px;
-  max-width: 460px;
+  max-width: 480px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -45,11 +45,11 @@
 }
 
 @keyframes mdb-slide-up {
-  from { opacity: 0; transform: translateY(32px) scale(0.95); }
-  to   { opacity: 1; transform: translateY(0)   scale(1); }
+  from { opacity: 0; transform: translateY(24px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* Top colour stripe */
+/* Top accent color stripe */
 .mdb-popup-top-stripe {
   position: absolute;
   top: 0;
@@ -75,89 +75,107 @@
   justify-content: center;
   cursor: pointer;
   color: var(--text-muted, #64748b);
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: all 0.15s ease;
 }
-.mdb-close-btn:hover { background: var(--border, #e2e8f0); color: var(--text, #334155); }
+.mdb-close-btn:hover {
+  background: var(--border, #e2e8f0);
+  color: var(--text, #334155);
+  transform: rotate(90deg);
+}
 
-/* Emoji circle */
-.mdb-popup-emoji {
-  font-size: 48px;
-  line-height: 1;
+/* Medical Icon Container (SVG instead of emoji) */
+.mdb-popup-icon-container {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 80px;
-  height: 80px;
-  background: rgba(13, 148, 136, 0.08);
+  width: 88px;
+  height: 88px;
   border-radius: 50%;
-  animation: mdb-emoji-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
-}
-.mdb-popup .mdb-popup-emoji {
-  background: color-mix(in srgb, var(--mdb-color, #0d9488) 12%, transparent);
-}
-
-@keyframes mdb-emoji-pop {
-  from { transform: scale(0.5); opacity: 0; }
-  to   { transform: scale(1);   opacity: 1; }
+  background: color-mix(in srgb, var(--mdb-color, #0d9488) 14%, transparent);
+  border: 2px solid color-mix(in srgb, var(--mdb-color, #0d9488) 30%, transparent);
+  animation: mdb-icon-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
 }
 
-/* Badge */
+.mdb-popup-icon-pulse {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid var(--mdb-color, #0d9488);
+  opacity: 0.35;
+  animation: mdb-ring-pulse 2.2s infinite ease-out;
+}
+
+@keyframes mdb-icon-pop {
+  from { transform: scale(0.6); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+@keyframes mdb-ring-pulse {
+  0%   { transform: scale(0.95); opacity: 0.6; }
+  70%  { transform: scale(1.25); opacity: 0; }
+  100% { transform: scale(1.25); opacity: 0; }
+}
+
+/* Live Badge */
 .mdb-popup-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  background: color-mix(in srgb, var(--mdb-color, #0d9488) 10%, transparent);
+  gap: 7px;
+  background: color-mix(in srgb, var(--mdb-color, #0d9488) 12%, transparent);
   color: var(--mdb-color, #0d9488);
-  border: 1px solid color-mix(in srgb, var(--mdb-color, #0d9488) 25%, transparent);
-  border-radius: 999px;
-  padding: 4px 12px;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
+  font-size: 11.5px;
+  font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--mdb-color, #0d9488) 25%, transparent);
 }
 
 .mdb-pulse-dot {
-  display: inline-block;
   width: 7px;
   height: 7px;
   border-radius: 50%;
   background: var(--mdb-color, #0d9488);
-  animation: mdb-pulse 1.4s ease-in-out infinite;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mdb-color, #0d9488) 35%, transparent);
+  animation: mdb-dot-pulse 1.8s infinite;
 }
 
-@keyframes mdb-pulse {
+@keyframes mdb-dot-pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.7); }
+  50%      { opacity: 0.5; transform: scale(0.85); }
 }
 
 /* Title */
 .mdb-popup-title {
   font-size: 22px;
-  font-weight: 850;
-  color: var(--text-h, #0f172a);
+  font-weight: 800;
+  color: var(--text, #0f172a);
+  line-height: 1.3;
   margin: 0;
-  letter-spacing: -0.025em;
-  line-height: 1.25;
 }
 
-/* Theme */
+/* Theme badge */
 .mdb-popup-theme {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   background: var(--surface-hover, #f8fafc);
   border: 1px solid var(--border, #e2e8f0);
   border-radius: 8px;
-  padding: 6px 12px;
+  padding: 6px 14px;
   font-size: 12.5px;
   color: var(--text-muted, #64748b);
-  font-style: normal;
+}
+.mdb-popup-theme svg {
+  color: var(--mdb-color, #0d9488);
+  flex-shrink: 0;
 }
 .mdb-popup-theme em {
-  font-style: italic;
-  color: var(--text, #334155);
-  font-weight: 600;
+  font-style: normal;
+  color: var(--text, #1e293b);
+  font-weight: 700;
 }
 
 /* Description */
@@ -166,40 +184,45 @@
   color: var(--text-muted, #64748b);
   line-height: 1.65;
   margin: 0;
-  max-width: 380px;
+  max-width: 400px;
 }
 
 /* Actions */
 .mdb-popup-actions {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
   justify-content: center;
   width: 100%;
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
 .mdb-btn-primary {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 22px;
-  border-radius: 10px;
+  gap: 8px;
+  padding: 10px 24px;
+  border-radius: 12px;
   font-size: 13.5px;
   font-weight: 700;
   color: #ffffff;
   text-decoration: none;
   border: none;
   cursor: pointer;
-  transition: filter 0.15s ease, transform 0.1s ease;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
 }
-.mdb-btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.mdb-btn-primary:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
 
 .mdb-btn-secondary {
   display: inline-flex;
   align-items: center;
   padding: 10px 22px;
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 13.5px;
   font-weight: 700;
   color: var(--text-muted, #64748b);
@@ -208,118 +231,159 @@
   cursor: pointer;
   transition: background 0.15s ease;
 }
-.mdb-btn-secondary:hover { background: var(--border, #e2e8f0); }
-
-/* ── HERO FLOATING PILL ───────────────────────────────────────────────────── */
-.mdb-hero-pill {
-  position: absolute;
-  top: 20px;
-  right: 24px;
-  z-index: 20;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(6, 13, 24, 0.82);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 999px;
-  padding: 8px 14px 8px 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  animation: mdb-pill-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  max-width: 320px;
+.mdb-btn-secondary:hover {
+  background: var(--border, #e2e8f0);
+  color: var(--text, #1e293b);
 }
 
-/* Left border uses the event colour */
+/* ── HERO FLOATING PILL (Moved down, opposite side, slightly bigger) ──────── */
+.mdb-hero-pill {
+  position: absolute;
+  top: 36px;
+  left: 36px;
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(8, 18, 32, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 999px;
+  padding: 8px 14px 8px 10px;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.35),
+    0 2px 8px rgba(0, 0, 0, 0.2);
+  animation: mdb-pill-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  max-width: 420px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mdb-hero-pill:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 14px 36px rgba(0, 0, 0, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.25);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+/* Left accent bar */
 .mdb-hero-pill::before {
   content: '';
   display: block;
-  width: 3px;
-  height: 100%;
+  width: 4px;
+  height: 60%;
   position: absolute;
-  left: 0;
-  top: 0;
-  border-radius: 999px 0 0 999px;
+  left: 2px;
+  top: 20%;
+  border-radius: 999px;
   background: var(--mdb-color, #0d9488);
 }
 
 @keyframes mdb-pill-in {
-  from { opacity: 0; transform: translateX(20px); }
+  from { opacity: 0; transform: translateX(-20px); }
   to   { opacity: 1; transform: translateX(0); }
 }
 
-.mdb-hero-pill-emoji {
-  font-size: 20px;
-  line-height: 1;
+/* Medical SVG icon box */
+.mdb-hero-pill-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+  margin-left: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .mdb-hero-pill-text {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
   min-width: 0;
 }
 
-.mdb-hero-pill-label {
-  font-size: 9px;
+.mdb-hero-pill-sub {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
   font-weight: 800;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.6px;
   text-transform: uppercase;
-  color: var(--mdb-color, #0d9488);
+  color: rgba(255, 255, 255, 0.65);
 }
 
-.mdb-hero-pill-name {
-  font-size: 12px;
+.mdb-hero-pill-pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: mdb-dot-pulse 1.8s infinite;
+}
+
+.mdb-hero-pill-title {
+  font-size: 13px;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.92);
+  color: #ffffff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 200px;
+  max-width: 240px;
+  line-height: 1.25;
 }
 
 .mdb-hero-pill-link {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
   flex-shrink: 0;
-  transition: background 0.15s ease;
+  transition: all 0.15s ease;
 }
-.mdb-hero-pill-link:hover { background: rgba(255, 255, 255, 0.2); color: #fff; }
+.mdb-hero-pill-link:hover {
+  background: var(--mdb-color, #0d9488);
+  color: #ffffff;
+  transform: scale(1.08);
+}
 
 .mdb-hero-pill-close {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.08);
+  background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.45);
   cursor: pointer;
   flex-shrink: 0;
-  transition: background 0.15s ease, color 0.15s ease;
   padding: 0;
+  transition: color 0.15s ease;
 }
-.mdb-hero-pill-close:hover { background: rgba(255, 255, 255, 0.18); color: #fff; }
+.mdb-hero-pill-close:hover {
+  color: #ffffff;
+}
 
-/* Mobile adjustments */
-@media (max-width: 600px) {
+/* ── RESPONSIVE ADAPTATIONS ──────────────────────────────────────────────── */
+@media (max-width: 768px) {
   .mdb-hero-pill {
-    top: 12px;
-    right: 12px;
-    max-width: calc(100vw - 24px);
+    top: 14px;
+    left: 14px;
+    right: 14px;
+    max-width: none;
+    padding: 7px 12px 7px 8px;
   }
-  .mdb-hero-pill-name { max-width: 140px; }
-  .mdb-popup { padding: 32px 20px 24px; }
-  .mdb-popup-title { font-size: 19px; }
-  .mdb-popup-emoji { font-size: 40px; width: 68px; height: 68px; }
+  .mdb-hero-pill-title {
+    max-width: 170px;
+    font-size: 12px;
+  }
 }

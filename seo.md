@@ -110,3 +110,35 @@ Create a centralized SEO component `src/components/seo/SEOHead.tsx` managing:
 - Transparent display of review status (`DRAFT`, `PUBLISHED`, `PEER_REVIEWED`).
 - Prominent **Medical Disclaimer**: MediCore provides open-access educational materials for healthcare students and professionals, not patient diagnoses or medical advice.
 
+---
+
+## 7. Implementation Roadmap & Execution Status
+
+### Day 1 - 30: Technical Foundation & Developer Authority (P0)
+```text
+├── [COMPLETED] Update index.html structured data with complete founder & developer schema
+├── [COMPLETED] Configure public/robots.txt for AI crawlers (GPTBot, Perplexity, Google-Extended)
+├── [COMPLETED] Deploy sitewide developer footer attribution to https://bijonn.pages.dev/
+├── [COMPLETED] Optimize Developer Detail page for "Bijosilin Marisilin" & "Bijon"
+├── [NEXT] Verify MedCore in Google Search Console & Bing Webmaster Tools
+└── [NEXT] Create programmatic dynamic sitemap generator for Supabase articles
+```
+
+### Day 31 - 60: On-Page Optimization & Core Content Expansion (P1)
+```text
+├── Launch 20 foundational high-yield clinical guides with peer-review citations
+├── Implement BreadcrumbList structured data across all subjects and topics
+├── Optimize Vite code-splitting to reduce main JS bundle size below 500 kB
+├── Publish technical case study on https://bijonn.pages.dev/ detailing MedCore's architecture
+└── Publish LinkedIn & Medium articles linking to MedCore engineering milestones
+```
+
+### Day 61 - 90: Digital PR, Local & International Authority (P2)
+```text
+├── Build Sri Lankan academic partnerships (USJ Student Medical Societies, Medical Student Associations)
+├── Submit MedCore to verified open-access educational directories
+├── Launch interactive USMLE/ERPM question banks with dedicated landing pages
+└── Conduct monthly GSC performance audits tracking impressions, CTR, and indexing velocity
+```
+
+

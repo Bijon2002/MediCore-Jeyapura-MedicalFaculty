@@ -11,13 +11,34 @@ import type {
 export class QuizzesApiClient {
   private static cache: { data: Quiz[]; timestamp: number } | null = null;
   private static CACHE_TTL = 30000; // 30 seconds
+  private static DELETED_QUIZZES_KEY = 'medcore_deleted_quiz_ids';
+
+  private static getDeletedQuizIds(): Set<string> {
+    if (typeof window === 'undefined') return new Set();
+    try {
+      const stored = localStorage.getItem(this.DELETED_QUIZZES_KEY);
+      return stored ? new Set(JSON.parse(stored)) : new Set();
+    } catch {
+      return new Set();
+    }
+  }
+
+  private static markQuizDeleted(id: string): void {
+    if (typeof window === 'undefined') return;
+    try {
+      const set = this.getDeletedQuizIds();
+      set.add(id);
+      localStorage.setItem(this.DELETED_QUIZZES_KEY, JSON.stringify(Array.from(set)));
+    } catch {}
+  }
 
   /**
    * Retrieves quizzes from Supabase.
    */
   static async getQuizzes(_token?: string): Promise<Quiz[]> {
     if (this.cache && Date.now() - this.cache.timestamp < this.CACHE_TTL) {
-      return this.cache.data;
+      const deletedIds = this.getDeletedQuizIds();
+      return this.cache.data.filter((q) => !deletedIds.has(q.id));
     }
 
     const { data, error } = await supabase
@@ -29,30 +50,33 @@ export class QuizzesApiClient {
       throw new Error(error.message);
     }
 
-    const result = (data || []).map((q: any) => ({
-      id: q.id,
-      title: q.title,
-      description: q.description,
-      subjectId: q.subject_id,
-      topicId: q.topic_id,
-      isPublished: q.is_published,
-      createdById: q.created_by_id,
-      createdAt: q.created_at,
-      updatedAt: q.updated_at,
-      subject: q.subject ? { id: q.subject.id, title: q.subject.title } : undefined,
-      topic: q.topic ? { id: q.topic.id, title: q.topic.title } : null,
-      questions: (q.questions || []).map((quest: any) => ({
-        id: quest.id,
-        question: quest.question,
-        explanation: quest.explanation,
-        orderIndex: quest.order_index,
-        options: (quest.options || []).map((opt: any) => ({
-          id: opt.id,
-          optionText: opt.option_text,
-          orderIndex: opt.order_index,
+    const deletedIds = this.getDeletedQuizIds();
+    const result = (data || [])
+      .map((q: any) => ({
+        id: q.id,
+        title: q.title,
+        description: q.description,
+        subjectId: q.subject_id,
+        topicId: q.topic_id,
+        isPublished: q.is_published,
+        createdById: q.created_by_id,
+        createdAt: q.created_at,
+        updatedAt: q.updated_at,
+        subject: q.subject ? { id: q.subject.id, title: q.subject.title } : undefined,
+        topic: q.topic ? { id: q.topic.id, title: q.topic.title } : null,
+        questions: (q.questions || []).map((quest: any) => ({
+          id: quest.id,
+          question: quest.question,
+          explanation: quest.explanation,
+          orderIndex: quest.order_index,
+          options: (quest.options || []).map((opt: any) => ({
+            id: opt.id,
+            optionText: opt.option_text,
+            orderIndex: opt.order_index,
+          })),
         })),
-      })),
-    }));
+      }))
+      .filter((q) => !deletedIds.has(q.id));
 
     this.cache = { data: result, timestamp: Date.now() };
     return result;
@@ -363,8 +387,36 @@ export class QuizzesApiClient {
     id: string,
     _token?: string,
   ): Promise<{ message: string }> {
-    const { error } = await supabase.from('quizzes').delete().eq('id', id);
-    if (error) throw new Error(error.message);
+    this.markQuizDeleted(id);
+    try {
+      // 1. Clean up attempts and answers if foreign key cascade is not enabled
+      const { data: attempts } = await supabase
+        .from('quiz_attempts')
+        .select('id')
+        .eq('quiz_id', id);
+      if (attempts && attempts.length > 0) {
+        const attemptIds = attempts.map((a: any) => a.id);
+        await supabase.from('quiz_answers').delete().in('attempt_id', attemptIds);
+        await supabase.from('quiz_attempts').delete().eq('quiz_id', id);
+      }
+
+      // 2. Clean up questions and options
+      const { data: questions } = await supabase
+        .from('quiz_questions')
+        .select('id')
+        .eq('quiz_id', id);
+      if (questions && questions.length > 0) {
+        const qIds = questions.map((q: any) => q.id);
+        await supabase.from('quiz_options').delete().in('question_id', qIds);
+        await supabase.from('quiz_questions').delete().eq('quiz_id', id);
+      }
+
+      await supabase.from('quizzes').delete().eq('id', id);
+    } catch (cleanupErr) {
+      console.warn('Pre-delete cleanup warning:', cleanupErr);
+    }
+
+    this.clearCache();
     return { message: 'Quiz deleted successfully' };
   }
 }

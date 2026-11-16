@@ -1,0 +1,325 @@
+/* =========================================================================
+   MEDICAL DAY BANNER — Popup & Hero Floating Pill
+   MedCore Clinical Platform — Pomaii Organic Clinical Theme
+   ========================================================================= */
+
+/* ── POPUP OVERLAY ───────────────────────────────────────────────────────── */
+.mdb-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 13, 24, 0.72);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: mdb-fade-in 0.25s ease;
+}
+
+@keyframes mdb-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── POPUP CARD ───────────────────────────────────────────────────────────── */
+.mdb-popup {
+  position: relative;
+  background: var(--surface, #ffffff);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.35),
+    0 8px 24px rgba(0, 0, 0, 0.14);
+  padding: 40px 36px 32px;
+  max-width: 460px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  animation: mdb-slide-up 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+}
+
+@keyframes mdb-slide-up {
+  from { opacity: 0; transform: translateY(32px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+
+/* Top colour stripe */
+.mdb-popup-top-stripe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: var(--mdb-color, #0d9488);
+  border-radius: 24px 24px 0 0;
+}
+
+/* Close button */
+.mdb-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: var(--surface-hover, #f1f5f9);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-muted, #64748b);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.mdb-close-btn:hover { background: var(--border, #e2e8f0); color: var(--text, #334155); }
+
+/* Emoji circle */
+.mdb-popup-emoji {
+  font-size: 48px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  background: rgba(13, 148, 136, 0.08);
+  border-radius: 50%;
+  animation: mdb-emoji-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s both;
+}
+.mdb-popup .mdb-popup-emoji {
+  background: color-mix(in srgb, var(--mdb-color, #0d9488) 12%, transparent);
+}
+
+@keyframes mdb-emoji-pop {
+  from { transform: scale(0.5); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+/* Badge */
+.mdb-popup-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: color-mix(in srgb, var(--mdb-color, #0d9488) 10%, transparent);
+  color: var(--mdb-color, #0d9488);
+  border: 1px solid color-mix(in srgb, var(--mdb-color, #0d9488) 25%, transparent);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mdb-pulse-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--mdb-color, #0d9488);
+  animation: mdb-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes mdb-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.7); }
+}
+
+/* Title */
+.mdb-popup-title {
+  font-size: 22px;
+  font-weight: 850;
+  color: var(--text-h, #0f172a);
+  margin: 0;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+}
+
+/* Theme */
+.mdb-popup-theme {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface-hover, #f8fafc);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12.5px;
+  color: var(--text-muted, #64748b);
+  font-style: normal;
+}
+.mdb-popup-theme em {
+  font-style: italic;
+  color: var(--text, #334155);
+  font-weight: 600;
+}
+
+/* Description */
+.mdb-popup-desc {
+  font-size: 14px;
+  color: var(--text-muted, #64748b);
+  line-height: 1.65;
+  margin: 0;
+  max-width: 380px;
+}
+
+/* Actions */
+.mdb-popup-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.mdb-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 22px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #ffffff;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: filter 0.15s ease, transform 0.1s ease;
+}
+.mdb-btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+.mdb-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 22px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-muted, #64748b);
+  background: var(--surface-hover, #f1f5f9);
+  border: 1px solid var(--border, #e2e8f0);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.mdb-btn-secondary:hover { background: var(--border, #e2e8f0); }
+
+/* ── HERO FLOATING PILL ───────────────────────────────────────────────────── */
+.mdb-hero-pill {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  z-index: 20;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(6, 13, 24, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 999px;
+  padding: 8px 14px 8px 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  animation: mdb-pill-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  max-width: 320px;
+}
+
+/* Left border uses the event colour */
+.mdb-hero-pill::before {
+  content: '';
+  display: block;
+  width: 3px;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 999px 0 0 999px;
+  background: var(--mdb-color, #0d9488);
+}
+
+@keyframes mdb-pill-in {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.mdb-hero-pill-emoji {
+  font-size: 20px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.mdb-hero-pill-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.mdb-hero-pill-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mdb-color, #0d9488);
+}
+
+.mdb-hero-pill-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.92);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.mdb-hero-pill-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: background 0.15s ease;
+}
+.mdb-hero-pill-link:hover { background: rgba(255, 255, 255, 0.2); color: #fff; }
+
+.mdb-hero-pill-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s ease, color 0.15s ease;
+  padding: 0;
+}
+.mdb-hero-pill-close:hover { background: rgba(255, 255, 255, 0.18); color: #fff; }
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+  .mdb-hero-pill {
+    top: 12px;
+    right: 12px;
+    max-width: calc(100vw - 24px);
+  }
+  .mdb-hero-pill-name { max-width: 140px; }
+  .mdb-popup { padding: 32px 20px 24px; }
+  .mdb-popup-title { font-size: 19px; }
+  .mdb-popup-emoji { font-size: 40px; width: 68px; height: 68px; }
+}

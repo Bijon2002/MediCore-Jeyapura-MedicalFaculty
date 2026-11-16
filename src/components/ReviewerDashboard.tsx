@@ -13,6 +13,7 @@ import type { Topic } from '../client/types/topic.types';
 import { AdminApplicationReview } from './AdminApplicationReview';
 import { Profile } from './Profile';
 import { ImageUploader } from './ImageUploader';
+import { SystemAlert } from './SystemAlert';
 import './ReviewerDashboard.css';
 
 export type AdminWorkspaceTab = 'OVERVIEW' | 'ARTICLES' | 'QUIZZES' | 'REVIEWERS' | 'SUBJECTS' | 'PROFILE' | 'USERS' | 'HERO_SLIDES' | 'ADS';
@@ -72,6 +73,9 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
   const [articlesError, setArticlesError] = useState<string | null>(null);
   const [articleStatusFilter, setArticleStatusFilter] = useState<'ALL' | ArticleStatus>('ALL');
   const [articleSearchTerm, setArticleSearchTerm] = useState<string>('');
+  // Bulk-select for articles
+  const [selectedArticleIds, setSelectedArticleIds] = useState<Set<string>>(new Set());
+  const [bulkArticleDeleting, setBulkArticleDeleting] = useState(false);
 
   // QUIZZES STATE
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
@@ -79,6 +83,23 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
   const [quizzesError, setQuizzesError] = useState<string | null>(null);
   const [quizStatusFilter, setQuizStatusFilter] = useState<'ALL' | 'PUBLISHED' | 'UNPUBLISHED'>('ALL');
   const [quizSearchTerm, setQuizSearchTerm] = useState<string>('');
+  // Bulk-select for quizzes
+  const [selectedQuizIds, setSelectedQuizIds] = useState<Set<string>>(new Set());
+  const [bulkQuizDeleting, setBulkQuizDeleting] = useState(false);
+
+  // SYSTEM ALERT STATE (replaces window.confirm / window.alert)
+  const [sysAlert, setSysAlert] = useState<{
+    isOpen: boolean;
+    type: 'confirm' | 'danger' | 'success' | 'warning' | 'info' | 'alert';
+    title: string;
+    message: string;
+    confirmLabel?: string;
+    onConfirm?: () => void;
+  }>({ isOpen: false, type: 'confirm', title: '', message: '' });
+
+  const showAlert = (cfg: Omit<typeof sysAlert, 'isOpen'>) =>
+    setSysAlert({ ...cfg, isOpen: true });
+  const closeAlert = () => setSysAlert((prev) => ({ ...prev, isOpen: false }));
 
   // USERS STATE (Admin-only)
   interface UserProfile {
@@ -218,7 +239,7 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
 
   const handleSaveSubject = async () => {
     if (!subjectForm.title.trim()) {
-      alert('Specialty name is required.');
+      showAlert({ type: 'warning', title: 'Missing Field', message: 'Specialty name is required.' });
       return;
     }
     try {
@@ -237,13 +258,13 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
       resetSubjectForm();
       await fetchSubjects();
     } catch (err: any) {
-      alert(err?.message || 'Failed to save specialty.');
+      showAlert({ type: 'danger', title: 'Save Failed', message: err?.message || 'Failed to save specialty.' });
     }
   };
 
   const handleSaveTopic = async () => {
     if (!topicForm.subjectId || !topicForm.title.trim()) {
-      alert('Topic name and specialty are required.');
+      showAlert({ type: 'warning', title: 'Missing Fields', message: 'Topic name and specialty are required.' });
       return;
     }
     try {
@@ -262,28 +283,44 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
       resetTopicForm();
       await fetchTopics();
     } catch (err: any) {
-      alert(err?.message || 'Failed to save topic.');
+      showAlert({ type: 'danger', title: 'Save Failed', message: err?.message || 'Failed to save topic.' });
     }
   };
 
   const handleDeleteSubject = async (subject: Subject) => {
-    if (!window.confirm(`Delete "${subject.title}" and its topics?`)) return;
-    try {
-      await SubjectsApiClient.deleteSubject(subject.id);
-      await Promise.all([fetchSubjects(), fetchTopics()]);
-    } catch (err: any) {
-      alert(err?.message || 'Failed to delete specialty.');
-    }
+    showAlert({
+      type: 'danger',
+      title: 'Delete Specialty',
+      message: `Are you sure you want to delete "${subject.title}" and all its topics? This action cannot be undone.`,
+      confirmLabel: 'Delete',
+      onConfirm: async () => {
+        closeAlert();
+        try {
+          await SubjectsApiClient.deleteSubject(subject.id);
+          await Promise.all([fetchSubjects(), fetchTopics()]);
+        } catch (err: any) {
+          showAlert({ type: 'danger', title: 'Delete Failed', message: err?.message || 'Failed to delete specialty.' });
+        }
+      },
+    });
   };
 
   const handleDeleteTopic = async (topic: Topic) => {
-    if (!window.confirm(`Delete "${topic.title}"?`)) return;
-    try {
-      await TopicsApiClient.deleteTopic(topic.id);
-      await fetchTopics();
-    } catch (err: any) {
-      alert(err?.message || 'Failed to delete topic.');
-    }
+    showAlert({
+      type: 'danger',
+      title: 'Delete Topic',
+      message: `Are you sure you want to delete "${topic.title}"? This action cannot be undone.`,
+      confirmLabel: 'Delete',
+      onConfirm: async () => {
+        closeAlert();
+        try {
+          await TopicsApiClient.deleteTopic(topic.id);
+          await fetchTopics();
+        } catch (err: any) {
+          showAlert({ type: 'danger', title: 'Delete Failed', message: err?.message || 'Failed to delete topic.' });
+        }
+      },
+    });
   };
 
   // FETCH USERS (Admin-only)
@@ -320,7 +357,7 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
       if (error) throw error;
       setUsers((prev) => prev.map((u) => u.id === userId ? { ...u, role: newRole } : u));
     } catch (err: any) {
-      alert(err?.message || 'Failed to update user role.');
+      showAlert({ type: 'danger', title: 'Update Failed', message: err?.message || 'Failed to update user role.' });
     } finally {
       setUserSavingId(null);
     }
@@ -333,7 +370,7 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
       setHeroSlidesSaved(true);
       setTimeout(() => setHeroSlidesSaved(false), 2500);
     } catch (err) {
-      alert('Failed to save hero slides.');
+      showAlert({ type: 'danger', title: 'Save Failed', message: 'Failed to save hero slides.' });
     }
   };
 
@@ -358,21 +395,47 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
 
   // DELETE ARTICLE
   const handleDeleteArticle = async (articleId: string, articleTitle: string) => {
-    if (!window.confirm(`Are you sure you want to delete "${articleTitle}"?`)) {
-      return;
-    }
+    showAlert({
+      type: 'danger',
+      title: 'Delete Article',
+      message: `Are you sure you want to permanently delete "${articleTitle}"? This action cannot be undone.`,
+      confirmLabel: 'Delete Article',
+      onConfirm: async () => {
+        closeAlert();
+        setArticles((prev) => prev.filter((a) => a.id !== articleId));
+        setSelectedArticleIds((prev) => { const s = new Set(prev); s.delete(articleId); return s; });
+        try {
+          await ArticlesApiClient.deleteArticle(articleId);
+          await fetchArticles();
+        } catch (err: any) {
+          showAlert({ type: 'danger', title: 'Delete Failed', message: err?.message || 'Failed to delete article.' });
+        }
+      },
+    });
+  };
 
-    const token = getAccessToken();
-    if (!token) {
-      alert('Authentication required.');
-      return;
-    }
+  // BULK DELETE ARTICLES
+  const handleBulkDeleteArticles = async () => {
+    const idsToDelete = Array.from(selectedArticleIds);
+    if (idsToDelete.length === 0) return;
 
-    try {
-      await ArticlesApiClient.deleteArticle(articleId, token);
-      fetchArticles();
-    } catch (err: any) {
-      alert(err?.message || 'Failed to delete article. Admin permissions required.');
+    setBulkArticleDeleting(true);
+    closeAlert();
+    setArticles((prev) => prev.filter((a) => !idsToDelete.includes(a.id)));
+    setSelectedArticleIds(new Set());
+
+    let failed = 0;
+    for (const id of idsToDelete) {
+      try {
+        await ArticlesApiClient.deleteArticle(id);
+      } catch {
+        failed++;
+      }
+    }
+    setBulkArticleDeleting(false);
+    await fetchArticles();
+    if (failed > 0) {
+      showAlert({ type: 'warning', title: 'Partial Delete', message: `${failed} article(s) could not be deleted.` });
     }
   };
 
@@ -381,47 +444,67 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
       await ArticlesApiClient.setFeaturedArticle(article.id, !article.isFeatured);
       await fetchArticles();
     } catch (err: any) {
-      alert(err?.message || 'Failed to update featured article state.');
+      showAlert({ type: 'danger', title: 'Update Failed', message: err?.message || 'Failed to update featured article state.' });
     }
   };
 
   // TOGGLE QUIZ PUBLISH / UNPUBLISH
   const handleToggleQuizPublish = async (quiz: Quiz) => {
-    const token = getAccessToken();
-    if (!token) {
-      alert('Authentication required.');
-      return;
-    }
-
     try {
       if (quiz.isPublished) {
-        await QuizzesApiClient.unpublishQuiz(quiz.id, token);
+        await QuizzesApiClient.unpublishQuiz(quiz.id);
       } else {
-        await QuizzesApiClient.publishQuiz(quiz.id, token);
+        await QuizzesApiClient.publishQuiz(quiz.id);
       }
       fetchQuizzes();
     } catch (err: any) {
-      alert(err?.message || 'Failed to change quiz publication state.');
+      showAlert({ type: 'danger', title: 'Update Failed', message: err?.message || 'Failed to change quiz publication state.' });
     }
   };
 
   // DELETE QUIZ
   const handleDeleteQuiz = async (quizId: string, quizTitle: string) => {
-    if (!window.confirm(`Are you sure you want to delete quiz "${quizTitle}"?`)) {
-      return;
-    }
+    showAlert({
+      type: 'danger',
+      title: 'Delete Quiz',
+      message: `Are you sure you want to permanently delete the quiz "${quizTitle}"? This action cannot be undone.`,
+      confirmLabel: 'Delete Quiz',
+      onConfirm: async () => {
+        closeAlert();
+        setQuizzes((prev) => prev.filter((q) => q.id !== quizId));
+        setSelectedQuizIds((prev) => { const s = new Set(prev); s.delete(quizId); return s; });
+        try {
+          await QuizzesApiClient.deleteQuiz(quizId);
+          await fetchQuizzes();
+        } catch (err: any) {
+          showAlert({ type: 'danger', title: 'Delete Failed', message: err?.message || 'Failed to delete quiz.' });
+        }
+      },
+    });
+  };
 
-    const token = getAccessToken();
-    if (!token) {
-      alert('Authentication required.');
-      return;
-    }
+  // BULK DELETE QUIZZES
+  const handleBulkDeleteQuizzes = async () => {
+    const idsToDelete = Array.from(selectedQuizIds);
+    if (idsToDelete.length === 0) return;
 
-    try {
-      await QuizzesApiClient.deleteQuiz(quizId, token);
-      fetchQuizzes();
-    } catch (err: any) {
-      alert(err?.message || 'Failed to delete quiz. Admin credentials required.');
+    setBulkQuizDeleting(true);
+    closeAlert();
+    setQuizzes((prev) => prev.filter((q) => !idsToDelete.includes(q.id)));
+    setSelectedQuizIds(new Set());
+
+    let failed = 0;
+    for (const id of idsToDelete) {
+      try {
+        await QuizzesApiClient.deleteQuiz(id);
+      } catch {
+        failed++;
+      }
+    }
+    setBulkQuizDeleting(false);
+    await fetchQuizzes();
+    if (failed > 0) {
+      showAlert({ type: 'warning', title: 'Partial Delete', message: `${failed} quiz(zes) could not be deleted.` });
     }
   };
 
@@ -1475,6 +1558,40 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
               <div style={{ padding: '24px', color: '#ef4444', fontWeight: 600 }}>{quizzesError}</div>
             ) : null}
 
+            {/* Bulk actions bar for Quizzes */}
+            {selectedQuizIds.size > 0 && isAdmin && (
+              <div className="bulk-actions-strip">
+                <span>{selectedQuizIds.size} quiz(zes) selected</span>
+                <button
+                  type="button"
+                  className="btn-bulk-delete"
+                  disabled={bulkQuizDeleting}
+                  onClick={() => {
+                    showAlert({
+                      type: 'danger',
+                      title: 'Bulk Delete Quizzes',
+                      message: `Are you sure you want to permanently delete ${selectedQuizIds.size} selected quiz(zes)? All associated questions and options will also be deleted. This action cannot be undone.`,
+                      confirmLabel: bulkQuizDeleting ? 'Deleting...' : `Delete ${selectedQuizIds.size} Quizzes`,
+                      onConfirm: handleBulkDeleteQuizzes,
+                    });
+                  }}
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  </svg>
+                  Delete Selected ({selectedQuizIds.size})
+                </button>
+                <button
+                  type="button"
+                  className="btn-bulk-cancel"
+                  onClick={() => setSelectedQuizIds(new Set())}
+                >
+                  Deselect All
+                </button>
+              </div>
+            )}
+
             {quizzesLoading ? (
               <div style={{ padding: '36px', textAlign: 'center', color: 'var(--text-muted)' }}>
                 Loading Quizzes...
@@ -1488,6 +1605,23 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
                 <table className="reviewer-table">
                   <thead>
                     <tr>
+                      {isAdmin && (
+                        <th style={{ width: '40px', textAlign: 'center' }}>
+                          <input
+                            type="checkbox"
+                            className="admin-checkbox"
+                            aria-label="Select all quizzes"
+                            checked={filteredQuizzes.length > 0 && selectedQuizIds.size === filteredQuizzes.length}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedQuizIds(new Set(filteredQuizzes.map((q) => q.id)));
+                              } else {
+                                setSelectedQuizIds(new Set());
+                              }
+                            }}
+                          />
+                        </th>
+                      )}
                       <th>Quiz Title & Scope</th>
                       <th>Subject / Topic</th>
                       <th>Questions</th>
@@ -1498,6 +1632,22 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
                   <tbody>
                     {filteredQuizzes.map((quiz) => (
                       <tr key={quiz.id}>
+                        {isAdmin && (
+                          <td style={{ textAlign: 'center' }}>
+                            <input
+                              type="checkbox"
+                              className="admin-checkbox"
+                              aria-label={`Select quiz ${quiz.title}`}
+                              checked={selectedQuizIds.has(quiz.id)}
+                              onChange={(e) => {
+                                const next = new Set(selectedQuizIds);
+                                if (e.target.checked) next.add(quiz.id);
+                                else next.delete(quiz.id);
+                                setSelectedQuizIds(next);
+                              }}
+                            />
+                          </td>
+                        )}
                         <td>
                           <div className="article-row-title">{quiz.title}</div>
                           <div className="article-row-summary">
@@ -1665,6 +1815,40 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
               <div style={{ padding: '24px', color: '#ef4444', fontWeight: 600 }}>{articlesError}</div>
             ) : null}
 
+            {/* Bulk actions bar for Articles */}
+            {selectedArticleIds.size > 0 && (isAdmin || user?.role === 'MEDICAL_REVIEWER') && (
+              <div className="bulk-actions-strip">
+                <span>{selectedArticleIds.size} article(s) selected</span>
+                <button
+                  type="button"
+                  className="btn-bulk-delete"
+                  disabled={bulkArticleDeleting}
+                  onClick={() => {
+                    showAlert({
+                      type: 'danger',
+                      title: 'Bulk Delete Articles',
+                      message: `Are you sure you want to permanently delete ${selectedArticleIds.size} selected article(s)? This action cannot be undone.`,
+                      confirmLabel: bulkArticleDeleting ? 'Deleting...' : `Delete ${selectedArticleIds.size} Articles`,
+                      onConfirm: handleBulkDeleteArticles,
+                    });
+                  }}
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  </svg>
+                  Delete Selected ({selectedArticleIds.size})
+                </button>
+                <button
+                  type="button"
+                  className="btn-bulk-cancel"
+                  onClick={() => setSelectedArticleIds(new Set())}
+                >
+                  Deselect All
+                </button>
+              </div>
+            )}
+
             {articlesLoading ? (
               <div style={{ padding: '36px', textAlign: 'center', color: 'var(--text-muted)' }}>
                 Loading Reviewer Articles...
@@ -1678,6 +1862,23 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
                 <table className="reviewer-table">
                   <thead>
                     <tr>
+                      {(isAdmin || user?.role === 'MEDICAL_REVIEWER') && (
+                        <th style={{ width: '40px', textAlign: 'center' }}>
+                          <input
+                            type="checkbox"
+                            className="admin-checkbox"
+                            aria-label="Select all articles"
+                            checked={articles.length > 0 && selectedArticleIds.size === articles.length}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedArticleIds(new Set(articles.map((a) => a.id)));
+                              } else {
+                                setSelectedArticleIds(new Set());
+                              }
+                            }}
+                          />
+                        </th>
+                      )}
                       <th>Article Title & Summary</th>
                       <th>Status</th>
                       <th>Last Updated</th>
@@ -1687,6 +1888,22 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
                   <tbody>
                     {articles.map((article) => (
                       <tr key={article.id}>
+                        {(isAdmin || user?.role === 'MEDICAL_REVIEWER') && (
+                          <td style={{ textAlign: 'center' }}>
+                            <input
+                              type="checkbox"
+                              className="admin-checkbox"
+                              aria-label={`Select article ${article.title}`}
+                              checked={selectedArticleIds.has(article.id)}
+                              onChange={(e) => {
+                                const next = new Set(selectedArticleIds);
+                                if (e.target.checked) next.add(article.id);
+                                else next.delete(article.id);
+                                setSelectedArticleIds(next);
+                              }}
+                            />
+                          </td>
+                        )}
                         <td>
                           <div className="article-row-title">{article.title}</div>
                           <div className="article-row-summary">
@@ -1746,6 +1963,17 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
           </div>
         </>
       )}
+
+      {/* SYSTEM ALERT MODAL (Replaces browser window.confirm / window.alert) */}
+      <SystemAlert
+        isOpen={sysAlert.isOpen}
+        type={sysAlert.type}
+        title={sysAlert.title}
+        message={sysAlert.message}
+        confirmLabel={sysAlert.confirmLabel}
+        onConfirm={sysAlert.onConfirm}
+        onCancel={closeAlert}
+      />
     </div>
   );
 };

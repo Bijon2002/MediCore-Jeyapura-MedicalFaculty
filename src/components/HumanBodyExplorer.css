@@ -1,0 +1,368 @@
+/* ============================================================
+   HumanBodyExplorer — wraps open-anatomy-3d-react
+   Clean dark clinical layout, full-height, no emoji in header
+   ============================================================ */
+
+.hbe-page {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 64px);         /* below the fixed header */
+  min-height: 600px;
+  background: #060d18;
+  color: #e2e8f0;
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ---- Top bar ---- */
+.hbe-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.hbe-topbar-title {
+  display: flex;
+  flex-direction: column;
+}
+
+.hbe-topbar-title h1 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+  background: linear-gradient(90deg, #38bdf8, #818cf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hbe-topbar-title p {
+  font-size: 0.72rem;
+  color: #475569;
+  margin: 0;
+}
+
+.hbe-topbar-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.hbe-ctrl-btn {
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: #94a3b8;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.hbe-ctrl-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.hbe-ctrl-btn.active {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: #38bdf8;
+  color: #38bdf8;
+}
+
+/* ---- Main 3-column body ---- */
+.hbe-main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ---- Left: system filter ---- */
+.hbe-sidebar {
+  width: 180px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 10px;
+  background: rgba(255, 255, 255, 0.02);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  overflow-y: auto;
+  gap: 4px;
+}
+
+.hbe-sidebar-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #334155;
+  margin: 0 0 6px 2px;
+}
+
+.hbe-sys-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #64748b;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.18s;
+  text-align: left;
+  width: 100%;
+}
+
+.hbe-sys-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #cbd5e1;
+}
+
+.hbe-sys-btn.active {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.hbe-sys-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.hbe-sidebar-sep {
+  height: 1px;
+  background: rgba(255,255,255,0.05);
+  margin: 6px 0;
+}
+
+/* ---- Centre: 3D canvas ---- */
+.hbe-viewer-wrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* Force the open-anatomy-3d-react AnatomyViewer to fill its container */
+.hbe-viewer-wrap > div,
+.hbe-viewer-inner {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* override inner dark background from the package */
+.hbe-viewer-inner {
+  background: #060d18 !important;
+}
+
+/* ---- Right: info panel ---- */
+.hbe-info {
+  width: 270px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 14px;
+  background: rgba(255, 255, 255, 0.02);
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  overflow-y: auto;
+}
+
+.hbe-info-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #334155;
+  text-align: center;
+  padding: 24px 16px;
+}
+
+.hbe-info-empty-icon {
+  font-size: 2.5rem;
+  opacity: 0.35;
+}
+
+.hbe-info-empty p {
+  font-size: 0.8rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.hbe-info-card {
+  animation: hbe-fadein 0.25s ease;
+}
+
+@keyframes hbe-fadein {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hbe-info-system-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+}
+
+.hbe-info-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin: 0 0 2px;
+  line-height: 1.25;
+}
+
+.hbe-info-latin {
+  font-size: 0.75rem;
+  color: #475569;
+  font-style: italic;
+  margin: 0 0 14px;
+}
+
+.hbe-info-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.06);
+  margin: 10px 0;
+}
+
+.hbe-info-section-label {
+  font-size: 0.63rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #334155;
+  margin: 0 0 6px;
+}
+
+.hbe-info-desc {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  line-height: 1.65;
+  margin: 0 0 12px;
+}
+
+.hbe-info-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  margin-bottom: 12px;
+}
+
+.hbe-stat {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 7px;
+  padding: 8px 10px;
+  text-align: center;
+}
+
+.hbe-stat-value {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.hbe-stat-label {
+  font-size: 0.6rem;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 2px;
+}
+
+.hbe-info-facts {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hbe-info-facts li {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  font-size: 0.77rem;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+
+.hbe-info-facts li::before {
+  content: '→';
+  color: #38bdf8;
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  margin-top: 2px;
+}
+
+.hbe-info-deselect {
+  margin-top: auto;
+  padding: 7px;
+  border-radius: 7px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: transparent;
+  color: #475569;
+  font-size: 0.74rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.hbe-info-deselect:hover {
+  background: rgba(255,255,255,0.05);
+  color: #94a3b8;
+}
+
+/* Attribution */
+.hbe-attribution {
+  font-size: 0.6rem;
+  color: #1e293b;
+  padding: 6px 20px;
+  flex-shrink: 0;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  line-height: 1.4;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .hbe-sidebar { width: 140px; }
+  .hbe-info { width: 230px; }
+}
+
+@media (max-width: 680px) {
+  .hbe-main { flex-direction: column; }
+  .hbe-sidebar {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    max-height: 90px;
+    padding: 8px;
+  }
+  .hbe-sys-btn { width: auto; padding: 5px 9px; font-size: 0.7rem; }
+  .hbe-sidebar-label, .hbe-sidebar-sep { display: none; }
+  .hbe-viewer-wrap { height: 55vw; min-height: 260px; }
+  .hbe-info { width: 100%; border-left: none; border-top: 1px solid rgba(255,255,255,0.06); max-height: 280px; }
+}

@@ -77,14 +77,6 @@ export const Contact: React.FC<ContactProps> = ({ onNavigateHome, onNavigateToAr
           style={{ backgroundImage: "url('/images/medical-hero-4.jpg')" }}
         />
         <div className="contact-hero-scenic-overlay" />
-        <div className="contact-hero-wave-bg">
-          <svg className="contact-organic-wave" viewBox="0 0 1440 180" fill="none" preserveAspectRatio="none">
-            <path
-              d="M0,80 C320,160 540,20 900,100 C1200,160 1360,60 1440,110 L1440,180 L0,180 Z"
-              fill="#fafaf7"
-            />
-          </svg>
-        </div>
 
         <div className="contact-hero-container">
           <nav className="contact-breadcrumbs" aria-label="Breadcrumb">
@@ -225,24 +217,27 @@ export const Contact: React.FC<ContactProps> = ({ onNavigateHome, onNavigateToAr
                     </svg>
                   </div>
                   <div>
-                    <h4>Editorial &amp; Submissions</h4>
-                    <p>editorial@medcore.clinical</p>
-                    <span className="info-note">For article drafts and editorial correspondence</span>
+                    <h4>Official Email &amp; Inquiries</h4>
+                    <p><a href="mailto:med03core@gmail.com" style={{ color: 'inherit', textDecoration: 'underline' }}>med03core@gmail.com</a></p>
+                    <span className="info-note">Direct correspondence, partnerships &amp; inquiries</span>
                   </div>
                 </div>
 
                 <div className="contact-info-card">
                   <div className="info-icon">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3" />
-                      <path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4" />
-                      <circle cx="20" cy="10" r="2" />
+                      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
                     </svg>
                   </div>
                   <div>
-                    <h4>Medical Review Board</h4>
-                    <p>reviewers@medcore.clinical</p>
-                    <span className="info-note">Credential validation &amp; peer-review coordination</span>
+                    <h4>Official Social Channels</h4>
+                    <p style={{ display: 'flex', gap: '14px', marginTop: '4px' }}>
+                      <a href="https://www.instagram.com/med_core03?mdxt=NjN0cWt2OXp3czU=" target="_blank" rel="noopener noreferrer" style={{ color: '#ea580c', fontWeight: 700 }}>Instagram ↗</a>
+                      <a href="https://www.linkedin.com/company/medcore-srilanka/" target="_blank" rel="noopener noreferrer" style={{ color: '#0284c7', fontWeight: 700 }}>LinkedIn ↗</a>
+                    </p>
+                    <span className="info-note">Stay connected with live clinical updates</span>
                   </div>
                 </div>
 

@@ -23,8 +23,11 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
   structuredData,
 }) => {
   useEffect(() => {
-    // 1. Page Title
-    const formattedTitle = title.includes('medcore') ? title : `${title} | medcore`;
+    // 1. Page Title - Normalize brand name to "MedCore"
+    const cleanedTitle = title
+      .replace(/\bMediCore\b/g, 'MedCore')
+      .replace(/\bmedcore\b/g, 'MedCore');
+    const formattedTitle = cleanedTitle.includes('MedCore') ? cleanedTitle : `${cleanedTitle} | MedCore`;
     document.title = formattedTitle;
 
     // Helper to create or update meta tags
@@ -44,7 +47,7 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
 
     // 3. Open Graph
     const canonicalUrl = `${BASE_URL}${canonicalPath.startsWith('/') ? canonicalPath : `/${canonicalPath}`}`;
-    setMetaTag('property', 'og:site_name', 'medcore');
+    setMetaTag('property', 'og:site_name', 'MedCore');
     setMetaTag('property', 'og:title', formattedTitle);
     setMetaTag('property', 'og:description', description);
     setMetaTag('property', 'og:type', ogType);

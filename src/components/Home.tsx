@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { ArticlesApiClient } from '../client/api/articles.api';
 import { SubjectsApiClient } from '../client/api/subjects.api';
 import { TopicsApiClient } from '../client/api/topics.api';
@@ -10,9 +10,11 @@ import { SEOHead } from './seo/SEOHead';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { AnimatedCounter } from './AnimatedCounter';
 import { useMedicalNews } from '../hooks/useMedicalNews';
+import { MedicalDayController, MedicalDayHeroPill } from './MedicalDayBanner';
 import './Home.css';
 
 export interface HomeProps {
+  onNavigateHome?: () => void;
   onNavigateToArticles: () => void;
   onNavigateToArticleDetail: (article: Article) => void;
   onNavigateToSubjects: () => void;
@@ -28,6 +30,7 @@ export interface HomeProps {
 const MarqueeElement = 'marquee' as unknown as React.ElementType;
 
 export const Home: React.FC<HomeProps> = ({
+  onNavigateHome,
   onNavigateToArticles,
   onNavigateToArticleDetail,
   onNavigateToSubjects,
@@ -329,9 +332,11 @@ export const Home: React.FC<HomeProps> = ({
 
   return (
     <div className="pomaii-home-page">
+      {/* MEDICAL AWARENESS DAY — popup on first load, pill in hero thereafter */}
+      <MedicalDayController />
       <SEOHead
-        title="medcore | Open Medical Learning Platform"
-        description="Explore medical learning resources, educational articles and quizzes on medcore. An open-access platform for students and educators to learn, practise and create content."
+        title="MedCore | Open Medical Learning Platform"
+        description="Explore medical learning resources, educational articles and quizzes on MedCore. An open-access platform for students and educators to learn, practise and create content."
         canonicalPath="/"
       />
       {/* =========================================================================
@@ -364,6 +369,8 @@ export const Home: React.FC<HomeProps> = ({
         onMouseEnter={() => setIsHeroHovered(true)}
         onMouseLeave={() => setIsHeroHovered(false)}
       >
+        {/* Medical Awareness Day floating pill — shown in corner after popup closed */}
+        <MedicalDayHeroPill />
         {/* Background Image Container with Soft Glass Wave Overlay */}
         <div
           className="hero-background-wrapper"
@@ -1346,27 +1353,41 @@ export const Home: React.FC<HomeProps> = ({
             <div className="social-links-row">
               <span className="social-label">Follow Us</span>
               <div className="social-icon-bubbles">
-                <a href="#facebook" aria-label="Facebook" className="social-bubble">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-                  </svg>
-                </a>
-                <a href="#instagram" aria-label="Instagram" className="social-bubble">
+                <a
+                  href="https://www.instagram.com/med_core03?mdxt=NjN0cWt2OXp3czU="
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                  className="social-bubble"
+                  title="MedCore Instagram"
+                >
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
                     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
                     <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
                   </svg>
                 </a>
-                <a href="#twitter" aria-label="Twitter" className="social-bubble">
+                <a
+                  href="https://www.linkedin.com/company/medcore-srilanka/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="LinkedIn"
+                  className="social-bubble"
+                  title="MedCore LinkedIn"
+                >
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />
+                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
                   </svg>
                 </a>
-                <a href="#youtube" aria-label="YouTube" className="social-bubble">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z" />
-                    <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="#ffffff" />
+                <a
+                  href="mailto:med03core@gmail.com"
+                  aria-label="Email Us"
+                  className="social-bubble"
+                  title="Email MedCore"
+                >
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="2" y="4" width="20" height="16" rx="2" />
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
                   </svg>
                 </a>
               </div>
@@ -1383,7 +1404,19 @@ export const Home: React.FC<HomeProps> = ({
           <div className="footer-columns-grid">
             {/* Col 1: Brand & Bio */}
             <div className="footer-brand-column">
-              <div className="footer-logo-row" onClick={onNavigateToArticles}>
+              <div
+                className="footer-logo-row"
+                onClick={() => {
+                  if (onNavigateHome) {
+                    onNavigateHome();
+                  }
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                role="button"
+                tabIndex={0}
+                style={{ cursor: 'pointer' }}
+                aria-label="Navigate to MedCore Home"
+              >
                 <div className="footer-brand-icon">
                   <img src="/medcore-logo.png" alt="MedCore Logo" className="footer-brand-logo-img" />
                 </div>

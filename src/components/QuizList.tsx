@@ -109,14 +109,6 @@ export const QuizList: React.FC<QuizListProps> = ({
           style={{ backgroundImage: "url('/images/medical-hero-2.jpg')" }}
         />
         <div className="quizzes-hero-scenic-overlay" />
-        <div className="quizzes-hero-wave-bg">
-          <svg className="quizzes-organic-wave" viewBox="0 0 1440 180" fill="none" preserveAspectRatio="none">
-            <path
-              d="M0,80 C320,160 540,20 900,100 C1200,160 1360,60 1440,110 L1440,180 L0,180 Z"
-              fill="#fafaf7"
-            />
-          </svg>
-        </div>
 
         <div className="quizzes-hero-container">
           <div className="quizzes-hero-badge">

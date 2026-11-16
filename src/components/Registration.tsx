@@ -140,7 +140,7 @@ export const Registration: React.FC<RegistrationProps> = ({
         poster="/images/medical-hero-3.jpg"
         aria-hidden="true"
       >
-        <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" type="video/mp4" />
+        <source src="/login.mp4" type="video/mp4" />
       </video>
       <div className="medcore-registration-split-card">
         {/* LEFT PANEL: MEDICAL VISUAL SHOWCASE */}

@@ -14,11 +14,11 @@
 .public-hero-section {
   width: 100%;
   position: relative;
-  border-bottom: 1px solid rgba(226, 232, 240, 0.7);
+  border-bottom: none;
   padding: 64px 24px 50px;
   text-align: center;
   overflow: hidden;
-  background-color: #f2f7f4;
+  background-color: #060d18;
 }
 
 .public-hero-bg-image {
@@ -30,7 +30,8 @@
   background-size: cover;
   background-position: center 30%;
   z-index: 1;
-  opacity: 0.45;
+  opacity: 0.82;
+  filter: saturate(1.1) contrast(1.08);
 }
 
 .public-hero-scenic-overlay {
@@ -39,18 +40,12 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(180deg, rgba(248, 250, 252, 0.82) 0%, rgba(241, 245, 249, 0.88) 45%, rgba(250, 250, 247, 0.95) 80%, #fafaf7 100%);
+  background: linear-gradient(180deg, rgba(6, 13, 24, 0.62) 0%, rgba(6, 13, 24, 0.78) 50%, rgba(6, 13, 24, 0.92) 80%, rgba(6, 13, 24, 0.98) 100%);
   z-index: 1;
 }
 
 .public-hero-wave-bg {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 80px;
-  pointer-events: none;
-  z-index: 2;
+  display: none !important;
 }
 
 .public-organic-wave {
@@ -72,28 +67,29 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: #ffffff;
-  border: 1px solid rgba(21, 71, 52, 0.2);
-  box-shadow: 0 2px 8px rgba(21, 71, 52, 0.06);
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
   padding: 6px 16px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
-  color: #00285b;
+  color: #38bdf8;
   text-transform: uppercase;
   letter-spacing: 0.6px;
   margin-bottom: 18px;
+  backdrop-filter: blur(8px);
 }
 
 .public-hero-title {
   font-size: 44px;
   font-weight: 850;
   line-height: 1.18;
-  color: #091e13;
+  color: #ffffff;
   letter-spacing: -0.035em;
   margin: 0 0 16px;
   max-width: 860px;
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.8);
 }
 
 @media (max-width: 768px) {
@@ -105,11 +101,11 @@
 .public-hero-subtitle {
   font-size: 18px;
   line-height: 1.65;
-  color: #1e293b;
+  color: #cbd5e1;
   font-weight: 500;
   margin: 0 0 32px;
   max-width: 760px;
-  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
 }
 
 /* Metrics Strip */

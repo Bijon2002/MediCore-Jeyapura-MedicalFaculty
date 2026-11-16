@@ -29,6 +29,8 @@ import { ForStudents } from './components/ForStudents';
 import { ForEducators } from './components/ForEducators';
 import { Features } from './components/Features';
 import { PolicyPage } from './components/PolicyPage';
+import { HumanBodyExplorer } from './components/HumanBodyExplorer';
+import { ComingSoonPage } from './components/ComingSoonPage';
 import { PageTransition } from './components/PageTransition';
 import { parseRoute, pushRoute, type RouteState } from './components/route-utils';
 import { useAuth } from './auth/AuthContext';
@@ -45,6 +47,16 @@ function App() {
   const [showPreloader, setShowPreloader] = useState(true);
   const currentRole: UserRole = user?.role || 'STUDENT';
   const [adminActiveTab, setAdminActiveTab] = useState<AdminWorkspaceTab>('OVERVIEW');
+  const [unlockedPreviews, setUnlockedPreviews] = useState<Record<string, boolean>>(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      return {
+        'info-hub': params.get('preview') === 'true' || params.get('preview') === 'info-hub',
+        'body-atlas': params.get('preview') === 'true' || params.get('preview') === 'body-atlas',
+      };
+    }
+    return {} as Record<string, boolean>;
+  });
 
   const isStudentWorkspaceRoute =
     currentRole === 'STUDENT' &&
@@ -340,6 +352,11 @@ function App() {
     pushRoute(`/${policyType}`);
   };
 
+  const navigateToBodyAtlas = () => {
+    setRoute({ type: 'body-atlas' });
+    pushRoute('/body-atlas');
+  };
+
   const handleSwitchToWorkspace = () => {
     if (!user) {
       navigateToLogin();
@@ -412,6 +429,7 @@ function App() {
         onNavigateToAbout={navigateToAbout}
         onNavigateToContact={navigateToContact}
         onNavigateToInfoHub={navigateToInfoHub}
+        onNavigateToBodyAtlas={navigateToBodyAtlas}
         onSwitchToWorkspace={handleSwitchToWorkspace}
         isWorkspaceView={hasSidebar}
         activeRouteType={route.type}
@@ -445,6 +463,7 @@ function App() {
           <PageTransition pageKey={route.type + (('slug' in route && route.slug) || ('quizId' in route && route.quizId) || ('articleId' in route && route.articleId) || ('subjectSlug' in route && route.subjectSlug) || ('policyType' in route && route.policyType) || '')}>
           {route.type === 'home' ? (
             <Home
+              onNavigateHome={navigateToHome}
               onNavigateToArticles={navigateToArticles}
               onNavigateToArticleDetail={navigateToArticleDetail}
               onNavigateToSubjects={navigateToSubjects}
@@ -468,7 +487,19 @@ function App() {
               onNavigateToArticles={navigateToArticles}
             />
           ) : route.type === 'info-hub' ? (
-            <InfoHub onNavigateHome={navigateToHome} />
+            unlockedPreviews['info-hub'] ? (
+              <InfoHub onNavigateHome={navigateToHome} />
+            ) : (
+              <ComingSoonPage
+                type="info-hub"
+                onNavigateHome={navigateToHome}
+                onNavigateToArticles={navigateToArticles}
+                onNavigateToQuizzes={navigateToQuizzes}
+                onUnlockPreview={() =>
+                  setUnlockedPreviews((prev) => ({ ...prev, 'info-hub': true }))
+                }
+              />
+            )
           ) : route.type === 'features' ? (
             <Features
               onNavigateToQuizzes={navigateToQuizzes}
@@ -498,6 +529,20 @@ function App() {
             />
           ) : route.type === 'policy' ? (
             <PolicyPage type={route.policyType} />
+          ) : route.type === 'body-atlas' ? (
+            unlockedPreviews['body-atlas'] ? (
+              <HumanBodyExplorer />
+            ) : (
+              <ComingSoonPage
+                type="3d-atlas"
+                onNavigateHome={navigateToHome}
+                onNavigateToArticles={navigateToArticles}
+                onNavigateToQuizzes={navigateToQuizzes}
+                onUnlockPreview={() =>
+                  setUnlockedPreviews((prev) => ({ ...prev, 'body-atlas': true }))
+                }
+              />
+            )
           ) : route.type === 'login' ? (
             <Login
               onLoginSuccess={handleLoginSuccess}
@@ -589,8 +634,8 @@ function App() {
           )}
           </PageTransition>
 
-          {/* FOOTER (Shown on secondary pages, Home has its own comprehensive Pomaii footer) */}
-          {route.type !== 'home' ? (
+          {/* FOOTER (Shown on public secondary pages; hidden on Home and internal Admin/Student workspaces) */}
+          {route.type !== 'home' && !hasSidebar ? (
             <footer className="medcore-footer">
               <div className="footer-container">
                 <div className="footer-brand" onClick={navigateToHome} style={{ cursor: 'pointer' }}>
@@ -627,6 +672,8 @@ function App() {
                   <button type="button" onClick={() => navigateToPolicy('terms')}>Terms</button>
                   <span>·</span>
                   <button type="button" onClick={navigateToContact}>Contact</button>
+                  <span>·</span>
+                  <button type="button" onClick={navigateToBodyAtlas}>3D Body Atlas</button>
                   <span>·</span>
                   <button type="button" onClick={handleSwitchToWorkspace}>Clinical Workspace</button>
                 </div>

@@ -26,7 +26,8 @@ export type RouteState =
   | { type: 'edit-quiz'; quizId: string }
   | { type: 'login' }
   | { type: 'register' }
-  | { type: 'profile' };
+  | { type: 'profile' }
+  | { type: 'body-atlas' };
 
 export function parseRoute(pathname?: string): RouteState {
   const path = pathname ?? (typeof window !== 'undefined' ? window.location.pathname : '/');
@@ -211,6 +212,11 @@ export function parseRoute(pathname?: string): RouteState {
   // Topics list: /topics
   if (path === '/topics' || path === '/topics/') {
     return { type: 'topic-list' };
+  }
+
+  // Body Atlas route: /body-atlas
+  if (path === '/body-atlas' || path === '/body-atlas/') {
+    return { type: 'body-atlas' };
   }
 
   // Default fallback: Home

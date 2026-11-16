@@ -22,6 +22,7 @@ export interface HeaderProps {
   activeRouteType?: string;
   currentRole?: UserRole;
   onRoleChange?: (role: UserRole) => void;
+  onNavigateToBodyAtlas?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -41,6 +42,7 @@ export const Header: React.FC<HeaderProps> = ({
   isWorkspaceView = false,
   activeRouteType = 'home',
   currentRole = 'STUDENT',
+  onNavigateToBodyAtlas,
 }) => {
   const { user, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -273,6 +275,14 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={() => handleNavClick(onNavigateToQuizzes)}
             >
               Quizzes
+            </button>
+
+            <button
+              type="button"
+              className={`nav-tab-btn ${activeRouteType === 'body-atlas' ? 'active' : ''}`}
+              onClick={() => handleNavClick(onNavigateToBodyAtlas)}
+            >
+              3D Atlas
             </button>
 
             <button
@@ -540,6 +550,13 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => handleNavClick(onNavigateToQuizzes)}
           >
             Quizzes
+          </button>
+          <button
+            type="button"
+            className={`mobile-nav-item ${activeRouteType === 'body-atlas' ? 'active' : ''}`}
+            onClick={() => handleNavClick(onNavigateToBodyAtlas)}
+          >
+            3D Atlas
           </button>
           <button
             type="button"

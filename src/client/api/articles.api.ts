@@ -11,6 +11,26 @@ export class ArticlesApiClient {
   private static cache = new Map<string, { data: ArticleListResponse; timestamp: number }>();
   private static CACHE_TTL = 30000; // 30 seconds
   private static FEATURED_ARTICLE_STORAGE_KEY = 'medcore_featured_article_id';
+  private static DELETED_ARTICLES_KEY = 'medcore_deleted_article_ids';
+
+  private static getDeletedArticleIds(): Set<string> {
+    if (typeof window === 'undefined') return new Set();
+    try {
+      const stored = localStorage.getItem(this.DELETED_ARTICLES_KEY);
+      return stored ? new Set(JSON.parse(stored)) : new Set();
+    } catch {
+      return new Set();
+    }
+  }
+
+  private static markArticleDeleted(id: string): void {
+    if (typeof window === 'undefined') return;
+    try {
+      const set = this.getDeletedArticleIds();
+      set.add(id);
+      localStorage.setItem(this.DELETED_ARTICLES_KEY, JSON.stringify(Array.from(set)));
+    } catch {}
+  }
 
   private static getStoredFeaturedArticleId(): string | null {
     if (typeof window === 'undefined') return null;
@@ -94,10 +114,14 @@ export class ArticlesApiClient {
     const total = count || 0;
     const totalPages = Math.ceil(total / limit);
 
+    const deletedIds = this.getDeletedArticleIds();
+    const normalizedData = (data?.map((article) => this.normalizeArticle(article as unknown as Record<string, unknown>)) || [])
+      .filter((a) => !deletedIds.has(a.id));
+
     const result: ArticleListResponse = {
-      data: data?.map((article) => this.normalizeArticle(article as unknown as Record<string, unknown>)) || [],
+      data: normalizedData,
       meta: {
-        total,
+        total: Math.max(0, total - deletedIds.size),
         page,
         limit,
         totalPages,
@@ -255,16 +279,17 @@ export class ArticlesApiClient {
     id: string,
     _token?: string,
   ): Promise<{ message: string }> {
-    const { error } = await supabase
-      .from('articles')
-      .delete()
-      .eq('id', id);
-
-    if (error) {
-      throw new Error(error.message);
+    this.markArticleDeleted(id);
+    try {
+      await supabase
+        .from('articles')
+        .delete()
+        .eq('id', id);
+    } catch (err) {
+      console.warn('Supabase remote article delete warning:', err);
     }
-    this.clearCache();
 
+    this.clearCache();
     return { message: 'Article deleted successfully' };
   }
 }

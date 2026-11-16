@@ -5,6 +5,7 @@ import type {
   ReviewerApplication,
   ApplicationStatus,
 } from '../client/types/reviewer-application.types';
+import { SystemAlert } from './SystemAlert';
 import './AdminApplicationReview.css';
 
 export const AdminApplicationReview: React.FC = () => {
@@ -25,6 +26,7 @@ export const AdminApplicationReview: React.FC = () => {
   const [showRejectModal, setShowRejectModal] = useState<boolean>(false);
   const [rejectionReason, setRejectionReason] = useState<string>('');
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [approveConfirmApp, setApproveConfirmApp] = useState<{ id: string; name: string } | null>(null);
 
   const fetchApplications = useCallback(async () => {
     const token = getAccessToken();
@@ -60,10 +62,14 @@ export const AdminApplicationReview: React.FC = () => {
     fetchApplications();
   }, [fetchApplications]);
 
-  const handleApprove = async (appId: string, applicantName: string) => {
-    if (!window.confirm(`Are you sure you want to approve "${applicantName}" as a Medical Reviewer?`)) {
-      return;
-    }
+  const handleApprove = (appId: string, applicantName: string) => {
+    setApproveConfirmApp({ id: appId, name: applicantName });
+  };
+
+  const executeApprove = async () => {
+    if (!approveConfirmApp) return;
+    const { id: appId, name: applicantName } = approveConfirmApp;
+    setApproveConfirmApp(null);
 
     const token = getAccessToken();
     if (!token) return;
@@ -407,6 +413,16 @@ export const AdminApplicationReview: React.FC = () => {
           </div>
         </div>
       )}
+      {/* APPROVE CONFIRMATION SYSTEM ALERT */}
+      <SystemAlert
+        isOpen={Boolean(approveConfirmApp)}
+        type="confirm"
+        title="Approve Medical Reviewer"
+        message={`Are you sure you want to approve "${approveConfirmApp?.name}" as an accredited Medical Reviewer? They will gain authoring and peer-review access immediately.`}
+        confirmLabel="Approve"
+        onConfirm={executeApprove}
+        onCancel={() => setApproveConfirmApp(null)}
+      />
     </div>
   );
 };

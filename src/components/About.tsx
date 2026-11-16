@@ -21,8 +21,8 @@ export const About: React.FC<AboutProps> = ({
   return (
     <div className="medcore-about-page">
       <SEOHead
-        title="About MediCore | Mission, Origin & Architecture"
-        description="Learn about MediCore, an open-access medical education initiative created by students of the Faculty of Medical Sciences, University of Sri Jayewardenepura, Sri Lanka."
+        title="About MedCore | Mission, Origin & Architecture"
+        description="Learn about MedCore, an open-access medical education initiative created by students of the Faculty of Medical Sciences, University of Sri Jayewardenepura, Sri Lanka."
         canonicalPath="/about"
       />
       {/* =========================================================================
@@ -34,14 +34,6 @@ export const About: React.FC<AboutProps> = ({
           style={{ backgroundImage: "url('/images/medical-hero-1.jpg')" }}
         />
         <div className="about-hero-scenic-overlay" />
-        <div className="about-hero-wave-bg">
-          <svg className="about-organic-wave" viewBox="0 0 1440 180" fill="none" preserveAspectRatio="none">
-            <path
-              d="M0,80 C320,160 540,20 900,100 C1200,160 1360,60 1440,110 L1440,180 L0,180 Z"
-              fill="#fafaf7"
-            />
-          </svg>
-        </div>
 
         <div className="about-hero-container hero-slide-up">
           <nav className="about-breadcrumbs" aria-label="Breadcrumb">
@@ -98,22 +90,25 @@ export const About: React.FC<AboutProps> = ({
       </section>
 
       {/* =========================================================================
-          FOUNDER & DEVELOPMENT TEAM
+          FOUNDER & DEVELOPMENT TEAM & SUPPORTERS
           ========================================================================= */}
       <section className="about-section people-section reveal-on-scroll">
         <div className="about-container">
           <div className="about-section-header">
             <span className="about-section-tag">People Behind MedCore</span>
-            <h2>Founder &amp; Development Team</h2>
-            <p>Meet the people building an open, practical, and academically rigorous medical learning platform.</p>
+            <h2>Founder, Team &amp; Supporters</h2>
+            <p>Meet the people building, engineering, and championing an open, practical, and academically rigorous medical learning platform.</p>
           </div>
 
+          {/* FOUNDER CARD */}
           <div className="founder-profile-card">
-            <div className="founder-profile-mark" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                <circle cx="12" cy="8" r="4" />
-                <path d="M4 21a8 8 0 0 1 16 0M8 3.5 12 2l4 1.5" />
-              </svg>
+            <div className="founder-photo-wrapper">
+              <img
+                src="/images/founder.jpeg"
+                alt="Thuvarakan Srikaran - Founder of MedCore"
+                className="founder-photo-img"
+                loading="lazy"
+              />
             </div>
             <div>
               <span className="people-card-label">Founder – MedCore</span>
@@ -135,25 +130,66 @@ export const About: React.FC<AboutProps> = ({
             </div>
           </div>
 
+          {/* CO-CREATORS & ENGINEERING TEAM */}
           <div className="people-team-grid">
-            <article className="people-team-card">
-              <img src="/Developers/bijon.png" alt="Bijosilin" />
-              <div>
+            <article className="people-team-card developer-profile-card">
+              <div className="developer-photo-wrapper">
+                <img
+                  src="/Developers/bijon.png"
+                  alt="Bijosilin Marisilin - Co-Creator & Lead Engineer"
+                  className="developer-photo-img"
+                  loading="lazy"
+                />
+              </div>
+              <div className="developer-info-col">
                 <span className="people-card-label">Co-Creator &amp; Lead Engineer</span>
-                <h3>Bijosilin</h3>
+                <h3>Bijosilin Marisilin</h3>
                 <p className="people-card-role">Full-Stack &amp; Product Architecture</p>
                 <p>Leads React, TypeScript, Supabase architecture, scalable database design, and clinical knowledge delivery systems.</p>
               </div>
             </article>
-            <article className="people-team-card">
-              <img src="/Developers/mathu.jpeg" alt="Mathusan" />
-              <div>
+            <article className="people-team-card developer-profile-card">
+              <div className="developer-photo-wrapper">
+                <img
+                  src="/Developers/mathu.jpeg"
+                  alt="Mathusan - Co-Creator & Software Developer"
+                  className="developer-photo-img"
+                  loading="lazy"
+                />
+              </div>
+              <div className="developer-info-col">
                 <span className="people-card-label">Co-Creator &amp; Software Developer</span>
                 <h3>Mathusan</h3>
                 <p className="people-card-role">Backend Systems &amp; Education Tools</p>
                 <p>Focuses on backend engineering, assessment logic, clinical workflow automation, and educational user experience.</p>
               </div>
             </article>
+          </div>
+
+          {/* SUPPORTERS SECTION */}
+          <div className="supporters-section-wrapper">
+            <div className="supporters-header">
+              <span className="people-card-label">Community &amp; Academic Advocates</span>
+              <h3>Supporters – MedCore</h3>
+              <p>Dedicated medical learners and academic champions advocating for open-access clinical education.</p>
+            </div>
+
+            <div className="supporters-grid">
+              <article className="people-team-card supporter-card">
+                <div className="supporter-avatar-box" aria-hidden="true">
+                  <span className="supporter-initials">BJ</span>
+                  <span className="supporter-badge-icon" title="Medical Student Supporter">🩺</span>
+                </div>
+                <div>
+                  <span className="people-card-label">Supporter – MedCore</span>
+                  <h3>Bernard Sutharsan Johnathan</h3>
+                  <p className="people-card-role">Supporter | 3rd Year Medical Student</p>
+                  <p>
+                    Bernard Sutharsan Johnathan is a third-year medical student at the University of Sri Jayewardenepura, Sri Lanka. As a supporter of MedCore, he contributes to its vision of promoting accessible, high-quality medical education and empowering the next generation of healthcare professionals.
+                  </p>
+                </div>
+              </article>
+            </div>
           </div>
         </div>
       </section>

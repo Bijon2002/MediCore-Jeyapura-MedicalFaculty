@@ -155,14 +155,6 @@ export const ArticleList: React.FC<ArticleListProps> = ({ onArticleClick, onSele
           style={{ backgroundImage: "url('/images/medical-hero-1.jpg')" }}
         />
         <div className="public-hero-scenic-overlay" />
-        <div className="public-hero-wave-bg">
-          <svg className="public-organic-wave" viewBox="0 0 1440 180" fill="none" preserveAspectRatio="none">
-            <path
-              d="M0,80 C320,160 540,20 900,100 C1200,160 1360,60 1440,110 L1440,180 L0,180 Z"
-              fill="#fafaf7"
-            />
-          </svg>
-        </div>
 
         <div className="public-hero-container hero-slide-up">
           <div className="public-hero-badge">

@@ -27,9 +27,7 @@
   justify-content: center;
   min-height: calc(100vh - 120px);
   padding: 48px 24px;
-  background: linear-gradient(-45deg, #09131f, #0d3224, #00969b, #0369a1, #0f172a);
-  background-size: 350% 350%;
-  animation: authGradientFlow 14s ease infinite;
+  background: #000000;
   position: relative;
   overflow: hidden;
 }
@@ -40,8 +38,8 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.14;
-  filter: saturate(0.7) contrast(1.05);
+  opacity: 0.75;
+  filter: saturate(1.05) contrast(1.1);
   pointer-events: none;
   z-index: 0;
 }
@@ -49,29 +47,8 @@
 .medcore-login-page-wrapper::before {
   content: '';
   position: absolute;
-  top: -10%;
-  left: -10%;
-  width: 50vw;
-  height: 50vw;
-  background: radial-gradient(circle, rgba(0, 150, 155, 0.3) 0%, transparent 60%);
-  border-radius: 50%;
-  filter: blur(50px);
-  animation: floatOrb 10s ease-in-out infinite alternate;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.medcore-login-page-wrapper::after {
-  content: '';
-  position: absolute;
-  bottom: -10%;
-  right: -10%;
-  width: 50vw;
-  height: 50vw;
-  background: radial-gradient(circle, rgba(2, 132, 199, 0.25) 0%, transparent 60%);
-  border-radius: 50%;
-  filter: blur(50px);
-  animation: floatOrb 12s ease-in-out infinite alternate-reverse;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.65) 60%, rgba(0, 0, 0, 0.85) 100%);
   pointer-events: none;
   z-index: 0;
 }

@@ -145,7 +145,7 @@ export const About: React.FC<AboutProps> = ({
                 <span className="people-card-label">Co-Creator &amp; Lead Engineer</span>
                 <h3>Bijosilin Marisilin</h3>
                 <p className="people-card-role">
-                  Software Engineering Graduate · Software Engineer · Full-Stack &amp; Product Architecture
+                  Software Engineer · Full-Stack &amp; Product Architecture
                 </p>
 
                 <div className="dev-badges-row">
@@ -158,9 +158,15 @@ export const About: React.FC<AboutProps> = ({
                   </span>
                   <span className="dev-chip achievement-chip">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                      <path d="M12 2a9 9 0 1 0 0 18A9 9 0 0 0 12 2z"/><path d="M12 8v4l3 3"/>
                     </svg>
-                    Built production systems serving 5 govt districts
+                    ML Researcher
+                  </span>
+                  <span className="dev-chip education-chip">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                    </svg>
+                    SE Graduate
                   </span>
                 </div>
 
@@ -175,6 +181,18 @@ export const About: React.FC<AboutProps> = ({
                 </p>
 
                 <div className="dev-social-actions">
+                  <a
+                    href="https://bijonn.pages.dev/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="dev-portfolio-btn"
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect x="2" y="3" width="20" height="14" rx="2" />
+                      <path d="M8 21h8M12 17v4" />
+                    </svg>
+                    <span>Portfolio</span>
+                  </a>
                   <a
                     href="https://www.linkedin.com/in/marisilin-bijosilin/"
                     target="_blank"

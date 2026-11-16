@@ -13,19 +13,19 @@ export const DeveloperDetail: React.FC<DeveloperDetailProps> = ({ slug, onBackTo
   const developerData = isBijosilin
     ? {
         name: 'Bijosilin Marisilin',
-        title: 'Software Engineering Graduate & Software Engineer · Co-creator of medcore',
+        title: 'Software Engineer & Co-creator of medcore',
         pronouns: null,
         initials: 'BM',
         colorClass: '',
         metaDesc:
-          'Explore the technical contributions, architecture work, and profile of Bijosilin Marisilin, software engineering graduate, software engineer, and co-creator of medcore medical platform.',
+          'Explore the technical contributions, architecture work, and profile of Bijosilin Marisilin, software engineer and co-creator of medcore medical platform.',
         portfolio: 'https://bijonn.pages.dev/',
         github: 'https://github.com/Bijon2002',
         linkedin: 'https://www.linkedin.com/in/marisilin-bijosilin/',
         location: 'Jaffna, Northern Province, Sri Lanka',
-        achievement: 'Built production systems serving 5 govt districts',
+        achievement: 'ML Researcher · SE Graduate',
         roleDescription:
-          'Bijosilin Marisilin is the co-creator and lead software architect of medcore. A Software Engineering graduate currently working as a Software Engineer, he has built mission-critical production platforms serving five government administrative districts across Sri Lanka.',
+          'Bijosilin Marisilin is the co-creator and lead software architect of medcore. A Software Engineer with extensive experience in full-stack architecture and cloud infrastructure, he has built mission-critical production platforms serving five government administrative districts across Sri Lanka.',
         elaboration: [
           'At medcore, he leads the overall technical design — engineering the high-performance React 19 single-page application with TypeScript, designing the Supabase PostgreSQL database schemas with granular Row Level Security (RLS), and architecting the clinical knowledge authoring, search, and delivery pipelines.',
           'His work centers on uniting modern software reliability, medical informatics, and scalable cloud systems to provide barrier-free, academically rigorous learning resources for medical students and clinicians worldwide.',

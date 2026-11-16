@@ -57,9 +57,11 @@ export const Developers: React.FC<DevelopersProps> = ({ onSelectDeveloper }) => 
             <img className="developer-avatar" src="/Developers/bijon.png" alt="Bijosilin Marisilin" />
           </div>
           <h2 className="developer-name">Bijosilin Marisilin</h2>
-          <p className="developer-role">Software Engineering Graduate · Software Engineer · Full-Stack &amp; Product Architecture</p>
+          <p className="developer-role">Software Engineer · Full-Stack &amp; Product Architecture</p>
           <div className="developer-meta-chips">
             <span className="dev-meta-chip location">📍 Jaffna, Northern Province, Sri Lanka</span>
+            <span className="dev-meta-chip">🔬 ML Researcher</span>
+            <span className="dev-meta-chip">🎓 SE Graduate</span>
           </div>
           <p className="developer-bio">
             Co-creator and lead architect of medcore. Software Engineering graduate who built production systems serving 5 government districts. Specializes in React, TypeScript, Supabase architecture, scalable database design, and clinical knowledge delivery systems.

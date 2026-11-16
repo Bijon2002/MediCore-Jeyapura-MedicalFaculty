@@ -7,6 +7,8 @@ export interface SEOHeadProps {
   ogType?: 'website' | 'article' | 'profile';
   ogImage?: string;
   noIndex?: boolean;
+  author?: string;
+  keywords?: string;
   structuredData?: Record<string, any> | Array<Record<string, any>>;
 }
 
@@ -20,6 +22,8 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
   ogType = 'website',
   ogImage = DEFAULT_IMAGE,
   noIndex = false,
+  author,
+  keywords,
   structuredData,
 }) => {
   useEffect(() => {
@@ -44,6 +48,12 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
     // 2. Standard Meta Tags
     setMetaTag('name', 'description', description);
     setMetaTag('name', 'robots', noIndex ? 'noindex, nofollow' : 'index, follow');
+    if (keywords) {
+      setMetaTag('name', 'keywords', keywords);
+    }
+    if (author) {
+      setMetaTag('name', 'author', author);
+    }
 
     // 3. Open Graph
     const canonicalUrl = `${BASE_URL}${canonicalPath.startsWith('/') ? canonicalPath : `/${canonicalPath}`}`;
@@ -53,6 +63,7 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
     setMetaTag('property', 'og:type', ogType);
     setMetaTag('property', 'og:url', canonicalUrl);
     setMetaTag('property', 'og:image', ogImage);
+    setMetaTag('property', 'og:locale', 'en_LK');
 
     // 4. Twitter Cards
     setMetaTag('name', 'twitter:card', 'summary_large_image');
@@ -83,7 +94,7 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
     } else if (script) {
       script.remove();
     }
-  }, [title, description, canonicalPath, ogType, ogImage, noIndex, structuredData]);
+  }, [title, description, canonicalPath, ogType, ogImage, noIndex, author, keywords, structuredData]);
 
   return null;
 };

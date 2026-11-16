@@ -11,23 +11,36 @@ export const Developers: React.FC<DevelopersProps> = ({ onSelectDeveloper }) => 
   const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'AboutPage',
-    name: 'medcore Development Team',
-    description: 'The software engineers behind the medcore open-access medical education platform.',
+    name: 'MedCore Development Team',
+    description: 'The software engineers behind the MedCore open-access medical education platform.',
     mainEntity: [
       {
         '@type': 'Person',
         name: 'Bijosilin Marisilin',
-        jobTitle: 'Software Developer & Co-creator',
+        alternateName: ['Bijon', 'Marisilin Bijosilin'],
+        jobTitle: 'Lead Software Engineer | Full-Stack & AI Developer',
+        url: 'https://bijonn.pages.dev/',
         sameAs: [
           'https://bijonn.pages.dev/',
           'https://github.com/Bijon2002',
-          'https://linkedin.com/in/marisilin-bijosilin',
+          'https://www.linkedin.com/in/marisilin-bijosilin/',
+        ],
+        knowsAbout: [
+          'Full-Stack Software Engineering',
+          'React',
+          'TypeScript',
+          'PostgreSQL',
+          'Supabase',
+          'Cloud Architecture',
+          'Artificial Intelligence',
+          'Medical Informatics',
         ],
       },
       {
         '@type': 'Person',
         name: 'Puvanenthira Mathushan',
         jobTitle: 'Software Developer & Co-creator',
+        sameAs: ['https://www.linkedin.com/in/puvanenthira-mathushan/'],
       },
     ],
   };
@@ -35,17 +48,18 @@ export const Developers: React.FC<DevelopersProps> = ({ onSelectDeveloper }) => 
   return (
     <div className="developers-page">
       <SEOHead
-        title="medcore Development Team"
-        description="Meet the software engineering team behind medcore, an open-access medical education platform created with modern web technologies."
+        title="MedCore Engineering & Development Team"
+        description="Meet the software engineering team behind MedCore, an open-access medical education platform created with modern web technologies."
         canonicalPath="/developers"
+        keywords="MedCore Developers, Bijosilin Marisilin, Bijon Software Engineer, Puvanenthira Mathushan, MedCore Engineering"
         structuredData={structuredData}
       />
 
       <div className="developers-hero">
         <div className="dev-tag-pill">ENGINEERING &amp; ARCHITECTURE</div>
-        <h1 className="developers-title">The Engineers Behind medcore</h1>
+        <h1 className="developers-title">The Engineers Behind MedCore</h1>
         <p className="developers-subtitle">
-          medcore was conceived and built with modern full-stack web technologies to democratize high-yield clinical resources for medical students and clinicians worldwide.
+          MedCore was conceived and built with modern full-stack web technologies to democratize high-yield clinical resources for medical students and clinicians worldwide.
         </p>
       </div>
 
@@ -54,10 +68,10 @@ export const Developers: React.FC<DevelopersProps> = ({ onSelectDeveloper }) => 
         <div className="developer-card">
           <div className="developer-badge">Co-Creator &amp; Lead Engineer</div>
           <div className="developer-avatar-wrapper">
-            <img className="developer-avatar" src="/Developers/bijon.png" alt="Bijosilin Marisilin" />
+            <img className="developer-avatar" src="/Developers/bijon.png" alt="Bijosilin Marisilin (Bijon)" />
           </div>
-          <h2 className="developer-name">Bijosilin Marisilin</h2>
-          <p className="developer-role">Software Engineer · Full-Stack &amp; Product Architecture</p>
+          <h2 className="developer-name">Bijosilin Marisilin (Bijon)</h2>
+          <p className="developer-role">Software Engineer · Full-Stack &amp; AI Developer</p>
           <div className="developer-meta-chips">
             <span className="dev-meta-chip location">📍 Jaffna, Northern Province, Sri Lanka</span>
             <span className="dev-meta-chip">🔬 ML Researcher</span>

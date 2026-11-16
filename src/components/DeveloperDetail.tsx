@@ -12,22 +12,24 @@ export const DeveloperDetail: React.FC<DeveloperDetailProps> = ({ slug, onBackTo
 
   const developerData = isBijosilin
     ? {
-        name: 'Bijosilin Marisilin',
-        title: 'Software Engineer & Co-creator of medcore',
+        name: 'Bijosilin Marisilin (Bijon)',
+        title: 'Software Engineer | Full-Stack Developer | AI Developer',
         pronouns: null,
         initials: 'BM',
         colorClass: '',
         metaDesc:
-          'Explore the technical contributions, architecture work, and profile of Bijosilin Marisilin, software engineer and co-creator of medcore medical platform.',
+          'Bijosilin Marisilin (Bijon) is a Software Engineer, Full-Stack Developer, and AI researcher who co-created MedCore (https://medcore.lk/). Discover his technical architecture, GitHub, and portfolio.',
+        keywords:
+          'Bijosilin Marisilin, Bijon, Bijosilin Marisilin Software Engineer, Bijon Software Engineer, Bijon Full Stack Developer, Bijosilin Marisilin Developer Sri Lanka, Bijosilin Marisilin MedCore, MedCore Developer, MedCore Software Engineer',
         portfolio: 'https://bijonn.pages.dev/',
         github: 'https://github.com/Bijon2002',
         linkedin: 'https://www.linkedin.com/in/marisilin-bijosilin/',
         location: 'Jaffna, Northern Province, Sri Lanka',
-        achievement: 'ML Researcher · SE Graduate',
+        achievement: 'ML Researcher · First Class SE Graduate',
         roleDescription:
-          'Bijosilin Marisilin is the co-creator and lead software architect of medcore. A Software Engineer with extensive experience in full-stack architecture and cloud infrastructure, he has built mission-critical production platforms serving five government administrative districts across Sri Lanka.',
+          'Bijosilin Marisilin (known professionally as Bijon) is a Software Engineer, Full-Stack Developer, and AI researcher who co-created and architected MedCore. With extensive experience in full-stack architecture, machine learning research, and cloud infrastructure, he has built mission-critical production platforms serving five government administrative districts across Sri Lanka.',
         elaboration: [
-          'At medcore, he leads the overall technical design — engineering the high-performance React 19 single-page application with TypeScript, designing the Supabase PostgreSQL database schemas with granular Row Level Security (RLS), and architecting the clinical knowledge authoring, search, and delivery pipelines.',
+          'At MedCore, Bijon leads the overall technical design — engineering the high-performance React 19 single-page application with TypeScript, designing the Supabase PostgreSQL database schemas with granular Row Level Security (RLS), and architecting the clinical knowledge authoring, search, and delivery pipelines.',
           'His work centers on uniting modern software reliability, medical informatics, and scalable cloud systems to provide barrier-free, academically rigorous learning resources for medical students and clinicians worldwide.',
         ],
         contributions: [
@@ -37,25 +39,26 @@ export const DeveloperDetail: React.FC<DeveloperDetailProps> = ({ slug, onBackTo
           'Developed rich-text medical article authoring system with live image uploads and docx parser.',
           'Configured global technical SEO architecture, XML sitemaps, JSON-LD schemas, and Cloudflare Pages deployment.',
         ],
-        technologies: ['React 19', 'TypeScript', 'Vite', 'Supabase', 'PostgreSQL', 'Cloudflare Pages', 'HTML5 / CSS3', 'Git'],
+        technologies: ['React 19', 'TypeScript', 'Vite', 'Supabase', 'PostgreSQL', 'Cloudflare Pages', 'Full-Stack Architecture', 'Artificial Intelligence', 'HTML5 / CSS3', 'Git'],
       }
     : {
         name: 'Puvanenthira Mathushan',
-        title: 'Software Developer & Co-creator of medcore',
+        title: 'Software Developer & Co-creator of MedCore',
         pronouns: null,
         initials: 'PM',
         colorClass: 'alt',
         metaDesc:
-          'Explore the contributions and engineering background of Puvanenthira Mathushan, software developer, CS undergraduate at SLIIT Northern University, and co-creator of the medcore medical education platform.',
+          'Explore the contributions and engineering background of Puvanenthira Mathushan, software developer, CS undergraduate at SLIIT Northern University, and co-creator of the MedCore medical education platform.',
+        keywords: 'Puvanenthira Mathushan, Mathushan Developer, MedCore Developer',
         portfolio: null,
         github: null,
         linkedin: 'https://www.linkedin.com/in/puvanenthira-mathushan/',
         location: 'Jaffna District, Northern Province, Sri Lanka',
         achievement: 'Undergraduate – Computer Science | SLIIT Northern Uni',
         roleDescription:
-          'Puvanenthira Mathushan is the co-creator and software developer of medcore, currently pursuing his undergraduate degree in Computer Science at SLIIT Northern University, Jaffna. He brings strong backend engineering skills and a keen focus on building practical, student-centric academic tools.',
+          'Puvanenthira Mathushan is the co-creator and software developer of MedCore, currently pursuing his undergraduate degree in Computer Science at SLIIT Northern University, Jaffna. He brings strong backend engineering skills and a keen focus on building practical, student-centric academic tools.',
         elaboration: [
-          'Within medcore, Mathushan focuses on backend engineering, data modelling, assessment scoring algorithms, and educational workflow automation. He co-architected the interactive clinical quiz engine, timed examination modules, and specialty categorization models that empower medical students to test diagnostic knowledge against board-style question banks.',
+          'Within MedCore, Mathushan focuses on backend engineering, data modelling, assessment scoring algorithms, and educational workflow automation. He co-architected the interactive clinical quiz engine, timed examination modules, and specialty categorization models that empower medical students to test diagnostic knowledge against board-style question banks.',
           'He is dedicated to optimizing full-stack applications that streamline complex medical learning into intuitive, high-yield digital experiences — bridging the gap between computer science and clinical education.',
         ],
         contributions: [
@@ -68,30 +71,66 @@ export const DeveloperDetail: React.FC<DeveloperDetailProps> = ({ slug, onBackTo
         technologies: ['React', 'TypeScript', 'Vite', 'PostgreSQL', 'Supabase Auth', 'Algorithmic Logic', 'Node.js'],
       };
 
-  const personStructuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'Person',
-    name: developerData.name,
-    jobTitle: developerData.title,
-    worksFor: {
-      '@type': 'Organization',
-      name: 'medcore',
-      url: 'https://medcore.lk',
-    },
-    ...(developerData.portfolio || developerData.github || developerData.linkedin
-      ? {
-          sameAs: [developerData.portfolio, developerData.github, developerData.linkedin].filter(Boolean),
-        }
-      : {}),
-  };
+  const personStructuredData = isBijosilin
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'Person',
+        name: 'Bijosilin Marisilin',
+        alternateName: ['Bijon', 'Marisilin Bijosilin'],
+        jobTitle: 'Software Engineer | Full-Stack Developer | AI Developer',
+        description: 'Software Engineer, Full-Stack Developer, AI researcher, and co-creator of MedCore.',
+        worksFor: {
+          '@type': 'Organization',
+          name: 'MedCore',
+          url: 'https://medcore.lk',
+        },
+        url: 'https://bijonn.pages.dev/',
+        sameAs: [
+          'https://bijonn.pages.dev/',
+          'https://github.com/Bijon2002',
+          'https://www.linkedin.com/in/marisilin-bijosilin/',
+        ],
+        knowsAbout: [
+          'Software Engineering',
+          'Full-Stack Web Development',
+          'Artificial Intelligence',
+          'React 19',
+          'TypeScript',
+          'PostgreSQL',
+          'Supabase',
+          'Cloudflare Pages',
+          'Medical Informatics',
+        ],
+        alumniOf: {
+          '@type': 'EducationalOrganization',
+          name: 'Software Engineering Graduate (First Class)',
+        },
+      }
+    : {
+        '@context': 'https://schema.org',
+        '@type': 'Person',
+        name: developerData.name,
+        jobTitle: developerData.title,
+        worksFor: {
+          '@type': 'Organization',
+          name: 'MedCore',
+          url: 'https://medcore.lk',
+        },
+        ...(developerData.portfolio || developerData.github || developerData.linkedin
+          ? {
+              sameAs: [developerData.portfolio, developerData.github, developerData.linkedin].filter(Boolean),
+            }
+          : {}),
+      };
 
   return (
     <div className="developers-page">
       <SEOHead
-        title={`${developerData.name} | Software Developer`}
+        title={`${developerData.name} | Software Engineer & AI Developer`}
         description={developerData.metaDesc}
         canonicalPath={`/developers/${slug}`}
         ogType="profile"
+        keywords={developerData.keywords}
         structuredData={personStructuredData}
       />
 

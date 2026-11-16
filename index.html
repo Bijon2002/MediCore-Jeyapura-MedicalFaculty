@@ -16,41 +16,77 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://medcore.lk/" />
     <meta property="og:image" content="https://medcore.lk/medcore-logo.png" />
+    <meta property="og:locale" content="en_LK" />
+    <meta property="og:locale:alternate" content="en_US" />
+    <meta property="og:locale:alternate" content="en_GB" />
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="MedCore | Open Medical Learning Platform" />
     <meta name="twitter:description" content="Explore medical learning resources, educational articles and quizzes on MedCore. An open-access platform for students and educators to learn, practise and create content." />
     <meta name="twitter:image" content="https://medcore.lk/medcore-logo.png" />
+    <meta name="author" content="MedCore Clinical Team & Bijosilin Marisilin" />
     <!-- Google AdSense Verification & Auto Ads -->
     <meta name="google-adsense-account" content="ca-pub-2520900304515802" />
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2520900304515802"
      crossorigin="anonymous"></script>
 
-    <!-- Global Organization Structured Data -->
+    <!-- Global Organization & WebSite Structured Data -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@graph": [
         {
-          "@type": "Organization",
+          "@type": "EducationalOrganization",
           "@id": "https://medcore.lk/#organization",
           "name": "MedCore",
           "url": "https://medcore.lk",
-          "logo": "https://medcore.lk/medcore-logo.png",
-          "description": "Open-access medical education platform for students and educators to explore, create, and share educational articles, quizzes, and clinical learning resources.",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://medcore.lk/medcore-logo.png",
+            "width": 512,
+            "height": 512
+          },
+          "description": "Open-access medical education and clinical learning platform created by students of the Faculty of Medical Sciences, University of Sri Jayewardenepura, Sri Lanka.",
           "founder": [
             {
               "@type": "Person",
+              "name": "Thuvarakan Srikaran",
+              "jobTitle": "Founder & Medical Student",
+              "affiliation": {
+                "@type": "EducationalOrganization",
+                "name": "Faculty of Medical Sciences, University of Sri Jayewardenepura, Sri Lanka"
+              }
+            },
+            {
+              "@type": "Person",
               "name": "Bijosilin Marisilin",
+              "alternateName": "Bijon",
+              "jobTitle": "Co-Creator & Lead Software Engineer | Full-Stack & AI Developer",
+              "url": "https://bijonn.pages.dev/",
               "sameAs": [
                 "https://bijonn.pages.dev/",
                 "https://github.com/Bijon2002",
-                "https://linkedin.com/in/marisilin-bijosilin"
+                "https://www.linkedin.com/in/marisilin-bijosilin/"
+              ],
+              "knowsAbout": [
+                "Software Engineering",
+                "Full-Stack Web Development",
+                "React",
+                "TypeScript",
+                "PostgreSQL",
+                "Supabase",
+                "Artificial Intelligence",
+                "Cloud Architecture",
+                "Medical Informatics"
               ]
             },
             {
               "@type": "Person",
-              "name": "Puvanenthira Mathushan"
+              "name": "Puvanenthira Mathushan",
+              "jobTitle": "Co-Creator & Software Developer",
+              "sameAs": [
+                "https://www.linkedin.com/in/puvanenthira-mathushan/"
+              ]
             }
           ]
         },
@@ -59,9 +95,17 @@
           "@id": "https://medcore.lk/#website",
           "url": "https://medcore.lk",
           "name": "MedCore",
-          "description": "Open-access medical education and practice platform",
+          "description": "Open-access medical education, interactive clinical quizzes, and specialty learning resources.",
           "publisher": {
             "@id": "https://medcore.lk/#organization"
+          },
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://medcore.lk/articles?q={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
           }
         }
       ]

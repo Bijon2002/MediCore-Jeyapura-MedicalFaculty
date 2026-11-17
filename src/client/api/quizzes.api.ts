@@ -11,25 +11,14 @@ import type {
 export class QuizzesApiClient {
   private static cache: { data: Quiz[]; timestamp: number } | null = null;
   private static CACHE_TTL = 30000; // 30 seconds
-  private static DELETED_QUIZZES_KEY = 'medcore_deleted_quiz_ids';
 
-  private static getDeletedQuizIds(): Set<string> {
-    if (typeof window === 'undefined') return new Set();
-    try {
-      const stored = localStorage.getItem(this.DELETED_QUIZZES_KEY);
-      return stored ? new Set(JSON.parse(stored)) : new Set();
-    } catch {
-      return new Set();
+  // Clear legacy local storage key so devices do not mask database state
+  static {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem('medcore_deleted_quiz_ids');
+      } catch {}
     }
-  }
-
-  private static markQuizDeleted(id: string): void {
-    if (typeof window === 'undefined') return;
-    try {
-      const set = this.getDeletedQuizIds();
-      set.add(id);
-      localStorage.setItem(this.DELETED_QUIZZES_KEY, JSON.stringify(Array.from(set)));
-    } catch {}
   }
 
   /**
@@ -37,8 +26,7 @@ export class QuizzesApiClient {
    */
   static async getQuizzes(_token?: string): Promise<Quiz[]> {
     if (this.cache && Date.now() - this.cache.timestamp < this.CACHE_TTL) {
-      const deletedIds = this.getDeletedQuizIds();
-      return this.cache.data.filter((q) => !deletedIds.has(q.id));
+      return this.cache.data;
     }
 
     const { data, error } = await supabase
@@ -50,7 +38,6 @@ export class QuizzesApiClient {
       throw new Error(error.message);
     }
 
-    const deletedIds = this.getDeletedQuizIds();
     const result = (data || [])
       .map((q: any) => ({
         id: q.id,
@@ -75,8 +62,7 @@ export class QuizzesApiClient {
             orderIndex: opt.order_index,
           })),
         })),
-      }))
-      .filter((q) => !deletedIds.has(q.id));
+      }));
 
     this.cache = { data: result, timestamp: Date.now() };
     return result;
@@ -387,7 +373,6 @@ export class QuizzesApiClient {
     id: string,
     _token?: string,
   ): Promise<{ message: string }> {
-    this.markQuizDeleted(id);
     try {
       // 1. Clean up attempts and answers if foreign key cascade is not enabled
       const { data: attempts } = await supabase
@@ -410,13 +395,85 @@ export class QuizzesApiClient {
         await supabase.from('quiz_options').delete().in('question_id', qIds);
         await supabase.from('quiz_questions').delete().eq('quiz_id', id);
       }
-
-      await supabase.from('quizzes').delete().eq('id', id);
     } catch (cleanupErr) {
       console.warn('Pre-delete cleanup warning:', cleanupErr);
     }
 
+    const { data, error } = await supabase
+      .from('quizzes')
+      .delete()
+      .eq('id', id)
+      .select('id');
+
+    if (error) {
+      throw new Error(`Database error deleting quiz: ${error.message}`);
+    }
+
+    if (!data || data.length === 0) {
+      throw new Error(
+        'Could not delete quiz from the database. Please verify your Supabase permissions under Row Level Security (RLS).'
+      );
+    }
+
     this.clearCache();
     return { message: 'Quiz deleted successfully' };
+  }
+
+  /**
+   * Bulk deletes multiple quizzes by their IDs.
+   */
+  static async deleteQuizzes(
+    ids: string[],
+    _token?: string,
+  ): Promise<{ message: string; deletedCount: number }> {
+    if (!ids || ids.length === 0) {
+      return { message: 'No quizzes selected', deletedCount: 0 };
+    }
+
+    try {
+      const { data: attempts } = await supabase
+        .from('quiz_attempts')
+        .select('id')
+        .in('quiz_id', ids);
+      if (attempts && attempts.length > 0) {
+        const attemptIds = attempts.map((a: any) => a.id);
+        await supabase.from('quiz_answers').delete().in('attempt_id', attemptIds);
+        await supabase.from('quiz_attempts').delete().in('quiz_id', ids);
+      }
+
+      const { data: questions } = await supabase
+        .from('quiz_questions')
+        .select('id')
+        .in('quiz_id', ids);
+      if (questions && questions.length > 0) {
+        const qIds = questions.map((q: any) => q.id);
+        await supabase.from('quiz_options').delete().in('question_id', qIds);
+        await supabase.from('quiz_questions').delete().in('quiz_id', ids);
+      }
+    } catch (cleanupErr) {
+      console.warn('Bulk pre-delete cleanup warning:', cleanupErr);
+    }
+
+    const { data, error } = await supabase
+      .from('quizzes')
+      .delete()
+      .in('id', ids)
+      .select('id');
+
+    if (error) {
+      throw new Error(`Database error bulk deleting quizzes: ${error.message}`);
+    }
+
+    if (!data || data.length === 0) {
+      throw new Error(
+        'None of the selected quizzes were deleted from the database. Please verify your Supabase permissions under Row Level Security (RLS).'
+      );
+    }
+
+    this.clearCache();
+    return {
+      message: `${data.length} quiz(zes) deleted successfully`,
+      deletedCount: data.length,
+    };
   }
 }

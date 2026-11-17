@@ -280,12 +280,30 @@ CREATE POLICY "Anyone can read published articles"
 CREATE POLICY "Authenticated users can create articles" 
     ON public.articles FOR INSERT 
     WITH CHECK (auth.uid() = author_id);
-CREATE POLICY "Authors can update their own articles" 
+CREATE POLICY "Authors, Reviewers, and Admins can update articles" 
     ON public.articles FOR UPDATE 
-    USING (auth.uid() = author_id);
-CREATE POLICY "Authors can delete their own articles" 
+    USING (
+      auth.role() = 'authenticated' AND (
+        auth.uid() = author_id 
+        OR EXISTS (
+          SELECT 1 FROM public.profiles 
+          WHERE profiles.id = auth.uid() 
+          AND profiles.role IN ('ADMIN', 'MEDICAL_REVIEWER')
+        )
+      )
+    );
+CREATE POLICY "Authors, Reviewers, and Admins can delete articles" 
     ON public.articles FOR DELETE 
-    USING (auth.uid() = author_id);
+    USING (
+      auth.role() = 'authenticated' AND (
+        auth.uid() = author_id 
+        OR EXISTS (
+          SELECT 1 FROM public.profiles 
+          WHERE profiles.id = auth.uid() 
+          AND profiles.role IN ('ADMIN', 'MEDICAL_REVIEWER')
+        )
+      )
+    );
 
 -- QUIZZES & QUESTIONS
 CREATE POLICY "Anyone can view published quizzes" 
@@ -294,9 +312,30 @@ CREATE POLICY "Anyone can view published quizzes"
 CREATE POLICY "Authenticated users can create quizzes" 
     ON public.quizzes FOR INSERT 
     WITH CHECK (auth.uid() = created_by_id);
-CREATE POLICY "Creators can update quizzes" 
+CREATE POLICY "Creators, Reviewers, and Admins can update quizzes" 
     ON public.quizzes FOR UPDATE 
-    USING (auth.uid() = created_by_id);
+    USING (
+      auth.role() = 'authenticated' AND (
+        auth.uid() = created_by_id 
+        OR EXISTS (
+          SELECT 1 FROM public.profiles 
+          WHERE profiles.id = auth.uid() 
+          AND profiles.role IN ('ADMIN', 'MEDICAL_REVIEWER')
+        )
+      )
+    );
+CREATE POLICY "Creators, Reviewers, and Admins can delete quizzes" 
+    ON public.quizzes FOR DELETE 
+    USING (
+      auth.role() = 'authenticated' AND (
+        auth.uid() = created_by_id 
+        OR EXISTS (
+          SELECT 1 FROM public.profiles 
+          WHERE profiles.id = auth.uid() 
+          AND profiles.role IN ('ADMIN', 'MEDICAL_REVIEWER')
+        )
+      )
+    );
 
 CREATE POLICY "Anyone can view quiz questions" 
     ON public.quiz_questions FOR SELECT USING (true);

@@ -402,13 +402,14 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
       confirmLabel: 'Delete Article',
       onConfirm: async () => {
         closeAlert();
-        setArticles((prev) => prev.filter((a) => a.id !== articleId));
-        setSelectedArticleIds((prev) => { const s = new Set(prev); s.delete(articleId); return s; });
         try {
           await ArticlesApiClient.deleteArticle(articleId);
+          setArticles((prev) => prev.filter((a) => a.id !== articleId));
+          setSelectedArticleIds((prev) => { const s = new Set(prev); s.delete(articleId); return s; });
           await fetchArticles();
         } catch (err: any) {
-          showAlert({ type: 'danger', title: 'Delete Failed', message: err?.message || 'Failed to delete article.' });
+          await fetchArticles();
+          showAlert({ type: 'danger', title: 'Delete Failed', message: err?.message || 'Failed to delete article from the database.' });
         }
       },
     });
@@ -421,21 +422,17 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
 
     setBulkArticleDeleting(true);
     closeAlert();
-    setArticles((prev) => prev.filter((a) => !idsToDelete.includes(a.id)));
-    setSelectedArticleIds(new Set());
 
-    let failed = 0;
-    for (const id of idsToDelete) {
-      try {
-        await ArticlesApiClient.deleteArticle(id);
-      } catch {
-        failed++;
-      }
-    }
-    setBulkArticleDeleting(false);
-    await fetchArticles();
-    if (failed > 0) {
-      showAlert({ type: 'warning', title: 'Partial Delete', message: `${failed} article(s) could not be deleted.` });
+    try {
+      await ArticlesApiClient.deleteArticles(idsToDelete);
+      setArticles((prev) => prev.filter((a) => !idsToDelete.includes(a.id)));
+      setSelectedArticleIds(new Set());
+      await fetchArticles();
+    } catch (err: any) {
+      await fetchArticles();
+      showAlert({ type: 'danger', title: 'Bulk Delete Failed', message: err?.message || 'Failed to delete selected articles from the database.' });
+    } finally {
+      setBulkArticleDeleting(false);
     }
   };
 
@@ -471,13 +468,14 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
       confirmLabel: 'Delete Quiz',
       onConfirm: async () => {
         closeAlert();
-        setQuizzes((prev) => prev.filter((q) => q.id !== quizId));
-        setSelectedQuizIds((prev) => { const s = new Set(prev); s.delete(quizId); return s; });
         try {
           await QuizzesApiClient.deleteQuiz(quizId);
+          setQuizzes((prev) => prev.filter((q) => q.id !== quizId));
+          setSelectedQuizIds((prev) => { const s = new Set(prev); s.delete(quizId); return s; });
           await fetchQuizzes();
         } catch (err: any) {
-          showAlert({ type: 'danger', title: 'Delete Failed', message: err?.message || 'Failed to delete quiz.' });
+          await fetchQuizzes();
+          showAlert({ type: 'danger', title: 'Delete Failed', message: err?.message || 'Failed to delete quiz from the database.' });
         }
       },
     });
@@ -490,21 +488,17 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
 
     setBulkQuizDeleting(true);
     closeAlert();
-    setQuizzes((prev) => prev.filter((q) => !idsToDelete.includes(q.id)));
-    setSelectedQuizIds(new Set());
 
-    let failed = 0;
-    for (const id of idsToDelete) {
-      try {
-        await QuizzesApiClient.deleteQuiz(id);
-      } catch {
-        failed++;
-      }
-    }
-    setBulkQuizDeleting(false);
-    await fetchQuizzes();
-    if (failed > 0) {
-      showAlert({ type: 'warning', title: 'Partial Delete', message: `${failed} quiz(zes) could not be deleted.` });
+    try {
+      await QuizzesApiClient.deleteQuizzes(idsToDelete);
+      setQuizzes((prev) => prev.filter((q) => !idsToDelete.includes(q.id)));
+      setSelectedQuizIds(new Set());
+      await fetchQuizzes();
+    } catch (err: any) {
+      await fetchQuizzes();
+      showAlert({ type: 'danger', title: 'Bulk Delete Failed', message: err?.message || 'Failed to delete selected quizzes from the database.' });
+    } finally {
+      setBulkQuizDeleting(false);
     }
   };
 

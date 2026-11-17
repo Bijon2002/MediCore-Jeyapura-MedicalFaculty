@@ -11,25 +11,14 @@ export class ArticlesApiClient {
   private static cache = new Map<string, { data: ArticleListResponse; timestamp: number }>();
   private static CACHE_TTL = 30000; // 30 seconds
   private static FEATURED_ARTICLE_STORAGE_KEY = 'medcore_featured_article_id';
-  private static DELETED_ARTICLES_KEY = 'medcore_deleted_article_ids';
 
-  private static getDeletedArticleIds(): Set<string> {
-    if (typeof window === 'undefined') return new Set();
-    try {
-      const stored = localStorage.getItem(this.DELETED_ARTICLES_KEY);
-      return stored ? new Set(JSON.parse(stored)) : new Set();
-    } catch {
-      return new Set();
+  // Clear legacy local storage key so devices do not mask database state
+  static {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem('medcore_deleted_article_ids');
+      } catch {}
     }
-  }
-
-  private static markArticleDeleted(id: string): void {
-    if (typeof window === 'undefined') return;
-    try {
-      const set = this.getDeletedArticleIds();
-      set.add(id);
-      localStorage.setItem(this.DELETED_ARTICLES_KEY, JSON.stringify(Array.from(set)));
-    } catch {}
   }
 
   private static getStoredFeaturedArticleId(): string | null {
@@ -114,14 +103,14 @@ export class ArticlesApiClient {
     const total = count || 0;
     const totalPages = Math.ceil(total / limit);
 
-    const deletedIds = this.getDeletedArticleIds();
-    const normalizedData = (data?.map((article) => this.normalizeArticle(article as unknown as Record<string, unknown>)) || [])
-      .filter((a) => !deletedIds.has(a.id));
+    const normalizedData = data?.map((article) =>
+      this.normalizeArticle(article as unknown as Record<string, unknown>)
+    ) || [];
 
     const result: ArticleListResponse = {
       data: normalizedData,
       meta: {
-        total: Math.max(0, total - deletedIds.size),
+        total,
         page,
         limit,
         totalPages,
@@ -279,17 +268,57 @@ export class ArticlesApiClient {
     id: string,
     _token?: string,
   ): Promise<{ message: string }> {
-    this.markArticleDeleted(id);
-    try {
-      await supabase
-        .from('articles')
-        .delete()
-        .eq('id', id);
-    } catch (err) {
-      console.warn('Supabase remote article delete warning:', err);
+    const { data, error } = await supabase
+      .from('articles')
+      .delete()
+      .eq('id', id)
+      .select('id');
+
+    if (error) {
+      throw new Error(`Database error deleting article: ${error.message}`);
+    }
+
+    if (!data || data.length === 0) {
+      throw new Error(
+        'Could not delete article from the database. This happens when Supabase Row Level Security (RLS) restricts deletion for your role, or the article does not exist.'
+      );
     }
 
     this.clearCache();
     return { message: 'Article deleted successfully' };
+  }
+
+  /**
+   * Bulk deletes multiple articles by their IDs in Supabase.
+   */
+  static async deleteArticles(
+    ids: string[],
+    _token?: string,
+  ): Promise<{ message: string; deletedCount: number }> {
+    if (!ids || ids.length === 0) {
+      return { message: 'No articles selected', deletedCount: 0 };
+    }
+
+    const { data, error } = await supabase
+      .from('articles')
+      .delete()
+      .in('id', ids)
+      .select('id');
+
+    if (error) {
+      throw new Error(`Database error bulk deleting articles: ${error.message}`);
+    }
+
+    if (!data || data.length === 0) {
+      throw new Error(
+        'None of the selected articles were deleted from the database. Please verify your Supabase permissions under Row Level Security (RLS).'
+      );
+    }
+
+    this.clearCache();
+    return {
+      message: `${data.length} article(s) deleted successfully`,
+      deletedCount: data.length,
+    };
   }
 }

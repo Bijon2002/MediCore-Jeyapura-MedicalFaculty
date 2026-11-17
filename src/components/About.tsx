@@ -100,38 +100,59 @@ export const About: React.FC<AboutProps> = ({
             <p>Meet the people building, engineering, and championing an open, practical, and academically rigorous medical learning platform.</p>
           </div>
 
-          {/* FOUNDER CARD */}
-          <div className="founder-profile-card">
-            <div className="founder-photo-wrapper">
-              <img
-                src="/images/founder.jpeg"
-                alt="Thuvarakan Srikaran - Founder of MedCore"
-                className="founder-photo-img"
-                loading="lazy"
-              />
-            </div>
-            <div>
-              <span className="people-card-label">Founder – MedCore</span>
-              <h3>Thuvarakan Srikaran</h3>
-              <p className="people-card-role">Founder | Medical Student</p>
-              <p>
-                Thuvarakan S. is the founder of MedCore, an emerging medical education platform established with the vision of making high-quality medical knowledge accessible to students, healthcare professionals, and educators.
-              </p>
-              <p>
-                He is a third-year medical student at the University of Sri Jayewardenepura, Sri Lanka, with a strong passion for medical education, clinical learning, and academic development.
-              </p>
-              <p>
-                Through MedCore, he aims to bridge the gap between theoretical knowledge and practical clinical understanding by creating opportunities for expert-led learning, educational webinars, academic resources, and collaborative knowledge sharing.
-              </p>
-              <p>
-                His vision is to build MedCore into a trusted medical education platform that empowers the next generation of healthcare professionals.
-              </p>
-              <strong className="founder-signature">Building knowledge. Inspiring healthcare. Shaping the future.</strong>
-            </div>
-          </div>
-
-          {/* CO-CREATORS & ENGINEERING TEAM */}
+          {/* ALL THREE TEAM MEMBERS IN ONE ROW */}
           <div className="people-team-grid">
+            {/* FOUNDER CARD */}
+            <article className="people-team-card developer-profile-card">
+              <div className="developer-photo-wrapper">
+                <img
+                  src="/images/founder.jpeg"
+                  alt="Thuvarakan Srikaran - Founder of MedCore"
+                  className="developer-photo-img founder-img"
+                  loading="lazy"
+                />
+              </div>
+              <div className="developer-info-col">
+                <span className="people-card-label">Founder – MedCore</span>
+                <h3>Thuvarakan Srikaran</h3>
+                <p className="people-card-role">Founder | Medical Student</p>
+
+                <div className="dev-badges-row">
+                  <span className="dev-chip education-chip">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                    </svg>
+                    Medical Student · USJP
+                  </span>
+                  <span className="dev-chip location-chip">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 2a8 8 0 0 0-8 8c0 5.25 8 12 8 12s8-6.75 8-12a8 8 0 0 0-8-8z" />
+                      <circle cx="12" cy="10" r="3" />
+                    </svg>
+                    Sri Lanka
+                  </span>
+                </div>
+
+                <p>
+                  Thuvarakan S. is the founder of MedCore, an emerging medical education platform established with the vision of making high-quality medical knowledge accessible to students, healthcare professionals, and educators.
+                </p>
+                <p>
+                  He is a third-year medical student at the University of Sri Jayewardenepura, Sri Lanka, with a strong passion for medical education, clinical learning, and academic development.
+                </p>
+                <p>
+                  Through MedCore, he aims to bridge the gap between theoretical knowledge and practical clinical understanding by creating opportunities for expert-led learning, educational webinars, academic resources, and collaborative knowledge sharing.
+                </p>
+                <p>
+                  His vision is to build MedCore into a trusted medical education platform that empowers the next generation of healthcare professionals.
+                </p>
+
+                <div className="dev-social-actions">
+                  <strong className="founder-signature">Building knowledge. Inspiring healthcare. Shaping the future.</strong>
+                </div>
+              </div>
+            </article>
+
+            {/* CO-CREATOR & LEAD ENGINEER */}
             <article className="people-team-card developer-profile-card">
               <div className="developer-photo-wrapper">
                 <img

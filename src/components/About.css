@@ -242,150 +242,45 @@
   background: #fafaf7;
 }
 
-.founder-profile-card {
-  display: grid;
-  grid-template-columns: 240px 1fr;
-  gap: 36px;
-  align-items: start;
-  max-width: 1040px;
-  margin: 0 auto 36px;
-  padding: 40px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 24px;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
-}
-
-.founder-photo-wrapper {
-  width: 100%;
-  max-width: 240px;
-  aspect-ratio: 1 / 1.15;
-  border-radius: 22px;
-  overflow: hidden;
-  box-shadow: 0 12px 28px -6px rgba(2, 132, 199, 0.25), 0 4px 14px rgba(15, 23, 42, 0.08);
-  border: 3px solid #ffffff;
-  outline: 1px solid #e2e8f0;
-  background: #f1f5f9;
-}
-
-.founder-photo-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 20%;
-  display: block;
-}
-
-.founder-profile-mark {
-  width: 64px;
-  height: 64px;
-  padding: 16px;
-  box-sizing: border-box;
-  border-radius: 18px;
-  color: #0284c7;
-  background: #f0f9ff;
-}
-
-.founder-profile-mark svg {
-  width: 100%;
-  height: 100%;
-}
-
-.people-card-label {
-  display: inline-block;
-  margin-bottom: 8px;
-  color: #ea580c;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.founder-profile-card h3,
-.people-team-card h3 {
-  margin: 0 0 4px;
-  color: #0f172a;
-  font-size: 24px;
-  font-weight: 800;
-}
-
-.people-card-role {
-  margin: 0 0 16px;
-  color: #0284c7;
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.founder-profile-card p,
-.people-team-card p {
-  margin: 0 0 12px;
-  color: #475569;
-  font-size: 15px;
-  line-height: 1.65;
-}
-
-.founder-signature {
-  display: block;
-  margin-top: 20px;
-  color: #0f766e;
-  font-size: 15px;
-}
-
 .people-team-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: 1280px;
+  margin: 0 auto;
+  align-items: stretch;
+}
+
+.people-team-card.developer-profile-card {
   display: flex;
   flex-direction: column;
-  gap: 28px;
-  max-width: 980px;
-  margin: 0 auto;
-}
-
-.people-team-card {
-  display: flex;
-  gap: 18px;
-  padding: 24px;
+  padding: 28px 24px;
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 20px;
-}
-
-.developer-profile-card {
-  display: grid;
-  grid-template-columns: 240px 1fr;
-  gap: 36px;
-  align-items: start;
-  padding: 40px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 24px;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
+  height: 100%;
+  box-sizing: border-box;
 }
 
-.developer-profile-card:hover {
-  transform: translateY(-2px);
+.people-team-card.developer-profile-card:hover {
+  transform: translateY(-3px);
   box-shadow: 0 16px 36px rgba(15, 23, 42, 0.09);
 }
 
-@media (max-width: 768px) {
-  .founder-profile-card,
-  .developer-profile-card {
-    grid-template-columns: 1fr;
-    text-align: center;
-    justify-items: center;
-  }
-}
-
 .developer-photo-wrapper {
-  width: 100%;
-  max-width: 300px;
+  width: 76px;
+  height: 88px;
   aspect-ratio: 1 / 1.15;
-  border-radius: 24px;
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 16px 40px -8px rgba(2, 132, 199, 0.3), 0 4px 16px rgba(15, 23, 42, 0.1);
-  border: 4px solid #ffffff;
+  box-shadow: 0 8px 18px -3px rgba(2, 132, 199, 0.2), 0 3px 8px rgba(15, 23, 42, 0.05);
+  border: 2.5px solid #ffffff;
   outline: 1px solid #bae6fd;
   background: #f1f5f9;
   flex-shrink: 0;
+  margin-bottom: 16px;
 }
 
 .developer-photo-img {
@@ -397,40 +292,86 @@
   transition: transform 0.3s ease;
 }
 
-.developer-profile-card:hover .developer-photo-img {
-  transform: scale(1.03);
+.developer-photo-img.founder-img {
+  object-position: center 20%;
+}
+
+.people-team-card.developer-profile-card:hover .developer-photo-img {
+  transform: scale(1.04);
+}
+
+.people-card-label {
+  display: inline-block;
+  margin-bottom: 6px;
+  color: #ea580c;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.developer-info-col {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .developer-info-col h3 {
   margin: 0 0 4px;
   color: #0f172a;
-  font-size: 26px;
+  font-size: 20px;
   font-weight: 800;
+  line-height: 1.25;
 }
 
-.dev-pronouns {
+.developer-info-col .people-card-role {
+  margin: 0 0 10px;
+  color: #0284c7;
   font-size: 13px;
-  font-weight: 600;
-  color: #64748b;
-  margin-left: 4px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.developer-info-col p {
+  margin: 0 0 10px;
+  color: #475569;
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.founder-signature {
+  display: block;
+  color: #0f766e;
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1.45;
 }
 
 .dev-badges-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin: 8px 0 16px;
+  gap: 6px;
+  margin: 6px 0 14px;
 }
 
 .dev-chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 12px;
+  gap: 5px;
+  padding: 4px 10px;
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 600;
   line-height: 1;
+}
+
+.dev-social-actions {
+  margin-top: auto;
+  padding-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
 }
 
 .location-chip {
@@ -591,26 +532,20 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
-@media (max-width: 700px) {
-  .founder-profile-card {
-    grid-template-columns: 1fr;
-    padding: 28px 22px;
-    text-align: center;
+@media (max-width: 1024px) {
+  .people-team-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   }
+}
 
-  .founder-photo-wrapper {
-    max-width: 150px;
-    margin: 0 auto 18px;
-  }
-
+@media (max-width: 768px) {
   .people-team-grid {
     grid-template-columns: 1fr;
+    gap: 20px;
   }
 
-  .people-team-card {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+  .people-team-card.developer-profile-card {
+    padding: 24px 20px;
   }
 }
 

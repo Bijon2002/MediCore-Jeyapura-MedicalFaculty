@@ -197,7 +197,7 @@ export const ArticleList: React.FC<ArticleListProps> = ({ onArticleClick, onSele
                 </svg>
               </span>
               <div className="metric-text">
-                <strong>{totalCount || 11}+ Published Guides</strong>
+                <strong>{totalCount > 0 ? `${totalCount}+` : totalCount} Published Guides</strong>
                 <span>Continually updated</span>
               </div>
             </div>

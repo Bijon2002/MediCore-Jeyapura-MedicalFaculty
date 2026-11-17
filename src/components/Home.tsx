@@ -1,11 +1,9 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { ArticlesApiClient } from '../client/api/articles.api';
 import { SubjectsApiClient } from '../client/api/subjects.api';
-import { TopicsApiClient } from '../client/api/topics.api';
 import { supabase } from '../lib/supabase';
 import type { Article } from '../client/types/article.types';
 import type { Subject } from '../client/types/subject.types';
-import type { Topic } from '../client/types/topic.types';
 import { SEOHead } from './seo/SEOHead';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { AnimatedCounter } from './AnimatedCounter';
@@ -43,11 +41,14 @@ export const Home: React.FC<HomeProps> = ({
 }) => {
   const [articles, setArticles] = useState<Article[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [topics, setTopics] = useState<Topic[]>([]);
-  const [counts, setCounts] = useState({
-    articles: 0,
-    subjects: 0,
-    topics: 0,
+  const [counts, setCounts] = useState<{
+    articles: number | null;
+    subjects: number | null;
+    topics: number | null;
+  }>({
+    articles: null,
+    subjects: null,
+    topics: null,
   });
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -80,6 +81,70 @@ export const Home: React.FC<HomeProps> = ({
   // Activate scroll-reveal animations across sections & cards
   useScrollReveal(loading);
 
+  // Fetch live database counts directly from Supabase for the stats strip
+  const fetchStatsCounts = useCallback(async () => {
+    try {
+      const [topicsRes, subjectsRes, articlesRes, profilesRes] = await Promise.allSettled([
+        supabase.from('topics').select('id', { count: 'exact', head: true }),
+        supabase.from('subjects').select('id', { count: 'exact', head: true }),
+        supabase.from('articles').select('id', { count: 'exact', head: true }).eq('status', 'PUBLISHED'),
+        supabase.from('profiles').select('id', { count: 'exact', head: true }),
+      ]);
+
+      const topicsCount = topicsRes.status === 'fulfilled' ? topicsRes.value.count : null;
+      const subjectsCount = subjectsRes.status === 'fulfilled' ? subjectsRes.value.count : null;
+      const articlesCount = articlesRes.status === 'fulfilled' ? articlesRes.value.count : null;
+      const profilesCount = profilesRes.status === 'fulfilled' ? profilesRes.value.count : null;
+
+      setCounts((prev) => ({
+        topics: topicsCount !== null ? topicsCount : prev.topics,
+        subjects: subjectsCount !== null ? subjectsCount : prev.subjects,
+        articles: articlesCount !== null ? articlesCount : prev.articles,
+      }));
+
+      if (profilesCount !== null) {
+        setUserCount(profilesCount);
+      }
+    } catch (err) {
+      console.warn('Failed to fetch exact database stats for stats strip:', err);
+    }
+  }, []);
+
+  // Listen to Supabase Realtime updates & window events to keep stats strip 100% in sync with DB
+  useEffect(() => {
+    fetchStatsCounts();
+
+    const statsChannel = supabase
+      .channel('medcore-home-stats-strip-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'topics' }, () => {
+        fetchStatsCounts();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'subjects' }, () => {
+        fetchStatsCounts();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'articles' }, () => {
+        fetchStatsCounts();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
+        fetchStatsCounts();
+      })
+      .subscribe();
+
+    const handleStatsRefresh = () => fetchStatsCounts();
+    window.addEventListener('medcore:articles-updated', handleStatsRefresh);
+    window.addEventListener('medcore:subjects-updated', handleStatsRefresh);
+    window.addEventListener('medcore:topics-updated', handleStatsRefresh);
+    window.addEventListener('focus', handleStatsRefresh);
+
+    return () => {
+      supabase.removeChannel(statsChannel);
+      window.removeEventListener('medcore:articles-updated', handleStatsRefresh);
+      window.removeEventListener('medcore:subjects-updated', handleStatsRefresh);
+      window.removeEventListener('medcore:topics-updated', handleStatsRefresh);
+      window.removeEventListener('focus', handleStatsRefresh);
+    };
+  }, [fetchStatsCounts]);
+
   useEffect(() => {
     let isMounted = true;
     setLoading(true);
@@ -87,27 +152,23 @@ export const Home: React.FC<HomeProps> = ({
     Promise.allSettled([
       ArticlesApiClient.getArticles({ page: 1, limit: 20 }),
       SubjectsApiClient.getSubjects({ limit: 50 }),
-      TopicsApiClient.getTopics({ limit: 50 }),
     ])
-      .then(([articlesRes, subjectsRes, topicsRes]) => {
+      .then(([articlesRes, subjectsRes]) => {
         if (!isMounted) return;
 
         const articlesData = articlesRes.status === 'fulfilled' ? articlesRes.value.data || [] : [];
         const subjectsData = subjectsRes.status === 'fulfilled' ? subjectsRes.value.data || [] : [];
-        const topicsData = topicsRes.status === 'fulfilled' ? topicsRes.value.data || [] : [];
 
         const totalArticles = articlesRes.status === 'fulfilled' ? articlesRes.value.meta?.total || articlesData.length : 0;
         const totalSubjects = subjectsRes.status === 'fulfilled' ? subjectsRes.value.meta?.total || subjectsData.length : 0;
-        const totalTopics = topicsRes.status === 'fulfilled' ? topicsRes.value.meta?.total || topicsData.length : 0;
 
         setArticles(articlesData);
         setSubjects(subjectsData);
-        setTopics(topicsData);
-        setCounts({
-          articles: totalArticles,
-          subjects: totalSubjects,
-          topics: totalTopics,
-        });
+        setCounts((prev) => ({
+          articles: prev.articles !== null ? prev.articles : totalArticles,
+          subjects: prev.subjects !== null ? prev.subjects : totalSubjects,
+          topics: prev.topics,
+        }));
       })
       .catch((err) => {
         console.error('Failed to load home page data from DB', err);
@@ -115,11 +176,6 @@ export const Home: React.FC<HomeProps> = ({
       .finally(() => {
         if (isMounted) setLoading(false);
       });
-
-    // Fetch registered user count for stats strip
-    supabase.from('profiles').select('id', { count: 'exact', head: true }).then(({ count }) => {
-      if (isMounted && count !== null) setUserCount(count);
-    });
 
     return () => {
       isMounted = false;
@@ -1283,7 +1339,7 @@ export const Home: React.FC<HomeProps> = ({
                 <div className="stat-text-meta">
                   <strong>
                     <AnimatedCounter
-                      value={counts.topics > 0 ? counts.topics : (topics.length > 0 ? topics.length : 36)}
+                      value={counts.topics}
                       suffix="+"
                     />
                   </strong>
@@ -1303,7 +1359,7 @@ export const Home: React.FC<HomeProps> = ({
                 <div className="stat-text-meta">
                   <strong>
                     <AnimatedCounter
-                      value={counts.subjects > 0 ? counts.subjects : (subjects.length > 0 ? subjects.length : 6)}
+                      value={counts.subjects}
                       suffix=""
                     />
                   </strong>
@@ -1321,7 +1377,7 @@ export const Home: React.FC<HomeProps> = ({
                 <div className="stat-text-meta">
                   <strong>
                     <AnimatedCounter
-                      value={counts.articles > 0 ? counts.articles : (articles.length > 0 ? articles.length : 24)}
+                      value={counts.articles}
                       suffix="+"
                     />
                   </strong>
@@ -1338,11 +1394,10 @@ export const Home: React.FC<HomeProps> = ({
                 </div>
                 <div className="stat-text-meta">
                   <strong>
-                    {userCount !== null ? (
-                      <AnimatedCounter value={userCount} suffix="+" />
-                    ) : (
-                      '—'
-                    )}
+                    <AnimatedCounter
+                      value={userCount}
+                      suffix="+"
+                    />
                   </strong>
                   <span>Registered Learners</span>
                 </div>

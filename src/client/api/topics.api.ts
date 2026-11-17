@@ -73,6 +73,12 @@ export class TopicsApiClient {
     this.cache.clear();
   }
 
+  private static notifyTopicsUpdated(): void {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('medcore:topics-updated'));
+    }
+  }
+
   /**
    * Retrieves a single topic by its URL slug.
    */
@@ -140,6 +146,7 @@ export class TopicsApiClient {
     }
 
     this.clearCache();
+    this.notifyTopicsUpdated();
     return inserted as unknown as Topic;
   }
 
@@ -174,6 +181,7 @@ export class TopicsApiClient {
     }
 
     this.clearCache();
+    this.notifyTopicsUpdated();
     return updated as unknown as Topic;
   }
 
@@ -193,6 +201,7 @@ export class TopicsApiClient {
       throw new Error(error.message);
     }
     this.clearCache();
+    this.notifyTopicsUpdated();
 
     return { message: 'Topic deleted successfully' };
   }

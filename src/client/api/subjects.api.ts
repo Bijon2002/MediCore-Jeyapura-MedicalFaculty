@@ -76,6 +76,12 @@ export class SubjectsApiClient {
     this.cache.clear();
   }
 
+  private static notifySubjectsUpdated(): void {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('medcore:subjects-updated'));
+    }
+  }
+
   /**
    * Retrieves a single subject by its URL slug.
    */
@@ -142,6 +148,7 @@ export class SubjectsApiClient {
     }
 
     this.clearCache();
+    this.notifySubjectsUpdated();
     return this.normalizeSubject(inserted as Record<string, unknown>);
   }
 
@@ -175,6 +182,7 @@ export class SubjectsApiClient {
     }
 
     this.clearCache();
+    this.notifySubjectsUpdated();
     return this.normalizeSubject(updated as Record<string, unknown>);
   }
 
@@ -194,6 +202,7 @@ export class SubjectsApiClient {
       throw new Error(error.message);
     }
     this.clearCache();
+    this.notifySubjectsUpdated();
 
     return { message: 'Subject deleted successfully' };
   }

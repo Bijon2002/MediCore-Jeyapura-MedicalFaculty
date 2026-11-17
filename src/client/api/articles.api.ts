@@ -125,6 +125,12 @@ export class ArticlesApiClient {
     this.cache.clear();
   }
 
+  private static notifyArticlesUpdated(): void {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('medcore:articles-updated'));
+    }
+  }
+
   /**
    * Retrieves a single article by its URL slug.
    */
@@ -209,6 +215,7 @@ export class ArticlesApiClient {
     }
 
     this.clearCache();
+    this.notifyArticlesUpdated();
     return this.normalizeArticle(inserted as unknown as Record<string, unknown>);
   }
 
@@ -245,6 +252,7 @@ export class ArticlesApiClient {
     }
 
     this.clearCache();
+    this.notifyArticlesUpdated();
     return this.normalizeArticle(updated as unknown as Record<string, unknown>);
   }
 
@@ -258,6 +266,7 @@ export class ArticlesApiClient {
     }
 
     this.clearCache();
+    this.notifyArticlesUpdated();
     return this.getArticleById(id);
   }
 
@@ -285,6 +294,7 @@ export class ArticlesApiClient {
     }
 
     this.clearCache();
+    this.notifyArticlesUpdated();
     return { message: 'Article deleted successfully' };
   }
 
@@ -316,6 +326,7 @@ export class ArticlesApiClient {
     }
 
     this.clearCache();
+    this.notifyArticlesUpdated();
     return {
       message: `${data.length} article(s) deleted successfully`,
       deletedCount: data.length,

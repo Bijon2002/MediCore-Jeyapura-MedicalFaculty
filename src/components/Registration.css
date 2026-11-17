@@ -191,10 +191,11 @@
 
 .reg-stat-card strong {
   display: block;
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 850;
   color: #ffffff;
   line-height: 1.2;
+  letter-spacing: -0.02em;
 }
 
 .reg-stat-card span {
@@ -204,6 +205,23 @@
   text-transform: uppercase;
   letter-spacing: 0.4px;
   margin-top: 2px;
+}
+
+/* Loading skeleton for live stats */
+.reg-stat-skeleton {
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.12) 25%, rgba(255,255,255,0.22) 50%, rgba(255,255,255,0.12) 75%);
+  background-size: 200% 100%;
+  animation: statShimmer 1.2s infinite;
+  vertical-align: middle;
+}
+
+@keyframes statShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 /* =========================================================================

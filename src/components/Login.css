@@ -149,6 +149,28 @@
   color: #f1f5f9;
 }
 
+/* Inline skeleton for live stat numbers in feature bullets */
+.login-stat-inline-skeleton {
+  display: inline-block;
+  width: 120px;
+  height: 14px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.1) 25%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.1) 75%);
+  background-size: 200% 100%;
+  animation: loginStatShimmer 1.2s infinite;
+  vertical-align: middle;
+}
+
+@keyframes loginStatShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.visual-feature-item strong {
+  font-weight: 800;
+  color: #ffffff;
+}
+
 .visual-feature-icon {
   width: 24px;
   height: 24px;

@@ -1,7 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AuthApiClient } from '../client/api/auth.api';
 import { ReviewerApplicationsApiClient } from '../client/api/reviewer-applications.api';
+import { supabase } from '../lib/supabase';
 import './Registration.css';
+
+interface LiveStats {
+  articleCount: number | null;
+  quizCount: number | null;
+  userCount: number | null;
+}
+
+function formatStatNumber(n: number): string {
+  if (n >= 1000) return `${(n / 1000).toFixed(n >= 10000 ? 0 : 1).replace(/\.0$/, '')}k+`;
+  if (n === 0) return '0';
+  return `${n}+`;
+}
 
 export interface RegistrationProps {
   onNavigateToLogin: () => void;
@@ -15,6 +28,33 @@ export const Registration: React.FC<RegistrationProps> = ({
   onNavigateHome,
 }) => {
   const [accountType, setAccountType] = useState<AccountPortalType>('STUDENT');
+
+  // Live stats from Supabase
+  const [stats, setStats] = useState<LiveStats>({ articleCount: null, quizCount: null, userCount: null });
+
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchStats() {
+      try {
+        const [articlesRes, quizzesRes, usersRes] = await Promise.all([
+          supabase.from('articles').select('id', { count: 'exact', head: true }).eq('status', 'PUBLISHED'),
+          supabase.from('quizzes').select('id', { count: 'exact', head: true }).eq('is_published', true),
+          supabase.from('profiles').select('id', { count: 'exact', head: true }),
+        ]);
+        if (!cancelled) {
+          setStats({
+            articleCount: articlesRes.count ?? 0,
+            quizCount: quizzesRes.count ?? 0,
+            userCount: usersRes.count ?? 0,
+          });
+        }
+      } catch {
+        // Keep nulls — skeletons remain
+      }
+    }
+    fetchStats();
+    return () => { cancelled = true; };
+  }, []);
 
   // Shared Identity Fields
   const [firstName, setFirstName] = useState('');
@@ -159,7 +199,13 @@ export const Registration: React.FC<RegistrationProps> = ({
             </div>
 
             <h2 className="registration-visual-title">
-              Join 50,000+ Healthcare Leaders &amp; Scholars.
+              {stats.userCount === null ? (
+                <>Join Healthcare Leaders &amp; Scholars.</>
+              ) : stats.userCount === 0 ? (
+                <>Join Healthcare Leaders &amp; Scholars.</>
+              ) : (
+                <>Join {formatStatNumber(stats.userCount)} Healthcare Leaders &amp; Scholars.</>
+              )}
             </h2>
             <p className="registration-visual-desc">
               Whether you are preparing for USMLE board examinations or verifying surgical protocols as a credentialed reviewer, MedCore supports your clinical journey.
@@ -202,19 +248,31 @@ export const Registration: React.FC<RegistrationProps> = ({
             </div>
 
             <div className="reg-stat-pill-row">
-              <div className="reg-stat-card">
-                <strong>100%</strong>
-                <span>Peer-Reviewed</span>
+                <div className="reg-stat-card">
+                  <strong>
+                    {stats.articleCount === null
+                      ? <span className="reg-stat-skeleton" />
+                      : stats.articleCount === 0 ? '—' : formatStatNumber(stats.articleCount)}
+                  </strong>
+                  <span>Clinical Guides</span>
+                </div>
+                <div className="reg-stat-card">
+                  <strong>
+                    {stats.quizCount === null
+                      ? <span className="reg-stat-skeleton" />
+                      : stats.quizCount === 0 ? '—' : formatStatNumber(stats.quizCount)}
+                  </strong>
+                  <span>Case Quizzes</span>
+                </div>
+                <div className="reg-stat-card">
+                  <strong>
+                    {stats.userCount === null
+                      ? <span className="reg-stat-skeleton" />
+                      : stats.userCount === 0 ? '—' : formatStatNumber(stats.userCount)}
+                  </strong>
+                  <span>Active Learners</span>
+                </div>
               </div>
-              <div className="reg-stat-card">
-                <strong>500+</strong>
-                <span>Clinical Guides</span>
-              </div>
-              <div className="reg-stat-card">
-                <strong>50k+</strong>
-                <span>Active Learners</span>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -222,16 +280,18 @@ export const Registration: React.FC<RegistrationProps> = ({
         <div className="registration-form-panel">
           {/* BRAND HEADER */}
           <div className="registration-brand-header">
-            <div className="registration-logo-wrapper" onClick={onNavigateHome} role="button" tabIndex={0} title="Return to MedCore Home">`r`n              <img src="/medcore-logo.png" alt="MedCore Logo" className="registration-brand-logo-img" />`r`n            </div>
-          <h1 className="registration-title">
-            {accountType === 'STUDENT' ? 'Create Student Account' : 'Medical Reviewer Registration'}
-          </h1>
-          <p className="registration-subtitle">
-            {accountType === 'STUDENT'
-              ? 'Join MedCore to access peer-reviewed clinical learning & medical study materials.'
-              : 'Register as a clinical expert to apply for Medical Reviewer verification on MedCore.'}
-          </p>
-        </div>
+            <div className="registration-logo-wrapper" onClick={onNavigateHome} role="button" tabIndex={0} title="Return to MedCore Home">
+              <img src="/medcore-logo.png" alt="MedCore Logo" className="registration-brand-logo-img" />
+            </div>
+            <h1 className="registration-title">
+              {accountType === 'STUDENT' ? 'Create Student Account' : 'Medical Reviewer Registration'}
+            </h1>
+            <p className="registration-subtitle">
+              {accountType === 'STUDENT'
+                ? 'Join MedCore to access peer-reviewed clinical learning & medical study materials.'
+                : 'Register as a clinical expert to apply for Medical Reviewer verification on MedCore.'}
+            </p>
+          </div>
 
         {/* PORTAL TAB SWITCHER */}
         {!success && (

@@ -1,7 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import type { UserRole } from '../client/types/auth.types';
+import { supabase } from '../lib/supabase';
 import './Login.css';
+
+function formatStatNumber(n: number): string {
+  if (n >= 1000) return `${(n / 1000).toFixed(n >= 10000 ? 0 : 1).replace(/\.0$/, '')}k+`;
+  if (n === 0) return '0';
+  return `${n}+`;
+}
 
 export interface LoginProps {
   onLoginSuccess: (role: UserRole) => void;
@@ -19,6 +26,30 @@ export const Login: React.FC<LoginProps> = ({
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Live stats for the visual panel
+  const [articleCount, setArticleCount] = useState<number | null>(null);
+  const [quizCount, setQuizCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchStats() {
+      try {
+        const [articlesRes, quizzesRes] = await Promise.all([
+          supabase.from('articles').select('id', { count: 'exact', head: true }).eq('status', 'PUBLISHED'),
+          supabase.from('quizzes').select('id', { count: 'exact', head: true }).eq('is_published', true),
+        ]);
+        if (!cancelled) {
+          setArticleCount(articlesRes.count ?? 0);
+          setQuizCount(quizzesRes.count ?? 0);
+        }
+      } catch {
+        // Keep nulls on failure — inline skeleton shown
+      }
+    }
+    fetchStats();
+    return () => { cancelled = true; };
+  }, []);
 
   // If user is already authenticated, notify success
   React.useEffect(() => {
@@ -95,7 +126,14 @@ export const Login: React.FC<LoginProps> = ({
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
                 </span>
-                <span>Over 500+ Board-Verified Clinical Guides</span>
+                <span>
+                  {articleCount === null
+                    ? <span className="login-stat-inline-skeleton" />
+                    : articleCount === 0
+                      ? 'Board-Verified Clinical Guides'
+                      : <><strong>{formatStatNumber(articleCount)}</strong> Board-Verified Clinical Guides</>
+                  }
+                </span>
               </div>
               <div className="visual-feature-item">
                 <span className="visual-feature-icon">
@@ -111,7 +149,14 @@ export const Login: React.FC<LoginProps> = ({
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
                 </span>
-                <span>Comprehensive USMLE Step 1 &amp; 2 Case Quizzes</span>
+                <span>
+                  {quizCount === null
+                    ? <span className="login-stat-inline-skeleton" />
+                    : quizCount === 0
+                      ? 'USMLE Step 1 & 2 Case Quizzes'
+                      : <><strong>{formatStatNumber(quizCount)}</strong> USMLE Step 1 & 2 Case Quizzes</>
+                  }
+                </span>
               </div>
             </div>
 
@@ -134,7 +179,9 @@ export const Login: React.FC<LoginProps> = ({
         <div className="login-form-panel">
           {/* BRAND HEADER */}
           <div className="login-brand-header">
-            <div className="login-logo-wrapper" onClick={onNavigateHome} role="button" tabIndex={0} title="Return to MedCore Home">`r`n              <img src="/medcore-logo.png" alt="MedCore Logo" className="login-brand-logo-img" />`r`n            </div>
+            <div className="login-logo-wrapper" onClick={onNavigateHome} role="button" tabIndex={0} title="Return to MedCore Home">
+              <img src="/medcore-logo.png" alt="MedCore Logo" className="login-brand-logo-img" />
+            </div>
             <h1 className="login-title">Sign in to MedCore</h1>
             <p className="login-subtitle">
               Enter your clinical credentials to access your dashboard.

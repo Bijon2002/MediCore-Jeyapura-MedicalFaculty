@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { getAccessToken } from '../auth/auth-storage';
 import { QuizzesApiClient } from '../client/api/quizzes.api';
-import type { Quiz, QuizSubmitResult, SubmitQuizInput } from '../client/types/quiz.types';
+import type { Quiz, QuizSubmitResult, SubmitQuizInput, SubmitQuizAnswerInput } from '../client/types/quiz.types';
 import { ApiClientError } from '../client/api/api-client';
 import './QuizDetail.css';
 
@@ -16,7 +16,7 @@ export const QuizDetail: React.FC<QuizDetailProps> = ({ quizId, onBackToQuizzes 
   const [error, setError] = useState<string | null>(null);
   const [unauthenticated, setUnauthenticated] = useState<boolean>(false);
 
-  const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string>>({});
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string[]>>({});
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitResult, setSubmitResult] = useState<QuizSubmitResult | null>(null);
@@ -62,16 +62,29 @@ export const QuizDetail: React.FC<QuizDetailProps> = ({ quizId, onBackToQuizzes 
     fetchQuiz();
   }, [fetchQuiz]);
 
-  const handleSelectOption = (questionId: string, optionId: string) => {
+  const handleSelectOption = (questionId: string, optionId: string, isMultiple = false) => {
     if (submitResult || submitting) return;
+    const currentList = selectedAnswers[questionId] || [];
+    let updatedList: string[];
+
+    if (isMultiple) {
+      if (currentList.includes(optionId)) {
+        updatedList = currentList.filter((id) => id !== optionId);
+      } else {
+        updatedList = [...currentList, optionId];
+      }
+    } else {
+      updatedList = [optionId];
+    }
+
     const nextAnswers = {
       ...selectedAnswers,
-      [questionId]: optionId,
+      [questionId]: updatedList,
     };
     setSelectedAnswers(nextAnswers);
 
     if (validationNotice && quiz?.questions) {
-      const allAnswered = quiz.questions.every((q) => Boolean(nextAnswers[q.id]));
+      const allAnswered = quiz.questions.every((q) => (nextAnswers[q.id]?.length || 0) > 0);
       if (allAnswered) {
         setValidationNotice(null);
       }
@@ -82,7 +95,7 @@ export const QuizDetail: React.FC<QuizDetailProps> = ({ quizId, onBackToQuizzes 
     if (!quiz || submitResult || submitting) return;
 
     const totalQuestionsCount = quiz.questions?.length ?? 0;
-    const unansweredCount = quiz.questions?.filter((q) => !selectedAnswers[q.id]).length ?? totalQuestionsCount;
+    const unansweredCount = quiz.questions?.filter((q) => (selectedAnswers[q.id]?.length || 0) === 0).length ?? totalQuestionsCount;
 
     if (unansweredCount > 0) {
       setValidationNotice('Please answer all questions before submitting the quiz.');
@@ -100,9 +113,12 @@ export const QuizDetail: React.FC<QuizDetailProps> = ({ quizId, onBackToQuizzes 
       return;
     }
 
-    const answers = Object.entries(selectedAnswers)
-      .filter(([_, optionId]) => Boolean(optionId))
-      .map(([questionId, optionId]) => ({ questionId, optionId }));
+    const answers: SubmitQuizAnswerInput[] = [];
+    Object.entries(selectedAnswers).forEach(([questionId, optionIds]) => {
+      optionIds.forEach((optId) => {
+        answers.push({ questionId, optionId: optId });
+      });
+    });
 
     const payload: SubmitQuizInput = { answers };
 
@@ -121,7 +137,7 @@ export const QuizDetail: React.FC<QuizDetailProps> = ({ quizId, onBackToQuizzes 
   };
 
   const totalQuestions = quiz?.questions?.length ?? 0;
-  const answeredCount = Object.keys(selectedAnswers).length;
+  const answeredCount = Object.values(selectedAnswers).filter((opts) => opts && opts.length > 0).length;
 
   return (
     <div className="medcore-quiz-detail-container">
@@ -372,7 +388,9 @@ export const QuizDetail: React.FC<QuizDetailProps> = ({ quizId, onBackToQuizzes 
               </div>
             )}
             {quiz.questions.map((question, qIdx) => {
-              const selectedOptionId = selectedAnswers[question.id];
+              const selectedOptionIds = selectedAnswers[question.id] || [];
+              const isAnswered = selectedOptionIds.length > 0;
+              const isMultiple = Boolean(question.allowMultiple);
               const questionResult = submitResult?.results?.find(
                 (r) => r.questionId === question.id,
               );
@@ -381,9 +399,16 @@ export const QuizDetail: React.FC<QuizDetailProps> = ({ quizId, onBackToQuizzes 
                 <div key={question.id} className="quiz-question-card">
                   <div className="question-header">
                     <div className="question-header-top">
-                      <span className="question-number">Question {qIdx + 1} of {totalQuestions}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span className="question-number">Question {qIdx + 1} of {totalQuestions}</span>
+                        {isMultiple && (
+                          <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '6px', background: 'rgba(13,148,136,0.1)', color: '#0d9488', textTransform: 'uppercase' }}>
+                            Multiple Answers
+                          </span>
+                        )}
+                      </div>
                       <span className="question-status-pill">
-                        {selectedOptionId ? '✓ Answered' : '○ Pending'}
+                        {isAnswered ? '✓ Answered' : '○ Pending'}
                       </span>
                     </div>
                     <h2 className="question-text">{question.question}</h2>
@@ -395,20 +420,26 @@ export const QuizDetail: React.FC<QuizDetailProps> = ({ quizId, onBackToQuizzes 
                     </div>
                   )}
 
-                  <div className="options-group" role="radiogroup" aria-label={`Question ${qIdx + 1}`}>
+                  <div className="options-group" role={isMultiple ? 'group' : 'radiogroup'} aria-label={`Question ${qIdx + 1}`}>
                     {question.options.map((option, oIdx) => {
-                      const isSelected = selectedOptionId === option.id;
+                      const isSelected = selectedOptionIds.includes(option.id);
                       const optionLetter = String.fromCharCode(65 + oIdx);
                       let resultClass = '';
                       let statusText: string | null = null;
 
-                      if (submitResult && isSelected && questionResult) {
-                        if (questionResult.isCorrect) {
+                      if (submitResult) {
+                        const isThisOptionCorrect = (option as any).isCorrect;
+                        if (isSelected) {
+                          if (isThisOptionCorrect === true || questionResult?.isCorrect) {
+                            resultClass = 'correct';
+                            statusText = 'Correct answer';
+                          } else if (isThisOptionCorrect === false || !questionResult?.isCorrect) {
+                            resultClass = 'wrong';
+                            statusText = 'Your answer was incorrect';
+                          }
+                        } else if (isThisOptionCorrect === true) {
                           resultClass = 'correct';
-                          statusText = 'Correct answer';
-                        } else {
-                          resultClass = 'wrong';
-                          statusText = 'Your answer was incorrect';
+                          statusText = 'Correct answer (Missed)';
                         }
                       }
 
@@ -417,9 +448,9 @@ export const QuizDetail: React.FC<QuizDetailProps> = ({ quizId, onBackToQuizzes 
                           key={option.id}
                           type="button"
                           className={`option-btn ${isSelected ? 'selected' : ''} ${resultClass}`.trim()}
-                          onClick={() => handleSelectOption(question.id, option.id)}
+                          onClick={() => handleSelectOption(question.id, option.id, isMultiple)}
                           disabled={Boolean(submitResult) || submitting}
-                          role="radio"
+                          role={isMultiple ? 'checkbox' : 'radio'}
                           aria-checked={isSelected}
                           aria-label={`Option ${optionLetter}: ${option.optionText}${statusText ? ` - ${statusText}` : ''}`}
                           data-testid={`option-${question.id}-${option.id}`}
@@ -427,7 +458,7 @@ export const QuizDetail: React.FC<QuizDetailProps> = ({ quizId, onBackToQuizzes 
                           <span className="option-letter-badge">
                             {optionLetter}
                           </span>
-                          <span className="option-indicator">
+                          <span className="option-indicator" style={isMultiple ? { borderRadius: '4px' } : undefined}>
                             {resultClass === 'correct' ? (
                               <svg className="result-check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                                 <polyline points="20 6 9 17 4 12" />
@@ -438,7 +469,7 @@ export const QuizDetail: React.FC<QuizDetailProps> = ({ quizId, onBackToQuizzes 
                                 <line x1="6" y1="6" x2="18" y2="18" />
                               </svg>
                             ) : (
-                              <span className="option-indicator-inner" />
+                              <span className="option-indicator-inner" style={isMultiple ? { borderRadius: '2px' } : undefined} />
                             )}
                           </span>
                           <span className="option-text">{option.optionText}</span>

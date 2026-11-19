@@ -15,6 +15,7 @@ export class SubjectsApiClient {
     return {
       ...(raw as unknown as Subject),
       iconUrl: (raw.iconUrl ?? raw.icon_url) as string | null | undefined,
+      notes: (raw.notes) as string | null | undefined,
       orderIndex: Number(raw.orderIndex ?? raw.order_index ?? 0),
       createdAt: (raw.createdAt ?? raw.created_at) as string | Date,
       updatedAt: (raw.updatedAt ?? raw.updated_at) as string | Date,
@@ -137,6 +138,7 @@ export class SubjectsApiClient {
         title: data.title,
         slug: data.slug,
         description: data.description || null,
+        notes: data.notes || null,
         icon_url: data.iconUrl || null,
         order_index: data.orderIndex ?? 0,
       })
@@ -167,6 +169,7 @@ export class SubjectsApiClient {
     if (data.title !== undefined) updatePayload.title = data.title;
     if (data.slug !== undefined) updatePayload.slug = data.slug;
     if (data.description !== undefined) updatePayload.description = data.description;
+    if (data.notes !== undefined) updatePayload.notes = data.notes;
     if (data.iconUrl !== undefined) updatePayload.icon_url = data.iconUrl;
     if (data.orderIndex !== undefined) updatePayload.order_index = data.orderIndex;
 

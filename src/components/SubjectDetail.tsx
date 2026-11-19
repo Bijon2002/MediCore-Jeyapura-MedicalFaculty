@@ -212,8 +212,33 @@ export const SubjectDetail: React.FC<SubjectDetailProps> = ({
             <h1 className="subject-detail-title">{subject.title}</h1>
             <p className="subject-detail-description">
               {subject.description ||
-                `Comprehensive medical guides, articles, and clinical resources for ${subject.title}.`}
+                `Comprehensive medical guides, topics, and clinical resources for ${subject.title}.`}
             </p>
+            {subject.notes && (
+              <div className="subject-notes-banner" style={{
+                marginTop: '16px',
+                padding: '14px 18px',
+                background: 'var(--surface, #ffffff)',
+                border: '1px solid var(--border, #e2e8f0)',
+                borderLeft: '4px solid var(--accent, #0d9488)',
+                borderRadius: '8px',
+                textAlign: 'left'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700, fontSize: '13px', color: 'var(--accent, #0d9488)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                    <polyline points="10 9 9 9 8 9" />
+                  </svg>
+                  <span>Specialty Notes &amp; Instructions</span>
+                </div>
+                <p style={{ margin: 0, fontSize: '14px', lineHeight: 1.6, color: 'var(--text-body, #334155)', whiteSpace: 'pre-wrap' }}>
+                  {subject.notes}
+                </p>
+              </div>
+            )}
           </header>
 
           {/* TOPICS BAR / SELECTOR */}
@@ -251,15 +276,15 @@ export const SubjectDetail: React.FC<SubjectDetailProps> = ({
             )}
           </div>
 
-          {/* ARTICLES SECTION FOR SELECTED SUBJECT/TOPIC */}
+          {/* TOPICS SECTION FOR SELECTED SUBJECT/TOPIC */}
           <div className="topic-articles-section">
             <div className="articles-section-header">
               <h3 className="articles-section-title">
-                {activeTopic ? `Articles in ${activeTopic.title}` : `All Articles in ${subject.title}`}
+                {activeTopic ? `Topics in ${activeTopic.title}` : `All Topics in ${subject.title}`}
               </h3>
               {!loadingArticles && !articlesError ? (
                 <span className="results-count">
-                  Showing {articles.length} of {totalCount} articles
+                  Showing {articles.length} of {totalCount} topics
                 </span>
               ) : null}
             </div>
@@ -273,7 +298,7 @@ export const SubjectDetail: React.FC<SubjectDetailProps> = ({
                   className="btn btn-secondary retry-btn"
                   onClick={fetchArticlesData}
                 >
-                  Retry Loading Articles
+                  Retry Loading Topics
                 </button>
               </div>
             ) : null}
@@ -313,11 +338,11 @@ export const SubjectDetail: React.FC<SubjectDetailProps> = ({
                     <line x1="9" y1="15" x2="15" y2="15" />
                   </svg>
                 </div>
-                <h3 className="empty-title">No Articles Found</h3>
+                <h3 className="empty-title">No Topics Found</h3>
                 <p className="empty-message">
                   {activeTopic
-                    ? `There are currently no published articles under topic "${activeTopic.title}".`
-                    : `There are currently no published articles under ${subject.title}.`}
+                    ? `There are currently no published topics under topic "${activeTopic.title}".`
+                    : `There are currently no published topics under ${subject.title}.`}
                 </p>
                 {activeTopic ? (
                   <button

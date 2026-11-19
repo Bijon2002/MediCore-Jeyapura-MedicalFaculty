@@ -99,17 +99,22 @@ export class QuizzesApiClient {
       updatedAt: q.updated_at,
       subject: q.subject ? { id: q.subject.id, title: q.subject.title } : undefined,
       topic: q.topic ? { id: q.topic.id, title: q.topic.title } : null,
-      questions: (q.questions || []).map((quest: any) => ({
-        id: quest.id,
-        question: quest.question,
-        explanation: quest.explanation,
-        orderIndex: quest.order_index,
-        options: (quest.options || []).map((opt: any) => ({
-          id: opt.id,
-          optionText: opt.option_text,
-          orderIndex: opt.order_index,
-        })),
-      })),
+      questions: (q.questions || []).map((quest: any) => {
+        const correctCount = (quest.options || []).filter((opt: any) => opt.is_correct).length;
+        return {
+          id: quest.id,
+          question: quest.question,
+          explanation: quest.explanation,
+          orderIndex: quest.order_index,
+          allowMultiple: correctCount > 1,
+          options: (quest.options || []).map((opt: any) => ({
+            id: opt.id,
+            optionText: opt.option_text,
+            orderIndex: opt.order_index,
+            isCorrect: opt.is_correct,
+          })),
+        };
+      }),
     };
   }
 
@@ -198,6 +203,46 @@ export class QuizzesApiClient {
 
     if (quizError) throw new Error(quizError.message);
 
+    // If questions are provided, replace them
+    if (data.questions && data.questions.length > 0) {
+      const { data: oldQuestions } = await supabase
+        .from('quiz_questions')
+        .select('id')
+        .eq('quiz_id', id);
+
+      if (oldQuestions && oldQuestions.length > 0) {
+        const oldQIds = oldQuestions.map((q: any) => q.id);
+        await supabase.from('quiz_options').delete().in('question_id', oldQIds);
+        await supabase.from('quiz_questions').delete().eq('quiz_id', id);
+      }
+
+      for (let i = 0; i < data.questions.length; i++) {
+        const q = data.questions[i];
+        const { data: question, error: qError } = await supabase
+          .from('quiz_questions')
+          .insert({
+            quiz_id: id,
+            question: q.question,
+            explanation: q.explanation || null,
+            order_index: q.orderIndex ?? i,
+          })
+          .select('*')
+          .single();
+
+        if (qError || !question) continue;
+
+        if (q.options && q.options.length > 0) {
+          const optionsToInsert = q.options.map((opt, optIdx) => ({
+            question_id: question.id,
+            option_text: opt.optionText,
+            is_correct: opt.isCorrect,
+            order_index: opt.orderIndex ?? optIdx,
+          }));
+          await supabase.from('quiz_options').insert(optionsToInsert);
+        }
+      }
+    }
+
     this.clearCache();
     return this.getQuizById(id);
   }
@@ -254,6 +299,7 @@ export class QuizzesApiClient {
     const answerBreakdown: Array<{
       questionId: string;
       selectedOptionId: string | null;
+      selectedOptionIds?: string[];
       isCorrect: boolean;
     }> = [];
 
@@ -263,20 +309,48 @@ export class QuizzesApiClient {
     }> = [];
 
     for (const q of questions) {
-      const selected = data.answers.find((a) => a.questionId === q.id);
-      const correctOption = q.options.find((opt: { is_correct: boolean }) => opt.is_correct);
-      const isCorrect = Boolean(selected && correctOption && selected.optionId === correctOption.id);
+      const qAnswers = data.answers.filter((a) => a.questionId === q.id);
+      const submittedOptionIds: string[] = [];
+      qAnswers.forEach((a) => {
+        if (a.optionId) submittedOptionIds.push(a.optionId);
+        if (a.optionIds && Array.isArray(a.optionIds)) submittedOptionIds.push(...a.optionIds);
+      });
+      const uniqueSubmitted = Array.from(new Set(submittedOptionIds));
+
+      const correctOptions = (q.options || []).filter((opt: { is_correct: boolean }) => opt.is_correct);
+      const correctOptionIds = correctOptions.map((opt: { id: string }) => opt.id);
+
+      let isCorrect = false;
+      if (correctOptionIds.length > 1) {
+        // Multiple answers question: all correct answers must be selected and no incorrect ones
+        isCorrect =
+          uniqueSubmitted.length === correctOptionIds.length &&
+          correctOptionIds.every((id: string) => uniqueSubmitted.includes(id));
+      } else if (correctOptionIds.length === 1) {
+        // Single answer question
+        isCorrect = uniqueSubmitted.length === 1 && uniqueSubmitted[0] === correctOptionIds[0];
+      }
 
       if (isCorrect) score++;
 
-      answersToInsert.push({
-        question_id: q.id,
-        option_id: selected?.optionId || null,
-      });
+      if (uniqueSubmitted.length > 0) {
+        for (const optId of uniqueSubmitted) {
+          answersToInsert.push({
+            question_id: q.id,
+            option_id: optId,
+          });
+        }
+      } else {
+        answersToInsert.push({
+          question_id: q.id,
+          option_id: null,
+        });
+      }
 
       answerBreakdown.push({
         questionId: q.id,
-        selectedOptionId: selected?.optionId || null,
+        selectedOptionId: uniqueSubmitted[0] || null,
+        selectedOptionIds: uniqueSubmitted,
         isCorrect,
       });
     }

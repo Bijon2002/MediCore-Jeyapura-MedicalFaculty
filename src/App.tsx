@@ -47,7 +47,7 @@ function App() {
   const [showPreloader, setShowPreloader] = useState(true);
   const currentRole: UserRole = user?.role || 'STUDENT';
   const [adminActiveTab, setAdminActiveTab] = useState<AdminWorkspaceTab>('OVERVIEW');
-  const [unlockedPreviews, setUnlockedPreviews] = useState<Record<string, boolean>>(() => {
+  const [unlockedPreviews] = useState<Record<string, boolean>>(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       return {
@@ -495,9 +495,6 @@ function App() {
                 onNavigateHome={navigateToHome}
                 onNavigateToArticles={navigateToArticles}
                 onNavigateToQuizzes={navigateToQuizzes}
-                onUnlockPreview={() =>
-                  setUnlockedPreviews((prev) => ({ ...prev, 'info-hub': true }))
-                }
               />
             )
           ) : route.type === 'features' ? (
@@ -538,9 +535,6 @@ function App() {
                 onNavigateHome={navigateToHome}
                 onNavigateToArticles={navigateToArticles}
                 onNavigateToQuizzes={navigateToQuizzes}
-                onUnlockPreview={() =>
-                  setUnlockedPreviews((prev) => ({ ...prev, 'body-atlas': true }))
-                }
               />
             )
           ) : route.type === 'login' ? (

@@ -166,10 +166,6 @@ export const ArticleList: React.FC<ArticleListProps> = ({ onArticleClick, onSele
             <span>Peer-Reviewed Medical Knowledge · Open Clinical Access</span>
           </div>
 
-          <h1 className="public-hero-title">
-            Authoritative Medical Guides &amp; Clinical Insights
-          </h1>
-
           <p className="public-hero-subtitle">
             Explore clear, evidence-based clinical articles, surgical anatomy, and high-yield pathology correlations authored and reviewed by certified medical professionals.
           </p>

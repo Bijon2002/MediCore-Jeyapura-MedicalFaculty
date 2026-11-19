@@ -15,6 +15,7 @@ export interface QuizEditorProps {
 interface QuestionFormState {
   question: string;
   explanation: string;
+  allowMultiple: boolean;
   options: {
     optionText: string;
     isCorrect: boolean;
@@ -38,6 +39,7 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({
     {
       question: '',
       explanation: '',
+      allowMultiple: false,
       options: [
         { optionText: '', isCorrect: true },
         { optionText: '', isCorrect: false },
@@ -89,14 +91,19 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({
 
         if (quiz.questions && quiz.questions.length > 0) {
           setQuestions(
-            quiz.questions.map((q) => ({
-              question: q.question,
-              explanation: q.explanation || '',
-              options: q.options.map((opt, idx) => ({
-                optionText: opt.optionText,
-                isCorrect: idx === 0, // Fallback if backend doesn't return isCorrect in non-admin view
-              })),
-            })),
+            quiz.questions.map((q) => {
+              const correctCount = q.options.filter((opt) => opt.isCorrect).length;
+              const hasMultiple = Boolean(q.allowMultiple || correctCount > 1);
+              return {
+                question: q.question,
+                explanation: q.explanation || '',
+                allowMultiple: hasMultiple,
+                options: q.options.map((opt, idx) => ({
+                  optionText: opt.optionText,
+                  isCorrect: opt.isCorrect !== undefined ? Boolean(opt.isCorrect) : idx === 0,
+                })),
+              };
+            }),
           );
         }
       } catch (err: any) {
@@ -118,6 +125,7 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({
       {
         question: '',
         explanation: '',
+        allowMultiple: false,
         options: [
           { optionText: '', isCorrect: true },
           { optionText: '', isCorrect: false },
@@ -160,10 +168,38 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({
     setQuestions((prev) => {
       const copy = [...prev];
       const q = { ...copy[qIndex] };
-      q.options = q.options.map((opt, i) => ({
-        ...opt,
-        isCorrect: i === optIndex,
-      }));
+      if (q.allowMultiple) {
+        // Toggle the clicked option's isCorrect
+        q.options = q.options.map((opt, i) => ({
+          ...opt,
+          isCorrect: i === optIndex ? !opt.isCorrect : opt.isCorrect,
+        }));
+      } else {
+        // Single-answer: only one correct at a time
+        q.options = q.options.map((opt, i) => ({
+          ...opt,
+          isCorrect: i === optIndex,
+        }));
+      }
+      copy[qIndex] = q;
+      return copy;
+    });
+  };
+
+  const handleToggleMultiple = (qIndex: number) => {
+    setQuestions((prev) => {
+      const copy = [...prev];
+      const q = { ...copy[qIndex] };
+      const newAllowMultiple = !q.allowMultiple;
+      q.allowMultiple = newAllowMultiple;
+      if (!newAllowMultiple) {
+        // Switching back to single: keep only the first correct option (or first option)
+        const firstCorrectIdx = q.options.findIndex((o) => o.isCorrect);
+        q.options = q.options.map((opt, i) => ({
+          ...opt,
+          isCorrect: i === (firstCorrectIdx >= 0 ? firstCorrectIdx : 0),
+        }));
+      }
       copy[qIndex] = q;
       return copy;
     });
@@ -235,9 +271,16 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({
         return;
       }
       const correctCount = q.options.filter((opt) => opt.isCorrect).length;
-      if (correctCount !== 1) {
-        setError(`Question ${i + 1} must have exactly one correct option selected.`);
-        return;
+      if (q.allowMultiple) {
+        if (correctCount < 2) {
+          setError(`Question ${i + 1} is set to "Multiple answers" — please select at least 2 correct options.`);
+          return;
+        }
+      } else {
+        if (correctCount !== 1) {
+          setError(`Question ${i + 1} must have exactly one correct option selected.`);
+          return;
+        }
       }
     }
 
@@ -251,7 +294,7 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({
 
     try {
       if (isEditMode && quizId) {
-        // Update basic info
+        // Update quiz and questions
         await QuizzesApiClient.updateQuiz(
           quizId,
           {
@@ -259,6 +302,16 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({
             description: description.trim() || undefined,
             subjectId,
             topicId: topicId || undefined,
+            questions: questions.map((q, qIndex) => ({
+              question: q.question.trim(),
+              explanation: q.explanation.trim() || undefined,
+              orderIndex: qIndex,
+              options: q.options.map((opt, optIndex) => ({
+                optionText: opt.optionText.trim(),
+                isCorrect: opt.isCorrect,
+                orderIndex: optIndex,
+              })),
+            })),
           },
           token,
         );
@@ -412,7 +465,7 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({
               Questions ({questions.length})
             </h2>
             <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-              Each question requires 4-5 options and exactly 1 correct answer.
+              Each question requires 4-5 options and 1 or more correct answers.
             </span>
           </div>
 
@@ -420,6 +473,31 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({
             <div key={qIndex} className="question-block">
               <div className="question-header">
                 <span className="question-number-badge">Question #{qIndex + 1}</span>
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '7px',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    color: q.allowMultiple ? 'var(--teal-600, #0d9488)' : 'var(--text-muted)',
+                    cursor: 'pointer',
+                    userSelect: 'none',
+                    padding: '4px 10px',
+                    borderRadius: '8px',
+                    background: q.allowMultiple ? 'rgba(13,148,136,0.09)' : 'var(--surface-hover)',
+                    border: q.allowMultiple ? '1px solid rgba(13,148,136,0.3)' : '1px solid transparent',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={q.allowMultiple}
+                    onChange={() => handleToggleMultiple(qIndex)}
+                    style={{ accentColor: '#0d9488', width: '15px', height: '15px' }}
+                  />
+                  Multiple answers
+                </label>
                 {questions.length > 1 && (
                   <button
                     type="button"
@@ -447,14 +525,18 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({
 
               {/* Options */}
               <div className="options-section">
-                <span className="options-label">Answer Options (Select the correct one)</span>
+                <span className="options-label">
+                  {q.allowMultiple
+                    ? 'Answer Options (Check all correct answers)'
+                    : 'Answer Options (Select the correct one)'}
+                </span>
                 {q.options.map((opt, optIndex) => (
                   <div key={optIndex} className="option-row">
                     <input
-                      type="radio"
-                      name={`correct-option-${qIndex}`}
+                      type={q.allowMultiple ? 'checkbox' : 'radio'}
+                      name={q.allowMultiple ? undefined : `correct-option-${qIndex}`}
                       className="option-radio"
-                      title="Mark as correct answer"
+                      title={q.allowMultiple ? 'Mark as a correct answer' : 'Mark as correct answer'}
                       checked={opt.isCorrect}
                       onChange={() => handleSetCorrectOption(qIndex, optIndex)}
                     />

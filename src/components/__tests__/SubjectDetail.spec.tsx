@@ -173,7 +173,7 @@ describe('SubjectDetail Component', () => {
       expect(screen.getByTestId('topic-empty-articles')).toBeInTheDocument();
     });
 
-    expect(screen.getByText('No Articles Found')).toBeInTheDocument();
+    expect(screen.getByText(/No (Topics|Articles) Found/i)).toBeInTheDocument();
   });
 
   it('triggers back to subjects when breadcrumb is clicked', async () => {

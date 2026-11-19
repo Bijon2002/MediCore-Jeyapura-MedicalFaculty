@@ -6,7 +6,6 @@ export interface ComingSoonPageProps {
   onNavigateHome: () => void;
   onNavigateToArticles?: () => void;
   onNavigateToQuizzes?: () => void;
-  onUnlockPreview?: () => void;
 }
 
 export const ComingSoonPage: React.FC<ComingSoonPageProps> = ({
@@ -14,7 +13,6 @@ export const ComingSoonPage: React.FC<ComingSoonPageProps> = ({
   onNavigateHome,
   onNavigateToArticles,
   onNavigateToQuizzes,
-  onUnlockPreview,
 }) => {
   const isAtlas = type === '3d-atlas';
 
@@ -129,24 +127,6 @@ export const ComingSoonPage: React.FC<ComingSoonPageProps> = ({
             </button>
           )}
         </div>
-
-        {/* Discreet Dev Preview Toggle */}
-        {onUnlockPreview && (
-          <div>
-            <button
-              type="button"
-              className="coming-soon-preview-toggle"
-              onClick={onUnlockPreview}
-              title="Preview working live build"
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                <circle cx="12" cy="12" r="3" />
-              </svg>
-              Dev Preview (Live Build)
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );

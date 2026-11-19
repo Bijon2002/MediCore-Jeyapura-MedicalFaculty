@@ -64,7 +64,7 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
   const [topicsError, setTopicsError] = useState<string | null>(null);
   const [editingSubjectId, setEditingSubjectId] = useState<string | null>(null);
   const [editingTopicId, setEditingTopicId] = useState<string | null>(null);
-  const [subjectForm, setSubjectForm] = useState({ title: '', slug: '', description: '', iconUrl: '', orderIndex: 0 });
+  const [subjectForm, setSubjectForm] = useState({ title: '', slug: '', description: '', notes: '', iconUrl: '', orderIndex: 0 });
   const [topicForm, setTopicForm] = useState({ subjectId: '', title: '', slug: '', description: '', orderIndex: 0 });
 
   // ARTICLES STATE
@@ -229,7 +229,7 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
 
   const resetSubjectForm = () => {
     setEditingSubjectId(null);
-    setSubjectForm({ title: '', slug: '', description: '', iconUrl: '', orderIndex: subjects.length });
+    setSubjectForm({ title: '', slug: '', description: '', notes: '', iconUrl: '', orderIndex: subjects.length });
   };
 
   const resetTopicForm = () => {
@@ -247,6 +247,7 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
         title: subjectForm.title.trim(),
         slug: subjectForm.slug.trim() || subjectForm.title.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
         description: subjectForm.description.trim() || undefined,
+        notes: subjectForm.notes.trim() || undefined,
         iconUrl: subjectForm.iconUrl || undefined,
         orderIndex: subjectForm.orderIndex,
       };
@@ -1114,6 +1115,14 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
               <input aria-label="Specialty name" placeholder="Specialty name" value={subjectForm.title} onChange={(e) => setSubjectForm({ ...subjectForm, title: e.target.value })} />
               <input aria-label="Specialty slug" placeholder="Slug (optional)" value={subjectForm.slug} onChange={(e) => setSubjectForm({ ...subjectForm, slug: e.target.value })} />
               <input aria-label="Specialty description" placeholder="Description" value={subjectForm.description} onChange={(e) => setSubjectForm({ ...subjectForm, description: e.target.value })} />
+              <textarea
+                aria-label="Specialty notes"
+                placeholder="Notes (visible to students under this subject)"
+                value={subjectForm.notes}
+                onChange={(e) => setSubjectForm({ ...subjectForm, notes: e.target.value })}
+                rows={3}
+                style={{ resize: 'vertical', fontFamily: 'inherit', fontSize: '14px', padding: '8px 10px', borderRadius: '8px', border: '1.5px solid var(--border)', background: 'var(--surface)', color: 'var(--text-h)', width: '100%', boxSizing: 'border-box' }}
+              />
               <input aria-label="Specialty order" type="number" min="0" placeholder="Order" value={subjectForm.orderIndex} onChange={(e) => setSubjectForm({ ...subjectForm, orderIndex: Number(e.target.value) })} />
               <ImageUploader
                 value={subjectForm.iconUrl}
@@ -1145,6 +1154,7 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
                       <th>Specialty Name</th>
                       <th>Slug</th>
                       <th>Description</th>
+                      <th>Notes</th>
                       <th>Topics</th>
                       <th>Articles</th>
                       <th>Order</th>
@@ -1163,8 +1173,17 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
                             {sub.slug}
                           </code>
                         </td>
-                        <td style={{ maxWidth: '300px', fontSize: '13px', color: 'var(--text-muted)' }}>
+                        <td style={{ maxWidth: '240px', fontSize: '13px', color: 'var(--text-muted)' }}>
                           {sub.description || 'No description'}
+                        </td>
+                        <td style={{ maxWidth: '240px', fontSize: '13px', color: 'var(--text-muted)' }}>
+                          {sub.notes ? (
+                            <span style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                              {sub.notes}
+                            </span>
+                          ) : (
+                            <em style={{ color: 'var(--text-disabled, #94a3b8)' }}>No notes</em>
+                          )}
                         </td>
                         <td>
                           <span className="nav-item-badge">{sub._count?.topics ?? 0} Topics</span>
@@ -1181,7 +1200,7 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
                           <div className="admin-row-actions">
                             <button type="button" className="btn-action-edit" onClick={() => {
                               setEditingSubjectId(sub.id);
-                              setSubjectForm({ title: sub.title, slug: sub.slug, description: sub.description || '', iconUrl: sub.iconUrl || '', orderIndex: sub.orderIndex });
+                              setSubjectForm({ title: sub.title, slug: sub.slug, description: sub.description || '', notes: sub.notes || '', iconUrl: sub.iconUrl || '', orderIndex: sub.orderIndex });
                             }}>Edit</button>
                             <button type="button" className="btn-action-delete" onClick={() => handleDeleteSubject(sub)}>Delete</button>
                           </div>

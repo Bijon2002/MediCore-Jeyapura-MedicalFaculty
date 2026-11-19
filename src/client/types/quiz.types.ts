@@ -2,6 +2,7 @@ export interface QuizOption {
   id: string;
   optionText: string;
   orderIndex: number;
+  isCorrect?: boolean;
 }
 
 export interface QuizQuestion {
@@ -9,6 +10,7 @@ export interface QuizQuestion {
   question: string;
   explanation?: string | null;
   orderIndex: number;
+  allowMultiple?: boolean;
   options: QuizOption[];
 }
 
@@ -63,6 +65,7 @@ export type UpdateQuizInput = Partial<CreateQuizInput>;
 export interface SubmitQuizAnswerInput {
   questionId: string;
   optionId?: string;
+  optionIds?: string[];
 }
 
 export interface SubmitQuizInput {
@@ -72,6 +75,7 @@ export interface SubmitQuizInput {
 export interface QuizAnswerResult {
   questionId: string;
   selectedOptionId: string | null;
+  selectedOptionIds?: string[];
   isCorrect: boolean;
 }
 

@@ -19,6 +19,7 @@ export interface Subject {
   title: string;
   slug: string;
   description?: string | null;
+  notes?: string | null;
   iconUrl?: string | null;
   orderIndex: number;
   createdAt: string | Date;
@@ -31,6 +32,7 @@ export interface CreateSubjectInput {
   title: string;
   slug?: string;
   description?: string;
+  notes?: string;
   iconUrl?: string;
   orderIndex?: number;
 }
@@ -39,6 +41,7 @@ export interface UpdateSubjectInput {
   title?: string;
   slug?: string;
   description?: string;
+  notes?: string;
   iconUrl?: string;
   orderIndex?: number;
 }

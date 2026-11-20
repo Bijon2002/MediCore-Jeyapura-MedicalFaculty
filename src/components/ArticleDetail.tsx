@@ -12,9 +12,16 @@ import './ArticleDetail.css';
 export interface ArticleDetailProps {
   slug: string;
   onBack: () => void;
+  onNavigateToSubject?: (subjectSlug: string) => void;
+  onArticleLoaded?: (article: Article) => void;
 }
 
-export const ArticleDetail: React.FC<ArticleDetailProps> = ({ slug, onBack }) => {
+export const ArticleDetail: React.FC<ArticleDetailProps> = ({
+  slug,
+  onBack,
+  onNavigateToSubject,
+  onArticleLoaded,
+}) => {
   const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -36,12 +43,21 @@ export const ArticleDetail: React.FC<ArticleDetailProps> = ({ slug, onBack }) =>
         setError('Article not found.');
       } else {
         setArticle(fetchedArticle);
-        try {
-          const suggestions = await ArticlesApiClient.getArticles({ status: 'PUBLISHED', limit: 6 });
-          setSuggestedArticles(
-            suggestions.data.filter((suggestion) => suggestion.id !== fetchedArticle.id).slice(0, 4),
-          );
-        } catch {
+        if (onArticleLoaded) {
+          onArticleLoaded(fetchedArticle);
+        }
+
+        // Only fetch suggested articles if this is a general ARTICLE, not a daily NOTE
+        if (fetchedArticle.type !== 'NOTE') {
+          try {
+            const suggestions = await ArticlesApiClient.getArticles({ status: 'PUBLISHED', type: 'ARTICLE', limit: 6 });
+            setSuggestedArticles(
+              suggestions.data.filter((suggestion) => suggestion.id !== fetchedArticle.id).slice(0, 4),
+            );
+          } catch {
+            setSuggestedArticles([]);
+          }
+        } else {
           setSuggestedArticles([]);
         }
       }
@@ -52,7 +68,7 @@ export const ArticleDetail: React.FC<ArticleDetailProps> = ({ slug, onBack }) =>
     } finally {
       setLoading(false);
     }
-  }, [slug]);
+  }, [slug, onArticleLoaded]);
 
   useEffect(() => {
     fetchArticle();
@@ -65,22 +81,57 @@ export const ArticleDetail: React.FC<ArticleDetailProps> = ({ slug, onBack }) =>
   const wordCount = (article?.content || '').trim().split(/\s+/).filter(Boolean).length;
   const readTimeMinutes = Math.max(2, Math.ceil(wordCount / 200));
 
+  const isNote = article?.type === 'NOTE';
+  const subjectSlug = article?.subject?.slug || 'anatomy';
+  const subjectTitle = article?.subject?.title || 'Anatomy';
+
+  const handleBackAction = () => {
+    if (isNote && onNavigateToSubject && article?.subject?.slug) {
+      onNavigateToSubject(article.subject.slug);
+    } else {
+      onBack();
+    }
+  };
+
   return (
     <div className="medcore-reader-wrapper">
       <article className="medcore-article-detail-container">
         {/* Breadcrumb Navigation & Top Action Bar */}
         <div className="article-detail-topbar">
           <nav className="article-breadcrumbs" aria-label="Breadcrumbs">
-            <button type="button" className="breadcrumb-link" onClick={onBack}>
-              Clinical Library
-            </button>
-            <span className="breadcrumb-separator">›</span>
-            {article?.subject ? (
+            {isNote ? (
               <>
-                <span className="breadcrumb-subject">{article.subject.title}</span>
+                <button
+                  type="button"
+                  className="breadcrumb-link"
+                  onClick={() => onNavigateToSubject ? onNavigateToSubject(subjectSlug) : onBack()}
+                >
+                  Specialties
+                </button>
+                <span className="breadcrumb-separator">›</span>
+                <button
+                  type="button"
+                  className="breadcrumb-link"
+                  onClick={() => onNavigateToSubject ? onNavigateToSubject(subjectSlug) : onBack()}
+                >
+                  {subjectTitle}
+                </button>
                 <span className="breadcrumb-separator">›</span>
               </>
-            ) : null}
+            ) : (
+              <>
+                <button type="button" className="breadcrumb-link" onClick={onBack}>
+                  Clinical Library
+                </button>
+                <span className="breadcrumb-separator">›</span>
+                {article?.subject ? (
+                  <>
+                    <span className="breadcrumb-subject">{article.subject.title}</span>
+                    <span className="breadcrumb-separator">›</span>
+                  </>
+                ) : null}
+              </>
+            )}
             <span className="breadcrumb-current">
               {article ? article.title : 'Loading article...'}
             </span>
@@ -89,7 +140,7 @@ export const ArticleDetail: React.FC<ArticleDetailProps> = ({ slug, onBack }) =>
           <button
             type="button"
             className="btn btn-secondary back-btn"
-            onClick={onBack}
+            onClick={handleBackAction}
             data-testid="back-button"
           >
             <svg
@@ -104,7 +155,7 @@ export const ArticleDetail: React.FC<ArticleDetailProps> = ({ slug, onBack }) =>
               <line x1="19" y1="12" x2="5" y2="12" />
               <polyline points="12 19 5 12 12 5" />
             </svg>
-            Back to Articles
+            {isNote ? `Back to ${subjectTitle}` : 'Back to Articles'}
           </button>
         </div>
 
@@ -200,22 +251,22 @@ export const ArticleDetail: React.FC<ArticleDetailProps> = ({ slug, onBack }) =>
                 },
               }}
             />
-            <div className="article-reading-layout">
+            <div className={`article-reading-layout ${isNote ? 'single-column-note' : ''}`}>
               <div className="article-reading-main">
             {/* Header Metadata */}
             <header className="article-header">
               <div className="article-badges-row">
                 <span className="reader-specialty-badge">
-                  {article.subject?.title || 'Clinical Anatomy'}
+                  {article.subject?.title || (isNote ? 'Anatomy' : 'Clinical Anatomy')}
                 </span>
                 {article.topic?.title ? (
                   <span className="reader-topic-badge">{article.topic.title}</span>
                 ) : null}
-                <span className="reader-verified-badge">
+                <span className={`reader-verified-badge ${isNote ? 'note-verified-badge' : ''}`}>
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <path d="M20 6L9 17l-5-5" />
                   </svg>
-                  Peer-Reviewed Clinical Guide
+                  {isNote ? `${subjectTitle} Daily Notes` : 'Peer-Reviewed Clinical Guide'}
                 </span>
               </div>
 
@@ -314,9 +365,11 @@ export const ArticleDetail: React.FC<ArticleDetailProps> = ({ slug, onBack }) =>
                 </svg>
               </div>
               <div className="verification-copy">
-                <h4>Peer-Reviewed Medical Accuracy</h4>
+                <h4>{isNote ? `${subjectTitle} Specialty Notes` : 'Peer-Reviewed Medical Accuracy'}</h4>
                 <p>
-                  This article has been prepared and reviewed in accordance with MedCore clinical editorial standards. Content is intended for educational purposes and medical student preparation.
+                  {isNote
+                    ? `This daily clinical learning guide has been curated and published for ${subjectTitle} medical students and curriculum preparation.`
+                    : 'This article has been prepared and reviewed in accordance with MedCore clinical editorial standards. Content is intended for educational purposes and medical student preparation.'}
                 </p>
               </div>
             </div>
@@ -326,44 +379,46 @@ export const ArticleDetail: React.FC<ArticleDetailProps> = ({ slug, onBack }) =>
               <button
                 type="button"
                 className="btn btn-secondary"
-                onClick={onBack}
+                onClick={handleBackAction}
               >
-                ← Return to All Articles
+                {isNote ? `← Return to ${subjectTitle}` : '← Return to All Articles'}
               </button>
             </div>
               </div>
 
-              <aside className="article-suggested-sidebar" aria-label="Suggested clinical guides">
-                <div className="suggested-sidebar-heading">
-                  <span className="suggested-sidebar-kicker">Continue learning</span>
-                  <h2>Suggested guides</h2>
-                  <p>Explore related peer-reviewed clinical resources.</p>
-                </div>
-                <div className="suggested-article-list">
-                  {suggestedArticles.map((suggestedArticle) => (
-                    <button
-                      type="button"
-                      className="suggested-article-card"
-                      key={suggestedArticle.id}
-                      onClick={() => {
-                        window.location.href = `/articles/${suggestedArticle.slug}`;
-                      }}
-                    >
-                      <span className="suggested-article-image">
-                        {suggestedArticle.featuredImageUrl ? (
-                          <img src={suggestedArticle.featuredImageUrl} alt="" />
-                        ) : (
-                          <span aria-hidden="true">MC</span>
-                        )}
-                      </span>
-                      <span className="suggested-article-copy">
-                        <strong>{suggestedArticle.title}</strong>
-                        <span>{suggestedArticle.subject?.title || 'Clinical Guide'}</span>
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              </aside>
+              {!isNote && suggestedArticles.length > 0 && (
+                <aside className="article-suggested-sidebar" aria-label="Suggested clinical guides">
+                  <div className="suggested-sidebar-heading">
+                    <span className="suggested-sidebar-kicker">Continue learning</span>
+                    <h2>Suggested guides</h2>
+                    <p>Explore related peer-reviewed clinical resources.</p>
+                  </div>
+                  <div className="suggested-article-list">
+                    {suggestedArticles.map((suggestedArticle) => (
+                      <button
+                        type="button"
+                        className="suggested-article-card"
+                        key={suggestedArticle.id}
+                        onClick={() => {
+                          window.location.href = `/articles/${suggestedArticle.slug}`;
+                        }}
+                      >
+                        <span className="suggested-article-image">
+                          {suggestedArticle.featuredImageUrl ? (
+                            <img src={suggestedArticle.featuredImageUrl} alt="" />
+                          ) : (
+                            <span aria-hidden="true">MC</span>
+                          )}
+                        </span>
+                        <span className="suggested-article-copy">
+                          <strong>{suggestedArticle.title}</strong>
+                          <span>{suggestedArticle.subject?.title || 'Clinical Guide'}</span>
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </aside>
+              )}
             </div>
           </div>
         ) : null}

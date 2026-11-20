@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { ArticlesApiClient } from '../client/api/articles.api';
-import { SubjectsApiClient } from '../client/api/subjects.api';
 import type { Article } from '../client/types/article.types';
-import type { Subject } from '../client/types/subject.types';
 import { ArticleCard } from './ArticleCard';
 import { ArticleFilter } from './ArticleFilter';
 import { buildQueryArticleParams } from './article-utils';
@@ -15,10 +13,8 @@ export interface ArticleListProps {
   onSelectSubject?: (subjectSlug: string) => void;
 }
 
-export const ArticleList: React.FC<ArticleListProps> = ({ onArticleClick, onSelectSubject }) => {
+export const ArticleList: React.FC<ArticleListProps> = ({ onArticleClick }) => {
   const [articles, setArticles] = useState<Article[]>([]);
-  const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [selectedSubjectSlug, setSelectedSubjectSlug] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'title'>('newest');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -31,29 +27,12 @@ export const ArticleList: React.FC<ArticleListProps> = ({ onArticleClick, onSele
   const [totalPages, setTotalPages] = useState<number>(1);
   const [totalCount, setTotalCount] = useState<number>(0);
 
-  // Fetch subjects once for the category pills
-  useEffect(() => {
-    let isMounted = true;
-    SubjectsApiClient.getSubjects()
-      .then((res) => {
-        if (isMounted && res.data) {
-          setSubjects(res.data);
-        }
-      })
-      .catch((err) => {
-        console.warn('Could not load subject filters', err);
-      });
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
   const fetchArticles = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const params = buildQueryArticleParams(search, page, 12);
+      const params = buildQueryArticleParams(search, page, 12, 'ARTICLE');
       const response = await ArticlesApiClient.getArticles(params);
       setArticles(response.data || []);
       setTotalPages(response.meta?.totalPages || 1);
@@ -77,7 +56,6 @@ export const ArticleList: React.FC<ArticleListProps> = ({ onArticleClick, onSele
 
   const handleResetFilters = () => {
     setSearch('');
-    setSelectedSubjectSlug('all');
     setPage(1);
   };
 
@@ -93,15 +71,6 @@ export const ArticleList: React.FC<ArticleListProps> = ({ onArticleClick, onSele
   const filteredArticles = useMemo(() => {
     let result = [...articles];
 
-    // Filter by subject if not 'all'
-    if (selectedSubjectSlug !== 'all') {
-      result = result.filter(
-        (art) =>
-          art.subject?.slug?.toLowerCase() === selectedSubjectSlug.toLowerCase() ||
-          art.subjectId === selectedSubjectSlug,
-      );
-    }
-
     // Sort
     result.sort((a, b) => {
       if (sortBy === 'title') {
@@ -116,15 +85,15 @@ export const ArticleList: React.FC<ArticleListProps> = ({ onArticleClick, onSele
     });
 
     return result;
-  }, [articles, selectedSubjectSlug, sortBy]);
+  }, [articles, sortBy]);
 
   // Featured article (first published article when viewing page 1 with no search filter)
   const featuredArticle = useMemo(() => {
-    if (page === 1 && !search && selectedSubjectSlug === 'all' && filteredArticles.length > 0) {
+    if (page === 1 && !search && filteredArticles.length > 0) {
       return filteredArticles.find((article) => article.isFeatured) || filteredArticles[0];
     }
     return null;
-  }, [page, search, selectedSubjectSlug, filteredArticles]);
+  }, [page, search, filteredArticles]);
 
   const gridArticles = useMemo(() => {
     if (featuredArticle) {
@@ -132,14 +101,6 @@ export const ArticleList: React.FC<ArticleListProps> = ({ onArticleClick, onSele
     }
     return filteredArticles;
   }, [featuredArticle, filteredArticles]);
-
-  const handleSelectSubject = (slug: string) => {
-    setSelectedSubjectSlug(slug);
-    setPage(1);
-    if (onSelectSubject && slug !== 'all') {
-      // Optional callback if parent wants to track subject changes
-    }
-  };
 
   return (
     <div className="medcore-public-wrapper">
@@ -240,29 +201,6 @@ export const ArticleList: React.FC<ArticleListProps> = ({ onArticleClick, onSele
             }}
             onResetFilters={handleResetFilters}
           />
-
-          {/* Specialty Category Pills */}
-          <div className="specialty-pills-scroll">
-            <button
-              type="button"
-              className={`specialty-pill-btn ${selectedSubjectSlug === 'all' ? 'active' : ''}`}
-              onClick={() => handleSelectSubject('all')}
-            >
-              All Articles
-              <span className="pill-count">{totalCount || articles.length}</span>
-            </button>
-
-            {subjects.map((sub) => (
-              <button
-                key={sub.id}
-                type="button"
-                className={`specialty-pill-btn ${selectedSubjectSlug === sub.slug ? 'active' : ''}`}
-                onClick={() => handleSelectSubject(sub.slug)}
-              >
-                {sub.title}
-              </button>
-            ))}
-          </div>
         </div>
 
         {/* ERROR STATE */}
@@ -351,7 +289,7 @@ export const ArticleList: React.FC<ArticleListProps> = ({ onArticleClick, onSele
             </div>
             <h3 className="empty-title">No Articles Found</h3>
             <p className="empty-message">
-              {search || selectedSubjectSlug !== 'all'
+              {search
                 ? 'No articles matched your selected filters. Try clearing your search.'
                 : 'There are currently no published articles available.'}
             </p>
@@ -461,7 +399,6 @@ export const ArticleList: React.FC<ArticleListProps> = ({ onArticleClick, onSele
             <div className="results-toolbar">
               <div className="results-info">
                 Showing <strong>{filteredArticles.length}</strong> {filteredArticles.length === 1 ? 'article' : 'articles'}
-                {selectedSubjectSlug !== 'all' ? ` in ${selectedSubjectSlug}` : ''}
               </div>
 
               <div className="sort-dropdown-wrapper">

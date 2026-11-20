@@ -17,7 +17,6 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onArticleClic
   const wordCount = (article.content || '').trim().split(/\s+/).filter(Boolean).length;
   const readTimeMinutes = Math.max(2, Math.ceil(wordCount / 200));
 
-  const subjectTitle = article.subject?.title || 'Clinical Medicine';
   const topicTitle = article.topic?.title;
 
   const handleClick = () => {
@@ -59,7 +58,6 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({ article, onArticleClic
       ) : (
         <div className={`card-visual-banner ${isCardio ? 'banner-cardio' : isNeuro ? 'banner-neuro' : isThorax ? 'banner-thorax' : 'banner-general'}`}>
           <div className="banner-top-row">
-            <span className="specialty-pill">{subjectTitle}</span>
             <span className="card-read-badge">{readTimeMinutes} min read</span>
           </div>
           <div className="banner-illustration">

@@ -1,25 +1,24 @@
 /* =========================================================================
-   MedCore App Preloader (Splash Loading Screen)
+   MedCore Clean Minimal Preloader (Pure White Background)
+   ECG Heartbeat (#0D9488 Teal) + Original MedCore Logo Reveal
    ========================================================================= */
 
 .medcore-preloader-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   width: 100vw;
   height: 100vh;
-  background-color: #fafaf7;
+  background-color: #ffffff;
   z-index: 999999;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  user-select: none;
+  cursor: default;
   opacity: 1;
   transform: scale(1);
   transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  user-select: none;
-  cursor: default;
 }
 
 .medcore-preloader-overlay.fade-out {
@@ -28,158 +27,226 @@
   pointer-events: none;
 }
 
-.preloader-content-box {
+.preloader-stage {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
-  max-width: 360px;
+  justify-content: center;
+  width: 100%;
+  max-width: 440px;
+  min-height: 240px;
   padding: 24px;
+  box-sizing: border-box;
 }
 
 /* =========================================================================
-   LOGO SQUIRCLE BADGE
+   PHASE 1: ECG HEARTBEAT (0.0s - 1.5s)
+   Clean Teal (#0D9488) on Pure White Background
    ========================================================================= */
-.preloader-logo-squircle {
-  position: relative;
-  width: 78px;
-  height: 78px;
-  border-radius: 22px;
-  background: #ffffff;
-  border: 1.5px solid #e2e8f0;
+.preloader-ecg-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  animation: ecgFadeIn 0.35s ease-out forwards;
+}
+
+@keyframes ecgFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.ecg-svg {
+  width: 100%;
+  max-width: 340px;
+  height: 90px;
+  overflow: visible;
+}
+
+.ecg-path-bg {
+  stroke: #e2e8f0;
+  stroke-width: 2;
+  fill: none;
+}
+
+.ecg-path-pulse {
+  stroke: #0d9488;
+  stroke-width: 3.2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  animation: ecgDraw 1.25s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+  filter: drop-shadow(0 2px 4px rgba(13, 148, 136, 0.25));
+}
+
+@keyframes ecgDraw {
+  0% {
+    stroke-dashoffset: 400;
+  }
+  75%, 100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.ecg-lead-dot {
+  filter: drop-shadow(0 2px 6px rgba(13, 148, 136, 0.4));
+}
+
+.ecg-status-text {
+  margin-top: 18px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #0d9488;
+  font-family: var(--sans, 'Plus Jakarta Sans', system-ui, sans-serif);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ecg-status-text::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #0d9488;
+  box-shadow: 0 0 6px rgba(13, 148, 136, 0.5);
+  animation: pulseDot 1s infinite;
+}
+
+@keyframes pulseDot {
+  0%, 100% {
+    transform: scale(0.85);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+/* =========================================================================
+   PHASE 2: ORIGINAL MEDCORE LOGO REVEAL (1.5s - 2.5s)
+   Clean, Elegant, and Crisp on Pure White
+   ========================================================================= */
+.preloader-logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: logoReveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes logoReveal {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.preloader-logo-box {
+  width: 96px;
+  height: 96px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 10px 25px -4px rgba(2, 132, 199, 0.14), 0 4px 10px -2px rgba(15, 23, 42, 0.04);
-  margin-bottom: 18px;
-  padding: 10px;
-  box-sizing: border-box;
-  animation: preloader-squircle-float 2.4s ease-in-out infinite;
 }
 
-.preloader-logo-img {
+.preloader-logo-image {
   width: 100%;
   height: 100%;
   object-fit: contain;
   display: block;
+  filter: drop-shadow(0 6px 16px rgba(10, 37, 64, 0.08));
 }
 
-.preloader-pulse-glow {
-  position: absolute;
-  inset: -6px;
-  border-radius: 26px;
-  background: radial-gradient(circle, rgba(2, 132, 199, 0.2) 0%, rgba(2, 132, 199, 0) 70%);
-  z-index: -1;
-  animation: preloader-pulse-glow 2.4s ease-in-out infinite;
-}
-
-@keyframes preloader-squircle-float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-4px);
-  }
-}
-
-@keyframes preloader-pulse-glow {
-  0%, 100% {
-    opacity: 0.4;
-    transform: scale(0.96);
-  }
-  50% {
-    opacity: 0.9;
-    transform: scale(1.06);
-  }
-}
-
-/* =========================================================================
-   BRAND TITLE
-   ========================================================================= */
-.preloader-brand-title {
+.preloader-brand-name {
   font-size: 26px;
   font-weight: 800;
-  color: #0f172a;
-  letter-spacing: -0.03em;
-  margin: 0 0 16px;
-  line-height: 1.1;
-  font-family: var(--sans, 'Plus Jakarta Sans', sans-serif);
+  letter-spacing: -0.02em;
+  color: #0a2540;
+  margin: 16px 0 6px;
+  font-family: var(--sans, 'Plus Jakarta Sans', system-ui, sans-serif);
+  display: flex;
+  align-items: center;
+  gap: 2px;
 }
 
-/* =========================================================================
-   HORIZONTAL PROGRESS BAR
-   ========================================================================= */
-.preloader-progress-track {
-  width: 190px;
-  height: 4px;
-  background: #e2e8f0;
-  border-radius: 9999px;
-  overflow: hidden;
-  position: relative;
-  margin-bottom: 14px;
+.preloader-brand-name span.brand-core {
+  color: #0d9488;
 }
 
-.preloader-progress-bar {
-  height: 100%;
-  background: linear-gradient(90deg, #0284c7 0%, #10b981 100%);
-  border-radius: 9999px;
-  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-}
-
-.preloader-progress-bar::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.6) 50%, transparent 100%);
-  animation: preloader-shimmer 1.4s infinite;
-}
-
-@keyframes preloader-shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-/* =========================================================================
-   WELCOME TEXT
-   ========================================================================= */
-.preloader-welcome-text {
-  font-size: 13.5px;
+.preloader-tagline {
+  font-size: 13px;
   font-weight: 500;
   color: #64748b;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.02em;
   margin: 0;
-  line-height: 1.4;
+}
+
+/* Subtle Waiting Pill (Only if Supabase is still connecting after 2.5s) */
+.preloader-waiting-pill {
+  margin-top: 16px;
+  padding: 5px 14px;
+  border-radius: 9999px;
+  background: #f0fdfa;
+  border: 1px solid #ccfbf1;
+  color: #0d9488;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  animation: pulseDot 1.4s infinite;
 }
 
 /* =========================================================================
-   DARK THEME
+   ACCESSIBILITY: Respect prefers-reduced-motion
    ========================================================================= */
-[data-theme="dark"] .medcore-preloader-overlay {
-  background-color: #0b0f19;
+@media (prefers-reduced-motion: reduce) {
+  .medcore-preloader-overlay,
+  .preloader-ecg-container,
+  .preloader-logo-container {
+    animation: none !important;
+    transition: none !important;
+  }
+  .ecg-path-pulse {
+    animation: none !important;
+    stroke-dashoffset: 0 !important;
+  }
 }
 
-[data-theme="dark"] .preloader-logo-squircle {
-  background: #111827;
-  border-color: #1e293b;
-  box-shadow: 0 10px 25px -4px rgba(0, 0, 0, 0.5);
-}
-
-[data-theme="dark"] .preloader-brand-title {
-  color: #f8fafc;
-}
-
-[data-theme="dark"] .preloader-progress-track {
-  background: #1e293b;
-}
-
-[data-theme="dark"] .preloader-welcome-text {
-  color: #94a3b8;
+/* Responsive Scaling */
+@media (max-width: 480px) {
+  .preloader-stage {
+    padding: 16px;
+    min-height: 220px;
+  }
+  .ecg-svg {
+    max-width: 280px;
+    height: 75px;
+  }
+  .preloader-logo-box {
+    width: 80px;
+    height: 80px;
+  }
+  .preloader-brand-name {
+    font-size: 22px;
+    margin: 12px 0 4px;
+  }
 }

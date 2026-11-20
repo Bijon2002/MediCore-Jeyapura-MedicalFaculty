@@ -15,7 +15,7 @@ export type RouteState =
   | { type: 'create-article' }
   | { type: 'edit-article'; articleId: string }
   | { type: 'article-list' }
-  | { type: 'article-detail'; slug: string }
+  | { type: 'article-detail'; slug: string; contentType?: 'ARTICLE' | 'NOTE'; subjectSlug?: string }
   | { type: 'subject-list' }
   | { type: 'subject-detail'; subjectSlug: string; topicSlug?: string }
   | { type: 'topic-list' }

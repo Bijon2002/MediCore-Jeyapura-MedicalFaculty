@@ -2,21 +2,21 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { ArticlesApiClient } from '../client/api/articles.api';
 import { QuizzesApiClient } from '../client/api/quizzes.api';
 import { SubjectsApiClient } from '../client/api/subjects.api';
-import { TopicsApiClient } from '../client/api/topics.api';
 import { supabase } from '../lib/supabase';
 import { getAccessToken } from '../auth/auth-storage';
 import { useAuth } from '../auth/AuthContext';
 import type { Article, ArticleStatus } from '../client/types/article.types';
 import type { Quiz } from '../client/types/quiz.types';
 import type { Subject } from '../client/types/subject.types';
-import type { Topic } from '../client/types/topic.types';
 import { AdminApplicationReview } from './AdminApplicationReview';
 import { Profile } from './Profile';
 import { ImageUploader } from './ImageUploader';
+import { SubjectManagement } from './SubjectManagement';
+import { AnatomyNotesManagement } from './AnatomyNotesManagement';
 import { SystemAlert } from './SystemAlert';
 import './ReviewerDashboard.css';
 
-export type AdminWorkspaceTab = 'OVERVIEW' | 'ARTICLES' | 'QUIZZES' | 'REVIEWERS' | 'SUBJECTS' | 'PROFILE' | 'USERS' | 'HERO_SLIDES' | 'ADS';
+export type AdminWorkspaceTab = 'OVERVIEW' | 'ARTICLES' | 'ANATOMY_NOTES' | 'QUIZZES' | 'REVIEWERS' | 'SUBJECTS' | 'PROFILE' | 'USERS' | 'HERO_SLIDES' | 'ADS';
 
 export interface ReviewerDashboardProps {
   onCreateArticle: () => void;
@@ -57,15 +57,6 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
 
   // SUBJECTS STATE (for Admin View)
   const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [subjectsLoading, setSubjectsLoading] = useState<boolean>(false);
-  const [subjectsError, setSubjectsError] = useState<string | null>(null);
-  const [topics, setTopics] = useState<Topic[]>([]);
-  const [topicsLoading, setTopicsLoading] = useState<boolean>(false);
-  const [topicsError, setTopicsError] = useState<string | null>(null);
-  const [editingSubjectId, setEditingSubjectId] = useState<string | null>(null);
-  const [editingTopicId, setEditingTopicId] = useState<string | null>(null);
-  const [subjectForm, setSubjectForm] = useState({ title: '', slug: '', description: '', notes: '', iconUrl: '', orderIndex: 0 });
-  const [topicForm, setTopicForm] = useState({ subjectId: '', title: '', slug: '', description: '', orderIndex: 0 });
 
   // ARTICLES STATE
   const [articles, setArticles] = useState<Article[]>([]);
@@ -166,6 +157,7 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
       const response = await ArticlesApiClient.getArticles(
         {
           limit: 100,
+          type: 'ARTICLE',
           status: articleStatusFilter === 'ALL' ? undefined : articleStatusFilter,
           search: articleSearchTerm || undefined,
         },
@@ -202,127 +194,13 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
 
   // FETCH SUBJECTS (for Admin View)
   const fetchSubjects = useCallback(async () => {
-    setSubjectsLoading(true);
-    setSubjectsError(null);
     try {
       const response = await SubjectsApiClient.getSubjects({ limit: 50 });
       setSubjects(response.data || []);
-    } catch (err: any) {
-      setSubjectsError(err?.message || 'Failed to load specialties.');
-    } finally {
-      setSubjectsLoading(false);
+    } catch {
+      // Ignore background fetch error for stats
     }
   }, []);
-
-  const fetchTopics = useCallback(async () => {
-    setTopicsLoading(true);
-    setTopicsError(null);
-    try {
-      const response = await TopicsApiClient.getTopics({ limit: 200 });
-      setTopics(response.data || []);
-    } catch (err: any) {
-      setTopicsError(err?.message || 'Failed to load topics.');
-    } finally {
-      setTopicsLoading(false);
-    }
-  }, []);
-
-  const resetSubjectForm = () => {
-    setEditingSubjectId(null);
-    setSubjectForm({ title: '', slug: '', description: '', notes: '', iconUrl: '', orderIndex: subjects.length });
-  };
-
-  const resetTopicForm = () => {
-    setEditingTopicId(null);
-    setTopicForm({ subjectId: subjects[0]?.id || '', title: '', slug: '', description: '', orderIndex: topics.length });
-  };
-
-  const handleSaveSubject = async () => {
-    if (!subjectForm.title.trim()) {
-      showAlert({ type: 'warning', title: 'Missing Field', message: 'Specialty name is required.' });
-      return;
-    }
-    try {
-      const payload = {
-        title: subjectForm.title.trim(),
-        slug: subjectForm.slug.trim() || subjectForm.title.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
-        description: subjectForm.description.trim() || undefined,
-        notes: subjectForm.notes.trim() || undefined,
-        iconUrl: subjectForm.iconUrl || undefined,
-        orderIndex: subjectForm.orderIndex,
-      };
-      if (editingSubjectId) {
-        await SubjectsApiClient.updateSubject(editingSubjectId, payload);
-      } else {
-        await SubjectsApiClient.createSubject(payload);
-      }
-      resetSubjectForm();
-      await fetchSubjects();
-    } catch (err: any) {
-      showAlert({ type: 'danger', title: 'Save Failed', message: err?.message || 'Failed to save specialty.' });
-    }
-  };
-
-  const handleSaveTopic = async () => {
-    if (!topicForm.subjectId || !topicForm.title.trim()) {
-      showAlert({ type: 'warning', title: 'Missing Fields', message: 'Topic name and specialty are required.' });
-      return;
-    }
-    try {
-      const payload = {
-        subjectId: topicForm.subjectId,
-        title: topicForm.title.trim(),
-        slug: topicForm.slug.trim() || topicForm.title.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
-        description: topicForm.description.trim() || undefined,
-        orderIndex: topicForm.orderIndex,
-      };
-      if (editingTopicId) {
-        await TopicsApiClient.updateTopic(editingTopicId, payload);
-      } else {
-        await TopicsApiClient.createTopic(payload);
-      }
-      resetTopicForm();
-      await fetchTopics();
-    } catch (err: any) {
-      showAlert({ type: 'danger', title: 'Save Failed', message: err?.message || 'Failed to save topic.' });
-    }
-  };
-
-  const handleDeleteSubject = async (subject: Subject) => {
-    showAlert({
-      type: 'danger',
-      title: 'Delete Specialty',
-      message: `Are you sure you want to delete "${subject.title}" and all its topics? This action cannot be undone.`,
-      confirmLabel: 'Delete',
-      onConfirm: async () => {
-        closeAlert();
-        try {
-          await SubjectsApiClient.deleteSubject(subject.id);
-          await Promise.all([fetchSubjects(), fetchTopics()]);
-        } catch (err: any) {
-          showAlert({ type: 'danger', title: 'Delete Failed', message: err?.message || 'Failed to delete specialty.' });
-        }
-      },
-    });
-  };
-
-  const handleDeleteTopic = async (topic: Topic) => {
-    showAlert({
-      type: 'danger',
-      title: 'Delete Topic',
-      message: `Are you sure you want to delete "${topic.title}"? This action cannot be undone.`,
-      confirmLabel: 'Delete',
-      onConfirm: async () => {
-        closeAlert();
-        try {
-          await TopicsApiClient.deleteTopic(topic.id);
-          await fetchTopics();
-        } catch (err: any) {
-          showAlert({ type: 'danger', title: 'Delete Failed', message: err?.message || 'Failed to delete topic.' });
-        }
-      },
-    });
-  };
 
   // FETCH USERS (Admin-only)
   const fetchUsers = useCallback(async () => {
@@ -387,12 +265,11 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
         fetchQuizzes();
       } else if (activeTab === 'SUBJECTS') {
         fetchSubjects();
-        fetchTopics();
       } else if (activeTab === 'USERS') {
         fetchUsers();
       }
     }
-  }, [isReviewerOrAdmin, activeTab, fetchArticles, fetchQuizzes, fetchSubjects, fetchTopics, fetchUsers]);
+  }, [isReviewerOrAdmin, activeTab, fetchArticles, fetchQuizzes, fetchSubjects, fetchUsers]);
 
   // DELETE ARTICLE
   const handleDeleteArticle = async (articleId: string, articleTitle: string) => {
@@ -647,6 +524,33 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
             <polyline points="10 9 9 9 8 9" />
           </svg>
           Clinical Articles
+        </button>
+
+        <button
+          type="button"
+          onClick={() => handleSetActiveTab('ANATOMY_NOTES')}
+          style={{
+            background: activeTab === 'ANATOMY_NOTES' ? 'var(--accent, #0d9488)' : 'var(--surface)',
+            color: activeTab === 'ANATOMY_NOTES' ? '#ffffff' : 'var(--text-muted)',
+            border: '1px solid var(--border)',
+            padding: '0.5rem 1.25rem',
+            borderRadius: '8px',
+            fontWeight: 600,
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+          }}
+          data-testid="admin-tab-anatomy-notes"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+            <line x1="12" y1="6" x2="16" y2="6" />
+            <line x1="12" y1="10" x2="16" y2="10" />
+          </svg>
+          Anatomy Notes
         </button>
 
         <button
@@ -1090,186 +994,11 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
         </div>
       ) : isAdmin && activeTab === 'SUBJECTS' ? (
         /* VIEW: SPECIALTIES & TOPICS (ADMIN ONLY) */
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <div className="reviewer-header">
-            <div className="reviewer-title-group">
-              <span className="reviewer-badge">Curriculum Taxonomy</span>
-              <h1 className="reviewer-title">Medical Specialties & Anatomical Systems</h1>
-              <p className="reviewer-subtitle">
-                Hierarchical subjects and topics structuring all articles and clinical quiz questions.
-              </p>
-            </div>
-          </div>
-
-          <div className="reviewer-table-card" style={{ padding: '20px' }}>
-            <div className="reviewer-header" style={{ marginBottom: '16px' }}>
-              <div className="reviewer-title-group">
-                <h2 className="reviewer-section-title">{editingSubjectId ? 'Edit Specialty' : 'Create Specialty'}</h2>
-                <p className="reviewer-subtitle">Maintain the specialties shown on the public curriculum page.</p>
-              </div>
-              {editingSubjectId && (
-                <button type="button" className="btn-action-edit" onClick={resetSubjectForm}>Cancel Edit</button>
-              )}
-            </div>
-            <div className="admin-inline-form">
-              <input aria-label="Specialty name" placeholder="Specialty name" value={subjectForm.title} onChange={(e) => setSubjectForm({ ...subjectForm, title: e.target.value })} />
-              <input aria-label="Specialty slug" placeholder="Slug (optional)" value={subjectForm.slug} onChange={(e) => setSubjectForm({ ...subjectForm, slug: e.target.value })} />
-              <input aria-label="Specialty description" placeholder="Description" value={subjectForm.description} onChange={(e) => setSubjectForm({ ...subjectForm, description: e.target.value })} />
-              <textarea
-                aria-label="Specialty notes"
-                placeholder="Notes (visible to students under this subject)"
-                value={subjectForm.notes}
-                onChange={(e) => setSubjectForm({ ...subjectForm, notes: e.target.value })}
-                rows={3}
-                style={{ resize: 'vertical', fontFamily: 'inherit', fontSize: '14px', padding: '8px 10px', borderRadius: '8px', border: '1.5px solid var(--border)', background: 'var(--surface)', color: 'var(--text-h)', width: '100%', boxSizing: 'border-box' }}
-              />
-              <input aria-label="Specialty order" type="number" min="0" placeholder="Order" value={subjectForm.orderIndex} onChange={(e) => setSubjectForm({ ...subjectForm, orderIndex: Number(e.target.value) })} />
-              <ImageUploader
-                value={subjectForm.iconUrl}
-                onChange={(iconUrl) => setSubjectForm({ ...subjectForm, iconUrl })}
-                label="Specialty image"
-                helpText="Upload a square specialty image or icon (PNG, JPG, WEBP)."
-                variant="avatar"
-              />
-              <button type="button" className="btn-create-article" onClick={handleSaveSubject}>{editingSubjectId ? 'Update Specialty' : 'Add Specialty'}</button>
-            </div>
-          </div>
-
-          <div className="reviewer-table-card">
-            {subjectsLoading ? (
-              <div style={{ padding: '36px', textAlign: 'center', color: 'var(--text-muted)' }}>
-                Loading Specialties...
-              </div>
-            ) : subjectsError ? (
-              <div style={{ padding: '24px', color: '#ef4444' }}>{subjectsError}</div>
-            ) : subjects.length === 0 ? (
-              <div style={{ padding: '36px', textAlign: 'center', color: 'var(--text-muted)' }}>
-                No specialties registered in the database.
-              </div>
-            ) : (
-              <div className="reviewer-table-wrapper">
-                <table className="reviewer-table">
-                  <thead>
-                    <tr>
-                      <th>Specialty Name</th>
-                      <th>Slug</th>
-                      <th>Description</th>
-                      <th>Notes</th>
-                      <th>Topics</th>
-                      <th>Articles</th>
-                      <th>Order</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {subjects.map((sub) => (
-                      <tr key={sub.id}>
-                        <td>
-                          {sub.iconUrl && <img src={sub.iconUrl} alt="" className="admin-subject-thumbnail" />}
-                          <strong style={{ color: 'var(--text-h)' }}>{sub.title}</strong>
-                        </td>
-                        <td>
-                          <code style={{ fontSize: '12px', background: 'var(--surface-hover)', padding: '2px 6px', borderRadius: '4px' }}>
-                            {sub.slug}
-                          </code>
-                        </td>
-                        <td style={{ maxWidth: '240px', fontSize: '13px', color: 'var(--text-muted)' }}>
-                          {sub.description || 'No description'}
-                        </td>
-                        <td style={{ maxWidth: '240px', fontSize: '13px', color: 'var(--text-muted)' }}>
-                          {sub.notes ? (
-                            <span style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                              {sub.notes}
-                            </span>
-                          ) : (
-                            <em style={{ color: 'var(--text-disabled, #94a3b8)' }}>No notes</em>
-                          )}
-                        </td>
-                        <td>
-                          <span className="nav-item-badge">{sub._count?.topics ?? 0} Topics</span>
-                        </td>
-                        <td>
-                          <span className="nav-item-badge" style={{ background: 'var(--teal-500)', color: '#ffffff' }}>
-                            {sub._count?.articles ?? 0} Articles
-                          </span>
-                        </td>
-                        <td>
-                          <span style={{ fontSize: '13px', fontWeight: 600 }}>#{sub.orderIndex}</span>
-                        </td>
-                        <td>
-                          <div className="admin-row-actions">
-                            <button type="button" className="btn-action-edit" onClick={() => {
-                              setEditingSubjectId(sub.id);
-                              setSubjectForm({ title: sub.title, slug: sub.slug, description: sub.description || '', notes: sub.notes || '', iconUrl: sub.iconUrl || '', orderIndex: sub.orderIndex });
-                            }}>Edit</button>
-                            <button type="button" className="btn-action-delete" onClick={() => handleDeleteSubject(sub)}>Delete</button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-
-          <div className="reviewer-table-card" style={{ padding: '20px' }}>
-            <div className="reviewer-header" style={{ marginBottom: '16px' }}>
-              <div className="reviewer-title-group">
-                <h2 className="reviewer-section-title">{editingTopicId ? 'Edit Topic' : 'Create Topic'}</h2>
-                <p className="reviewer-subtitle">Add and maintain the clinical topics nested under each specialty.</p>
-              </div>
-              {editingTopicId && (
-                <button type="button" className="btn-action-edit" onClick={resetTopicForm}>Cancel Edit</button>
-              )}
-            </div>
-            <div className="admin-inline-form">
-              <select aria-label="Topic specialty" value={topicForm.subjectId} onChange={(e) => setTopicForm({ ...topicForm, subjectId: e.target.value })}>
-                <option value="">Select specialty</option>
-                {subjects.map((subject) => <option key={subject.id} value={subject.id}>{subject.title}</option>)}
-              </select>
-              <input aria-label="Topic name" placeholder="Topic name" value={topicForm.title} onChange={(e) => setTopicForm({ ...topicForm, title: e.target.value })} />
-              <input aria-label="Topic slug" placeholder="Slug (optional)" value={topicForm.slug} onChange={(e) => setTopicForm({ ...topicForm, slug: e.target.value })} />
-              <input aria-label="Topic description" placeholder="Description" value={topicForm.description} onChange={(e) => setTopicForm({ ...topicForm, description: e.target.value })} />
-              <input aria-label="Topic order" type="number" min="0" placeholder="Order" value={topicForm.orderIndex} onChange={(e) => setTopicForm({ ...topicForm, orderIndex: Number(e.target.value) })} />
-              <button type="button" className="btn-create-article" onClick={handleSaveTopic}>{editingTopicId ? 'Update Topic' : 'Add Topic'}</button>
-            </div>
-          </div>
-
-          <div className="reviewer-table-card">
-            {topicsLoading ? (
-              <div style={{ padding: '36px', textAlign: 'center', color: 'var(--text-muted)' }}>Loading Topics...</div>
-            ) : topicsError ? (
-              <div style={{ padding: '24px', color: '#ef4444' }}>{topicsError}</div>
-            ) : (
-              <div className="reviewer-table-wrapper">
-                <table className="reviewer-table">
-                  <thead><tr><th>Topic</th><th>Specialty</th><th>Description</th><th>Order</th><th>Actions</th></tr></thead>
-                  <tbody>
-                    {topics.map((topic) => (
-                      <tr key={topic.id}>
-                        <td><strong style={{ color: 'var(--text-h)' }}>{topic.title}</strong></td>
-                        <td>{topic.subject?.title || subjects.find((subject) => subject.id === topic.subjectId)?.title || '—'}</td>
-                        <td style={{ maxWidth: '300px', fontSize: '13px', color: 'var(--text-muted)' }}>{topic.description || 'No description'}</td>
-                        <td><span style={{ fontSize: '13px', fontWeight: 600 }}>#{topic.orderIndex}</span></td>
-                        <td>
-                          <div className="admin-row-actions">
-                            <button type="button" className="btn-action-edit" onClick={() => {
-                              setEditingTopicId(topic.id);
-                              setTopicForm({ subjectId: topic.subjectId, title: topic.title, slug: topic.slug, description: topic.description || '', orderIndex: topic.orderIndex });
-                            }}>Edit</button>
-                            <button type="button" className="btn-action-delete" onClick={() => handleDeleteTopic(topic)}>Delete</button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                    {topics.length === 0 && <tr><td colSpan={5} style={{ textAlign: 'center', color: 'var(--text-muted)' }}>No topics registered.</td></tr>}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        </div>
+        <SubjectManagement
+          showAlert={showAlert}
+          closeAlert={closeAlert}
+          onSubjectsUpdated={fetchSubjects}
+        />
       ) : isAdmin && activeTab === 'REVIEWERS' ? (
         <AdminApplicationReview />
       ) : isAdmin && activeTab === 'USERS' ? (
@@ -1478,6 +1207,11 @@ export const ReviewerDashboard: React.FC<ReviewerDashboardProps> = ({
             Ad creation, approval, scheduling, and public display are not enabled yet.
           </p>
         </section>
+      ) : activeTab === 'ANATOMY_NOTES' ? (
+        <AnatomyNotesManagement
+          subjectSlug="anatomy"
+          subjectTitle="Anatomy"
+        />
       ) : activeTab === 'QUIZZES' ? (
         /* VIEW: QUIZZES MANAGEMENT */
         <>

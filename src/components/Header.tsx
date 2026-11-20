@@ -20,6 +20,7 @@ export interface HeaderProps {
   onSwitchToWorkspace?: () => void;
   isWorkspaceView?: boolean;
   activeRouteType?: string;
+  routeState?: import('./route-utils').RouteState;
   currentRole?: UserRole;
   onRoleChange?: (role: UserRole) => void;
   onNavigateToBodyAtlas?: () => void;
@@ -41,6 +42,7 @@ export const Header: React.FC<HeaderProps> = ({
   onSwitchToWorkspace,
   isWorkspaceView = false,
   activeRouteType = 'home',
+  routeState,
   currentRole = 'STUDENT',
   onNavigateToBodyAtlas,
 }) => {
@@ -74,6 +76,18 @@ export const Header: React.FC<HeaderProps> = ({
   }, []);
 
   const activeRole: UserRole = user?.role || currentRole;
+
+  const isNoteDetail =
+    routeState?.type === 'article-detail' && routeState.contentType === 'NOTE';
+
+  const isArticlesActive =
+    (activeRouteType === 'article-list' || (activeRouteType === 'article-detail' && !isNoteDetail));
+
+  const isSpecialtiesActive =
+    activeRouteType === 'subject-list' ||
+    activeRouteType === 'subject-detail' ||
+    activeRouteType === 'topic-list' ||
+    isNoteDetail;
 
   // Close profile dropdown on outside click
   useEffect(() => {
@@ -255,7 +269,7 @@ export const Header: React.FC<HeaderProps> = ({
 
             <button
               type="button"
-              className={`nav-tab-btn ${activeRouteType === 'article-list' || activeRouteType === 'article-detail' ? 'active' : ''}`}
+              className={`nav-tab-btn ${isArticlesActive ? 'active' : ''}`}
               onClick={() => handleNavClick(onNavigateToArticles)}
             >
               Articles
@@ -263,7 +277,7 @@ export const Header: React.FC<HeaderProps> = ({
 
             <button
               type="button"
-              className={`nav-tab-btn ${activeRouteType === 'subject-list' || activeRouteType === 'subject-detail' || activeRouteType === 'topic-list' ? 'active' : ''}`}
+              className={`nav-tab-btn ${isSpecialtiesActive ? 'active' : ''}`}
               onClick={() => handleNavClick(onNavigateToSubjects)}
             >
               Specialties
@@ -532,14 +546,14 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
           <button
             type="button"
-            className={`mobile-nav-item ${activeRouteType === 'article-list' ? 'active' : ''}`}
+            className={`mobile-nav-item ${isArticlesActive ? 'active' : ''}`}
             onClick={() => handleNavClick(onNavigateToArticles)}
           >
             Articles
           </button>
           <button
             type="button"
-            className={`mobile-nav-item ${activeRouteType === 'subject-list' ? 'active' : ''}`}
+            className={`mobile-nav-item ${isSpecialtiesActive ? 'active' : ''}`}
             onClick={() => handleNavClick(onNavigateToSubjects)}
           >
             Specialties

@@ -1,4 +1,5 @@
 export type ArticleStatus = 'DRAFT' | 'PUBLISHED';
+export type ArticleType = 'ARTICLE' | 'NOTE';
 export type UserRole = 'STUDENT' | 'MEDICAL_REVIEWER' | 'ADMIN';
 
 export interface AuthorSummary {
@@ -31,6 +32,7 @@ export interface Article {
   featuredImageUrl?: string | null;
   isFeatured?: boolean;
   status: ArticleStatus;
+  type?: ArticleType;
   publishedAt?: string | Date | null;
   createdAt: string | Date;
   updatedAt: string | Date;
@@ -49,9 +51,10 @@ export interface CreateArticleInput {
   featuredImageUrl?: string;
   isFeatured?: boolean;
   status?: ArticleStatus;
+  type?: ArticleType;
   slug?: string;
-  subjectId?: string;
-  topicId?: string;
+  subjectId?: string | null;
+  topicId?: string | null;
 }
 
 export interface UpdateArticleInput {
@@ -61,13 +64,15 @@ export interface UpdateArticleInput {
   featuredImageUrl?: string;
   isFeatured?: boolean;
   status?: ArticleStatus;
+  type?: ArticleType;
   slug?: string;
-  subjectId?: string;
-  topicId?: string;
+  subjectId?: string | null;
+  topicId?: string | null;
 }
 
 export interface QueryArticleParams {
   status?: ArticleStatus;
+  type?: ArticleType;
   search?: string;
   page?: number;
   limit?: number;

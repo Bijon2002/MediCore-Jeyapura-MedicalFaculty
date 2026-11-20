@@ -33,6 +33,7 @@ export class ArticlesApiClient {
 
     return {
       ...(raw as unknown as Article),
+      type: ((raw.type as string) || 'ARTICLE') as Article['type'],
       featuredImageUrl: (raw.featuredImageUrl ?? raw.featured_image_url) as string | null | undefined,
       isFeatured:
         Boolean(raw.isFeatured ?? raw.is_featured) ||
@@ -77,10 +78,13 @@ export class ArticlesApiClient {
 
     let query = supabase
       .from('articles')
-      .select('id, title, slug, summary, featured_image_url, status, created_at, updated_at, author:profiles!author_id(id, first_name, last_name, avatar_url), subject:subjects(id, title, slug), topic:topics(id, title, slug)', { count: 'exact' });
+      .select('id, title, slug, summary, featured_image_url, status, type, created_at, updated_at, author:profiles!author_id(id, first_name, last_name, avatar_url), subject:subjects(id, title, slug), topic:topics(id, title, slug)', { count: 'exact' });
 
     if (params?.status) {
       query = query.eq('status', params.status);
+    }
+    if (params?.type) {
+      query = query.eq('type', params.type);
     }
     if (params?.subjectId) {
       query = query.eq('subject_id', params.subjectId);
@@ -202,6 +206,7 @@ export class ArticlesApiClient {
         content: data.content,
         summary: data.summary || null,
         status: data.status || 'DRAFT',
+        type: data.type || 'ARTICLE',
         subject_id: data.subjectId || null,
         topic_id: data.topicId || null,
         featured_image_url: data.featuredImageUrl || null,
@@ -236,6 +241,7 @@ export class ArticlesApiClient {
     if (data.content !== undefined) updatePayload.content = data.content;
     if (data.summary !== undefined) updatePayload.summary = data.summary;
     if (data.status !== undefined) updatePayload.status = data.status;
+    if (data.type !== undefined) updatePayload.type = data.type;
     if (data.subjectId !== undefined) updatePayload.subject_id = data.subjectId;
     if (data.topicId !== undefined) updatePayload.topic_id = data.topicId;
     if (data.featuredImageUrl !== undefined) updatePayload.featured_image_url = data.featuredImageUrl;

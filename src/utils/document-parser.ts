@@ -164,3 +164,67 @@ export async function parseWordDocument(file: File): Promise<ParsedDocumentResul
     wordCount,
   };
 }
+
+export interface ParsedSubjectDocumentResult {
+  title: string;
+  description: string;
+  formattedNotes: string;
+  wordCount: number;
+}
+
+/**
+ * Converts HTML from mammoth into formatted text/markdown suitable for Subject Notes.
+ * Preserves headings, lists, and paragraphs so they display properly in SubjectDetail with pre-wrap.
+ */
+export function convertHtmlToFormattedNotes(html: string): string {
+  let text = html;
+  // Replace line breaks
+  text = text.replace(/<br\s*\/?>/gi, '\n');
+  // Headings
+  text = text.replace(/<h1[^>]*>([\s\S]*?)<\/h1>/gi, (_, c) => `# ${c.trim()}\n\n`);
+  text = text.replace(/<h2[^>]*>([\s\S]*?)<\/h2>/gi, (_, c) => `## ${c.trim()}\n\n`);
+  text = text.replace(/<h3[^>]*>([\s\S]*?)<\/h3>/gi, (_, c) => `### ${c.trim()}\n\n`);
+  text = text.replace(/<h4[^>]*>([\s\S]*?)<\/h4>/gi, (_, c) => `#### ${c.trim()}\n\n`);
+  // List items
+  text = text.replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, (_, c) => `• ${c.trim()}\n`);
+  // Paragraphs
+  text = text.replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, (_, c) => `${c.trim()}\n\n`);
+  // Bold & italic
+  text = text.replace(/<(strong|b)[^>]*>([\s\S]*?)<\/\1>/gi, '**$2**');
+  text = text.replace(/<(em|i)[^>]*>([\s\S]*?)<\/\1>/gi, '*$2*');
+  // Strip remaining HTML tags
+  text = text.replace(/<[^>]+>/g, '');
+  // Decode HTML entities
+  text = text
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'");
+  // Normalize multiple newlines
+  text = text.replace(/\n{3,}/g, '\n\n').trim();
+  return text;
+}
+
+/**
+ * Parses a .docx document specifically for Medical Subject creation.
+ * Rejects non-.docx files with a clear error message.
+ */
+export async function parseDocxForSubject(file: File): Promise<ParsedSubjectDocumentResult> {
+  const fileName = file.name;
+  if (!fileName.toLowerCase().endsWith('.docx')) {
+    throw new Error('Only Word documents (.docx) are supported. Please upload a valid .docx file.');
+  }
+
+  const parsed = await parseWordDocument(file);
+  const formattedNotes = convertHtmlToFormattedNotes(parsed.contentHtml);
+
+  return {
+    title: parsed.title,
+    description: parsed.summary,
+    formattedNotes,
+    wordCount: parsed.wordCount,
+  };
+}
+

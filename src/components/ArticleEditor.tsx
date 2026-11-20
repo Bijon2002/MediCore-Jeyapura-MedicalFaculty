@@ -134,6 +134,8 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
             content: content.trim(),
             featuredImageUrl: featuredImageUrl.trim() || undefined,
             status: finalStatus,
+            type: 'ARTICLE',
+            subjectId: null,
           },
           token,
         );
@@ -145,6 +147,8 @@ export const ArticleEditor: React.FC<ArticleEditorProps> = ({
             content: content.trim(),
             featuredImageUrl: featuredImageUrl.trim() || undefined,
             status: finalStatus,
+            type: 'ARTICLE',
+            subjectId: null,
           },
           token,
         );

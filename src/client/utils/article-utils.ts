@@ -24,10 +24,12 @@ export const buildQueryArticleParams = (
   search: string = '',
   page: number = 1,
   limit: number = 12,
+  type?: 'ARTICLE' | 'NOTE',
 ): QueryArticleParams => {
   const params: QueryArticleParams = {
     page,
     limit,
+    type,
   };
 
   if (search.trim()) {

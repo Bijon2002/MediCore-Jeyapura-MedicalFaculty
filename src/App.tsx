@@ -277,7 +277,12 @@ function App() {
 
   const navigateToArticleDetail = (article: Article) => {
     if (article.slug) {
-      setRoute({ type: 'article-detail', slug: article.slug });
+      setRoute({
+        type: 'article-detail',
+        slug: article.slug,
+        contentType: article.type,
+        subjectSlug: article.subject?.slug,
+      });
       pushRoute(`/articles/${article.slug}`);
     }
   };
@@ -433,6 +438,7 @@ function App() {
         onSwitchToWorkspace={handleSwitchToWorkspace}
         isWorkspaceView={hasSidebar}
         activeRouteType={route.type}
+        routeState={route}
         currentRole={currentRole}
       />
 
@@ -598,7 +604,23 @@ function App() {
               onCancel={navigateToReviewerDashboard}
             />
           ) : route.type === 'article-detail' ? (
-            <ArticleDetail slug={route.slug} onBack={navigateToArticles} />
+            <ArticleDetail
+              slug={route.slug}
+              onBack={navigateToArticles}
+              onNavigateToSubject={(subjSlug) => {
+                setRoute({ type: 'subject-detail', subjectSlug: subjSlug });
+                pushRoute(`/subjects/${subjSlug}`);
+              }}
+              onArticleLoaded={(loadedArticle) => {
+                if (loadedArticle.type === 'NOTE' && route.contentType !== 'NOTE') {
+                  setRoute((prev) =>
+                    prev.type === 'article-detail'
+                      ? { ...prev, contentType: 'NOTE', subjectSlug: loadedArticle.subject?.slug }
+                      : prev
+                  );
+                }
+              }}
+            />
           ) : route.type === 'subject-list' ? (
             <SubjectList onSelectSubject={navigateToSubjectDetail} />
           ) : route.type === 'subject-detail' ? (

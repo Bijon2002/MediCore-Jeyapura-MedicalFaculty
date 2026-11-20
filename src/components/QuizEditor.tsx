@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { QuizzesApiClient } from '../client/api/quizzes.api';
 import { SubjectsApiClient } from '../client/api/subjects.api';
 import { getAccessToken } from '../auth/auth-storage';
@@ -34,6 +34,15 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({
   const [subjectId, setSubjectId] = useState('');
   const [topicId, setTopicId] = useState('');
   const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [subjectsLoading, setSubjectsLoading] = useState(false);
+  const [subjectsError, setSubjectsError] = useState<string | null>(null);
+
+  // Searchable Subject Combobox State
+  const [isSubjectDropdownOpen, setIsSubjectDropdownOpen] = useState(false);
+  const [subjectSearchQuery, setSubjectSearchQuery] = useState('');
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
+  const comboboxRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const [questions, setQuestions] = useState<QuestionFormState[]>([
     {
@@ -53,21 +62,111 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch subjects for dropdown
-  useEffect(() => {
-    async function loadSubjects() {
-      try {
-        const res = await SubjectsApiClient.getSubjects({ limit: 100 });
-        setSubjects(res.data || []);
-        if (!subjectId && res.data && res.data.length > 0) {
-          setSubjectId(res.data[0].id);
+  // Fetch subjects for dropdown (handling all pages)
+  const loadSubjects = useCallback(async () => {
+    setSubjectsLoading(true);
+    setSubjectsError(null);
+    try {
+      const allSubjects: Subject[] = [];
+      let currentPage = 1;
+      let totalPages = 1;
+
+      do {
+        const res = await SubjectsApiClient.getSubjects({ page: currentPage, limit: 100 });
+        if (res.data && res.data.length > 0) {
+          allSubjects.push(...res.data);
         }
-      } catch (err: any) {
-        console.error('Failed to load subjects:', err);
+        totalPages = res.meta?.totalPages || 1;
+        currentPage += 1;
+      } while (currentPage <= totalPages);
+
+      setSubjects(allSubjects);
+      // Only set initial subject in create mode if none selected yet
+      if (!isEditMode && allSubjects.length > 0) {
+        setSubjectId((prev) => (prev ? prev : allSubjects[0].id));
+      }
+    } catch (err: any) {
+      console.error('Failed to load subjects:', err);
+      setSubjectsError(err?.message || 'Failed to load medical subjects.');
+    } finally {
+      setSubjectsLoading(false);
+    }
+  }, [isEditMode]);
+
+  useEffect(() => {
+    loadSubjects();
+  }, [loadSubjects]);
+
+  // Click outside listener for subject combobox
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (comboboxRef.current && !comboboxRef.current.contains(event.target as Node)) {
+        setIsSubjectDropdownOpen(false);
+      }
+    };
+    if (isSubjectDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isSubjectDropdownOpen]);
+
+  // Filtered subjects based on search query (by title and slug)
+  const filteredSubjects = useMemo(() => {
+    const q = subjectSearchQuery.trim().toLowerCase();
+    if (!q) return subjects;
+    return subjects.filter(
+      (s) =>
+        s.title.toLowerCase().includes(q) ||
+        (s.slug && s.slug.toLowerCase().includes(q))
+    );
+  }, [subjects, subjectSearchQuery]);
+
+  // Keep highlighted index in bounds
+  useEffect(() => {
+    setHighlightedIndex(0);
+  }, [subjectSearchQuery]);
+
+  const handleSelectSubject = (id: string) => {
+    if (id !== subjectId) {
+      setSubjectId(id);
+      setTopicId(''); // Only reset topic if subject actually changed
+    }
+    setIsSubjectDropdownOpen(false);
+    setSubjectSearchQuery('');
+  };
+
+  const handleComboboxKeyDown = (e: React.KeyboardEvent) => {
+    if (!isSubjectDropdownOpen) {
+      if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        setIsSubjectDropdownOpen(true);
+        setTimeout(() => searchInputRef.current?.focus(), 50);
+      }
+      return;
+    }
+
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      setIsSubjectDropdownOpen(false);
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setHighlightedIndex((prev) =>
+        prev < filteredSubjects.length - 1 ? prev + 1 : 0
+      );
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setHighlightedIndex((prev) =>
+        prev > 0 ? prev - 1 : filteredSubjects.length - 1
+      );
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (filteredSubjects.length > 0 && filteredSubjects[highlightedIndex]) {
+        handleSelectSubject(filteredSubjects[highlightedIndex].id);
       }
     }
-    loadSubjects();
-  }, []);
+  };
 
   // If in edit mode, fetch existing quiz details
   useEffect(() => {
@@ -415,27 +514,210 @@ export const QuizEditor: React.FC<QuizEditorProps> = ({
 
         {/* Subject & Topic Selector */}
         <div className="form-group-row">
-          <div className="form-field">
-            <label className="field-label">
+          <div className="form-field" style={{ position: 'relative' }}>
+            <label className="field-label" id="subject-combobox-label">
               Subject <span className="field-required">*</span>
             </label>
-            <select
-              className="field-select"
-              value={subjectId}
-              onChange={(e) => {
-                setSubjectId(e.target.value);
-                setTopicId('');
-              }}
-            >
-              <option value="" disabled>
-                Select Subject...
-              </option>
-              {subjects.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.title}
-                </option>
-              ))}
-            </select>
+
+            <div className="subject-combobox" ref={comboboxRef} onKeyDown={handleComboboxKeyDown}>
+              <button
+                type="button"
+                id="subject-combobox-button"
+                aria-haspopup="listbox"
+                aria-expanded={isSubjectDropdownOpen}
+                aria-labelledby="subject-combobox-label subject-combobox-button"
+                className={`subject-combobox-trigger ${isSubjectDropdownOpen ? 'open' : ''}`}
+                onClick={() => {
+                  const nextState = !isSubjectDropdownOpen;
+                  setIsSubjectDropdownOpen(nextState);
+                  if (nextState) {
+                    setTimeout(() => searchInputRef.current?.focus(), 50);
+                  }
+                }}
+                disabled={subjectsLoading && subjects.length === 0}
+              >
+                <div className="subject-trigger-content">
+                  {selectedSubject ? (
+                    <>
+                      {selectedSubject.iconUrl ? (
+                        <img
+                          src={selectedSubject.iconUrl}
+                          alt=""
+                          className="subject-trigger-icon"
+                        />
+                      ) : (
+                        <span className="subject-item-badge">
+                          {selectedSubject.title.slice(0, 2).toUpperCase()}
+                        </span>
+                      )}
+                      <span className="subject-trigger-title">{selectedSubject.title}</span>
+                    </>
+                  ) : (
+                    <span className="subject-trigger-placeholder">
+                      {subjectsLoading ? 'Loading subjects...' : 'Search & select a medical subject...'}
+                    </span>
+                  )}
+                </div>
+
+                <svg
+                  className={`subject-trigger-chevron ${isSubjectDropdownOpen ? 'open' : ''}`}
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+
+              {/* DROPDOWN POPOVER */}
+              {isSubjectDropdownOpen && (
+                <div className="subject-combobox-dropdown" role="region" aria-label="Subject Selector">
+                  {/* Search bar inside dropdown */}
+                  <div className="subject-search-wrap">
+                    <svg
+                      className="subject-search-icon"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <circle cx="11" cy="11" r="8" />
+                      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                    <input
+                      ref={searchInputRef}
+                      type="text"
+                      className="subject-search-input"
+                      placeholder="Filter by subject name or slug..."
+                      value={subjectSearchQuery}
+                      onChange={(e) => setSubjectSearchQuery(e.target.value)}
+                      aria-label="Filter medical subjects"
+                    />
+                    {subjectSearchQuery && (
+                      <button
+                        type="button"
+                        className="subject-search-clear"
+                        onClick={() => {
+                          setSubjectSearchQuery('');
+                          searchInputRef.current?.focus();
+                        }}
+                        title="Clear search"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+
+                  {/* List of items */}
+                  {subjectsLoading && subjects.length === 0 ? (
+                    <div className="subject-combobox-loading">
+                      <span>Loading specialties from database...</span>
+                    </div>
+                  ) : subjectsError ? (
+                    <div className="subject-combobox-error">
+                      <span>{subjectsError}</span>
+                      <button
+                        type="button"
+                        className="subject-combobox-retry-btn"
+                        onClick={() => loadSubjects()}
+                      >
+                        Retry
+                      </button>
+                    </div>
+                  ) : filteredSubjects.length === 0 ? (
+                    <div className="subject-combobox-empty">
+                      <span>No subjects matching "{subjectSearchQuery}"</span>
+                    </div>
+                  ) : (
+                    <ul
+                      className="subject-combobox-list"
+                      role="listbox"
+                      aria-labelledby="subject-combobox-label"
+                    >
+                      {filteredSubjects.map((s, index) => {
+                        const isSelected = s.id === subjectId;
+                        const isHighlighted = index === highlightedIndex;
+
+                        return (
+                          <li
+                            key={s.id}
+                            role="option"
+                            aria-selected={isSelected}
+                            className={`subject-combobox-item ${isSelected ? 'selected' : ''} ${
+                              isHighlighted ? 'highlighted' : ''
+                            }`}
+                            onClick={() => handleSelectSubject(s.id)}
+                            onMouseEnter={() => setHighlightedIndex(index)}
+                          >
+                            <div className="subject-item-left">
+                              {s.iconUrl ? (
+                                <img src={s.iconUrl} alt="" className="subject-item-icon" />
+                              ) : (
+                                <span className="subject-item-badge">
+                                  {s.title.slice(0, 2).toUpperCase()}
+                                </span>
+                              )}
+                              <span className="subject-item-title">
+                                {s.title}
+                                {s.slug && <span className="subject-item-slug">({s.slug})</span>}
+                              </span>
+                            </div>
+
+                            {isSelected && (
+                              <svg
+                                className="subject-item-check"
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2.5"
+                              >
+                                <polyline points="20 6 9 17 4 12" />
+                              </svg>
+                            )}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  )}
+
+                  {/* Footer status summary */}
+                  <div className="subject-combobox-footer">
+                    <span>
+                      {subjects.length} total subject{subjects.length === 1 ? '' : 's'} available
+                    </span>
+                    <button
+                      type="button"
+                      className="subject-combobox-retry-btn"
+                      onClick={() => loadSubjects()}
+                      title="Reload subjects from database"
+                    >
+                      ↻ Refresh
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Explanatory helper text when single or few subjects */}
+            {subjects.length === 1 && !subjectsLoading && (
+              <div className="subject-hint-note">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="16" x2="12" y2="12" />
+                  <line x1="12" y1="8" x2="12.01" y2="8" />
+                </svg>
+                <span>
+                  Currently 1 subject in database. Create more via Admin Panel &rarr; Specialties &amp; Topics.
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="form-field">
